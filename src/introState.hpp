@@ -1,22 +1,15 @@
 #ifndef INTROSTATE_HPP
 #define INTROSTATE_HPP
 
-#include <array>
-#include <iostream>
-
+#include <bullet/btBulletDynamicsCommon.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
+#include "bulletDebugDrawer.hpp"
 #include "gameState.hpp"
 #include "gameStateTypes.hpp"
 #include "event.hpp"
-
-enum class eEndState {
-	NONE,
-	TIE,
-	P1_WINS,
-	P2_WINS
-};
 
 class cIntroState: public cGameState {
 	public:
@@ -28,19 +21,14 @@ class cIntroState: public cGameState {
 		virtual void renderState (SDL_Renderer* renderer, double timeLag);
 		virtual bool initState (SDL_Renderer* renderer);
 		virtual bool exitState (SDL_Renderer* renderer);
-		
-		eEndState checkEndGame (void);
 
-		cKbActionList kbActions_;
-		SDL_Texture* bgTexture_,
-			* xTexture_,
-			* oTexture_;
-		std::array<int,9> grid_;
-		bool changeSelCell_ = false,
-			 curPlayerToggle_ = true;
-		int curRow_ = 0,
-			curCol_ = 0;
-		eEndState endState_;
+		btBroadphaseInterface* broadphase_;
+		btDefaultCollisionConfiguration* collisionConfiguration_;
+		btCollisionDispatcher* dispatcher_;
+		btSequentialImpulseConstraintSolver* solver_;
+		btDiscreteDynamicsWorld* dynamicsWorld_;
+		
+		cDebugDraw2D* debugDraw_;
 };
 
 #endif
