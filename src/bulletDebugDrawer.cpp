@@ -5,7 +5,9 @@ cDebugDraw2D::cDebugDraw2D (SDL_Renderer* renderer,int debugMode,Uint8 alphaLeve
 cDebugDraw2D::~cDebugDraw2D (void) {}
 
 void cDebugDraw2D::drawLine (const btVector3& from,const btVector3& to,const btVector3& color) {
-	aalineRGBA(renderer_,from.getX(),from.getY(),to.getX(),to.getY(),255*color.getX(),255*color.getY(),255*color.getZ(),alphaLevel_);
+	int rendererHeight;
+	SDL_GetRendererOutputSize(renderer_,NULL,&rendererHeight);
+	aalineRGBA(renderer_,from.getX(),rendererHeight-from.getY(),to.getX(),rendererHeight-to.getY(),255*color.getX(),255*color.getY(),255*color.getZ(),alphaLevel_);
 }
 
 void cDebugDraw2D::drawContactPoint (const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) {

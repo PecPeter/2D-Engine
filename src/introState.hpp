@@ -7,6 +7,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "bulletDebugDrawer.hpp"
+#include "bulletKinematicCharacterController.hpp"
 #include "gameState.hpp"
 #include "gameStateTypes.hpp"
 #include "event.hpp"
@@ -27,8 +28,15 @@ class cIntroState: public cGameState {
 		btCollisionDispatcher* dispatcher_;
 		btSequentialImpulseConstraintSolver* solver_;
 		btDiscreteDynamicsWorld* dynamicsWorld_;
+		btRigidBody* fallRigidBody_;
+		btRigidBody* playerRigidBody_;
 		
 		cDebugDraw2D* debugDraw_;
+
+		cKbActionList kbActionsList_;
+		eKbAction kbAction_;
+
+		bool quitState_;
 };
 
 #endif

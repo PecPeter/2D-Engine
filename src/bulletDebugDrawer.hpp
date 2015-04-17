@@ -6,8 +6,8 @@
 #define BULLETDEBUGDRAWER_HPP
 
 #include <iostream>
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
+//#include <bullet/btBulletCollisionCommon.h>
+//#include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/LinearMath/btIDebugDraw.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
