@@ -9,15 +9,15 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "gameState.hpp"
-#include "gameStateHeader.hpp"
-#include "gameStateTypes.hpp"
+#include "stateHandler.hpp"
+
 
 class cEngine {
 	public:
 		cEngine (void);
 		~cEngine (void);
 
-		bool init (int screenWidth, int screenHeight, char* winTitle);
+		bool init (int screenWidth, int screenHeight, char* winTitle, cStateHandler* stateHandler);
 		void quit (void);
 
 		void mainLoop (void);
@@ -30,11 +30,11 @@ class cEngine {
 		SDL_Renderer* renderer_;
 		SDL_Event event_;
 
-		const double MS_PER_UPDATE = (1.f/120.f)*1000.f, //60 updates/s
-			  MS_PER_RENDER = (1.f/250.f)*1000.f; 		// Max of 250 FPS
-		const short MAX_UPDATE_COUNT = 10;
+		const double MS_PER_UPDATE,
+			  MS_PER_RENDER;
+		const short MAX_UPDATE_COUNT;
 
-		std::vector<cGameState*> stateList_;
+		cStateHandler* stateHandler_;
 };
 
 #endif

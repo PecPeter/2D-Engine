@@ -1,6 +1,7 @@
 #include "gameState.hpp"
 
-cGameState::cGameState (void): stateStage_(eStateStage::RENDER_NEW_STATE),exitGameState_(false) {}
+cGameState::cGameState (int noStateChange, int removeState): stateStage_(eStateStage::RENDER_NEW_STATE),
+		exitGameState_(false),noStateChange_(noStateChange),removeState_(removeState) {}
 
 cGameState::~cGameState (void) {}
 
@@ -10,12 +11,12 @@ void cGameState::handleEvents (SDL_Event* event) {
 			handleState(*event);
 }
 
-eStateAction cGameState::update (void) {
-	eStateAction stateAction(eStateAction::NONE);
+int cGameState::update (void) {
+	int stateAction(noStateChange_);
 	if (stateStage_ == eStateStage::NONE)
 		stateAction = updateState();
 	else if (stateStage_ == eStateStage::EXIT_STATE)
-		return eStateAction::REMOVE_STATE;
+		return removeState_;
 	return stateAction;
 }
 

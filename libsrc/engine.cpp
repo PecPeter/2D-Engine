@@ -1,10 +1,11 @@
 #include "engine.hpp"
 
-cEngine::cEngine (void): window_(nullptr),renderer_(nullptr) {}
+cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),MS_PER_UPDATE((1.f/120.f)*1000.f),
+	MS_PER_RENDER((1.f/250.f)*1000.f),MAX_UPDATE_COUNT(10),stateHandler_(nullptr) {}
 
 cEngine::~cEngine (void) {}
 
-bool cEngine::init (int screenWidth, int screenHeight, char* winTitle) {
+bool cEngine::init (int screenWidth, int screenHeight, char* winTitle, cStateHandler* stateHandler) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		std::cerr << "SDL could not be initialized, within cEngine::init()" <<
 			"\nSDL_Error: " << SDL_GetError() << std::endl;
@@ -39,23 +40,29 @@ bool cEngine::init (int screenWidth, int screenHeight, char* winTitle) {
 			"\nTTF_Error: " << TTF_GetError() << std::endl;
 		return false;
 	}
-	//Add intro state to stateList
-	stateList_.push_back(new cIntroState);
+	if (stateHandler == nullptr) {
+		std::cerr << "stateHandler is null, within cEngine::init." << std::endl;
+		return false;
+	}
+	stateHandler_ = stateHandler;
 	return true;
 }
 
 void cEngine::quit (void) {
+	if (stateHandler_ != nullptr) {
+		delete stateHandler_;
+	}
+	stateHandler_ = nullptr;
+//	if (stateList_.empty() == false)
+//		for (auto& itr : stateList_)
+//			delete &itr;
+//	stateList_.clear();
 	if (renderer_ != nullptr)
 		SDL_DestroyRenderer(renderer_);
 	if (window_ != nullptr)
 		SDL_DestroyWindow(window_);
 	renderer_ = nullptr;
 	window_ = nullptr;
-
-	if (stateList_.empty() == false)
-		for (auto it = stateList_.begin(); it != stateList_.end(); ++it)
-			delete *it;
-	stateList_.clear();
 
 	TTF_Quit();
 	IMG_Quit();
@@ -68,12 +75,11 @@ void cEngine::mainLoop (void) {
 		   curTime,
 		   dTime,
 		   updateTime = 0.0,
-		   renderTime = 0.0,
-		   actualTime,
-		   sleepTime;
+		   renderTime = 0.0;
 	int numUpdates = 0,
 		numFrames = 0;
-	while (stateList_.size() > 0) { 					//As long as there is a state on the list, don't end the game
+	while (stateHandler_->getNumStates() > 0) {
+		//As long as there is a state on the list, don't end the game
 		curTime = SDL_GetTicks();
 		dTime = curTime-prevTime;
 		prevTime = curTime;
@@ -81,7 +87,7 @@ void cEngine::mainLoop (void) {
 		renderTime += dTime;
 
 		int updateCount = 0;
-		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT && (stateList_.empty() == false)) {
+		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT && (stateHandler_->getNumStates() > 0)) {
 			handleEvents();
 			updateState();
 			updateTime -= MS_PER_UPDATE;
@@ -90,7 +96,7 @@ void cEngine::mainLoop (void) {
 		}
 
 		int renderCount = 0;
-		if ((renderTime >= MS_PER_RENDER || updateCount > 0) && (stateList_.empty() == false)) {
+		if ((renderTime >= MS_PER_RENDER || updateCount > 0) && (stateHandler_->getNumStates() > 0)) {
 			// Do interpolation calculations here, send to render
 			renderState(updateTime);	// change updateTime to the interpolation value once its calced.
 			++renderCount;
@@ -99,7 +105,6 @@ void cEngine::mainLoop (void) {
 		}
 
 		if (updateCount == 0 && renderCount == 0) {
-//		if (!sleep && updateCount == 0 && renderCount == 0) {
 			double actualTime = updateTime+(SDL_GetTicks()-curTime);
 			double sleepTime = (MS_PER_UPDATE-actualTime);
 			if (sleepTime > 1) {
@@ -110,32 +115,23 @@ void cEngine::mainLoop (void) {
 }
 
 void cEngine::handleEvents (void) {
-	auto currentState = stateList_.rbegin();
-	(*currentState)->handleEvents(&event_);
+	auto currentState = stateHandler_->getState();
+	if (currentState != nullptr)
+		currentState->handleEvents(&event_);
 }
 
 void cEngine::updateState (void) {
-	auto currentState = stateList_.rbegin();
-	switch ((*currentState)->update()) {
-		case eStateAction::REMOVE_STATE: {
-			delete *currentState;
-			stateList_.pop_back();
-			break;
-		}
-		case eStateAction::INTRO_STATE: {
-			std::cout << "Creating new introState" << std::endl;
-			stateList_.push_back(new cIntroState);
-			break;
-		}
-		default:
-			break;
-	}
+	auto currentState = stateHandler_->getState();
+	if (currentState != nullptr)
+		stateHandler_->changeState(currentState->update());
 }
 
 void cEngine::renderState (double timeLag) {
-	SDL_SetRenderDrawColor(renderer_,0,0,0,255);
-	SDL_RenderClear(renderer_);
-	auto currentState = stateList_.rbegin();
-	(*currentState)->render(renderer_,timeLag);
-	SDL_RenderPresent(renderer_);
+	auto currentState = stateHandler_->getState();
+	if (currentState != nullptr) {
+		currentState->render(renderer_,timeLag);
+		SDL_RenderPresent(renderer_);
+		SDL_SetRenderDrawColor(renderer_,0,0,0,255);
+		SDL_RenderClear(renderer_);
+	}
 }

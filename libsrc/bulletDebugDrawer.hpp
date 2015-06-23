@@ -6,8 +6,6 @@
 #define BULLETDEBUGDRAWER_HPP
 
 #include <iostream>
-//#include <bullet/btBulletCollisionCommon.h>
-//#include <bullet/btBulletDynamicsCommon.h>
 #include <bullet/LinearMath/btIDebugDraw.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -30,19 +28,27 @@ enum class eRenderingPlane {
 
 class cDebugDraw2D : public btIDebugDraw {
 	public:
-		cDebugDraw2D (SDL_Renderer* renderer,int debugMode=0,Uint8 alphaLevel=255,eRenderingPlane renderingPlane=eRenderingPlane::XY);
-		virtual ~cDebugDraw2D (void);
+		cDebugDraw2D (SDL_Renderer* renderer,int debugMode=0,Uint8 alphaLevel=255,eRenderingPlane
+				renderingPlane=eRenderingPlane::XY): renderer_(renderer), debugMode_(debugMode),
+				alphaLevel_(alphaLevel), renderingPlane_(renderingPlane) {}
+		virtual ~cDebugDraw2D (void) {}
 
 		// Pure virtual functions declarations
-		virtual void drawLine (const btVector3& from,const btVector3& to,const btVector3& color);
-		virtual void drawContactPoint (const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) override;
-		virtual void reportErrorWarning (const char* warningString) override;
-		virtual void draw3dText (const btVector3& location,const char* textString) override;
-		virtual void setDebugMode (int debugMode) override;
-		virtual int	getDebugMode (void) const override;
+		virtual void drawLine (const btVector3& from,const btVector3& to,const btVector3& color) {
+			int rendererHeight;
+			SDL_GetRendererOutputSize(renderer_,NULL,&rendererHeight);
+			aalineRGBA(renderer_,from.getX(),rendererHeight-from.getY(),to.getX(),
+					rendererHeight-to.getY(),255*color.getX(),255*color.getY(),255*color.getZ(),
+					alphaLevel_);
+		}
+		virtual void drawContactPoint (const btVector3& PointOnB,const btVector3& normalOnB,btScalar distance,int lifeTime,const btVector3& color) override {}
+		virtual void reportErrorWarning (const char* warningString) override {}
+		virtual void draw3dText (const btVector3& location,const char* textString) override {}
+		virtual void setDebugMode (int debugMode) override {}
+		virtual int	getDebugMode (void) const override {}
 		
-		void setRenderingPlane (eRenderingPlane renderingPlane);
-		eRenderingPlane getRenderingPlane (void);
+		void setRenderingPlane (eRenderingPlane renderingPlane) {renderingPlane_ = renderingPlane;}
+		eRenderingPlane getRenderingPlane (void) {return renderingPlane_;}
 		
 		/*
 		 * These can be redefined if necessary.
@@ -71,4 +77,3 @@ class cDebugDraw2D : public btIDebugDraw {
 };
 
 #endif
-
