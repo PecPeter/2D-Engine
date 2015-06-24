@@ -49,7 +49,6 @@ class cDebugDraw2D : public btIDebugDraw {
 		
 		void setRenderingPlane (eRenderingPlane renderingPlane) {renderingPlane_ = renderingPlane;}
 		eRenderingPlane getRenderingPlane (void) {return renderingPlane_;}
-		
 		/*
 		 * These can be redefined if necessary.
 		 *
