@@ -13,19 +13,20 @@ cCollWorld::~cCollWorld (void) {
 
 cCollObject2D* cCollWorld::createObject (const cVector2& pos, const cCollShape& shape,
 		eObjectType objectType) {
-	int shapeIndex = -1, 
-		listSize = shapeList_.size();
+	cCollShape* objectShape = nullptr;
+	int listSize = shapeList_.size();
 	for (int i = 0; i < listSize; ++i) {
-		if (shape == shapeList_.at(i)) {
-			shapeIndex = i;
+		cCollShape* tmpShape = &(shapeList_.at(i));
+		if (shape == *tmpShape) {
+			objectShape = tmpShape;
 			break;
 		}
 	}
-	if (shapeIndex == -1) {
+	if (objectShape == nullptr) {
 		shapeList_.push_back(shape);
-		shapeIndex += shapeList_.size();
+		objectShape = &(*(shapeList_.rbegin()));
 	}
-	cCollObject2D* collObject = new cCollObject2D(pos,shapeIndex,objectType);
+	cCollObject2D* collObject = new cCollObject2D(pos,objectShape,objectType);
 	collObjList_.push_back(collObject);
 	return collObject;
 }

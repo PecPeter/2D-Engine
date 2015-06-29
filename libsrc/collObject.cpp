@@ -1,7 +1,7 @@
 #include "collObject.hpp"
 
-cCollObject2D::cCollObject2D (const cVector2& pos, int collShapeIndex, eObjectType objectType):
-	pos_(pos),collShapeIndex_(collShapeIndex),objectType_(objectType) {}
+cCollObject2D::cCollObject2D (const cVector2& pos, const cCollShape* shape, eObjectType objectType):
+	pos_(pos),shape_(shape),objectType_(objectType) {}
 
 cCollObject2D::~cCollObject2D (void) {}
 

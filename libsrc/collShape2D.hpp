@@ -5,6 +5,7 @@
 #include "mathVector.hpp"
 
 enum class eShapeType {
+	POINT,
 	CIRCLE,
 	AABB
 };
@@ -21,6 +22,12 @@ class cCollShape {
 	protected:
 		eShapeType shapeType_;
 		cMatrix shapeDim_;
+};
+
+class cCollPoint : public cCollShape {
+	public:
+		cCollPoint (void);
+		~cCollPoint (void);
 };
 
 class cCollCircle : public cCollShape {

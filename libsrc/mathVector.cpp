@@ -15,7 +15,7 @@ cVector2 cVector2::projection (const cVector2& projAxis) {
 	return cVector2();
 }
 */
-double cVector2::sqMagnitude (void) {
+double cVector2::sqMagnitude (void) const {
 	double sqSum = 0;
 	for (int i = 0; i < nRows_; ++i) {
 		for (int j = 0; j < nCols_; ++j) {
@@ -25,7 +25,7 @@ double cVector2::sqMagnitude (void) {
 	return sqSum;
 };
 
-double cVector2::magnitude (void) {
+double cVector2::magnitude (void) const {
 	return sqMagnitude();
 }
 
@@ -42,4 +42,22 @@ double dotProd (const cVector2& v1, const cVector2& v2) {
 		}
 	}
 	return dotProduct;
+}
+
+double angleRad (const cVector2& v1, const cVector2& v2) {
+	return std::acos(dotProd(v1,v2)/(v1.magnitude()*v2.magnitude()));
+}
+
+double angleDeg (const cVector2& v1, const cVector2& v2) {
+	return angleRad(v1,v2)*(180.0/3.14159265);
+}
+
+cVector2 unitVector (const cVector2& v1) {
+	cVector2 tmpVec(v1);
+	tmpVec.scalarMult(1.0/v1.magnitude());
+	return tmpVec;
+}
+
+cVector2 absolute (const cVector2& v1) {
+	return cVector2(std::abs(v1.get(0,0)),std::abs(v1.get(1,0)));
 }

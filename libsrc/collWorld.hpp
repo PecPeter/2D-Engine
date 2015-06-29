@@ -2,9 +2,12 @@
 #define COLLWORLD_HPP
 
 #include <vector>
+#include <queue>
 
 #include "collShape2D.hpp"
 #include "collObject.hpp"
+#include "collPair.hpp"
+#include "collBroadphase.hpp"
 #include "mathVector.hpp"
 
 class cCollWorld {
@@ -22,6 +25,7 @@ class cCollWorld {
 				 worldDimMax_;
 		std::vector<cCollShape> shapeList_;
 		std::vector<cCollObject2D*> collObjList_;
+		std::queue<cCollPair> collPairList_;
 };
 
 #endif

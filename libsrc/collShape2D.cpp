@@ -2,6 +2,9 @@
 
 cCollShape::cCollShape (eShapeType shapeType): shapeType_(shapeType),shapeDim_(0,0) {
 	switch (shapeType_) {
+		case eShapeType::POINT:
+			shapeDim_.resize(0,0);
+			break;
 		case eShapeType::CIRCLE:
 			shapeDim_.resize(1,1);
 			break;
@@ -25,6 +28,10 @@ bool cCollShape::operator== (const cCollShape& rhs) const {
 		return false;
 	return true;
 }
+
+cCollPoint::cCollPoint (void): cCollShape(eShapeType::POINT) {}
+
+cCollPoint::~cCollPoint (void) {}
 
 cCollCircle::cCollCircle (double radius): cCollShape(eShapeType::CIRCLE) {
 	shapeDim_.set(0,0) = radius;
