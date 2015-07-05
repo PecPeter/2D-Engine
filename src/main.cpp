@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include "mathMatrixUnitTest.hpp"
+#include "mathVectorUnitTest.hpp"
+
 #include "gameState.hpp"
 #include "stateHandler.hpp"
 #include "engine.hpp"
@@ -39,6 +42,7 @@ class handler: public cStateHandler {
 };
 
 int main (void) {
+	/*
 	cEngine engine;
 	const int SCREEN_WIDTH = 640,
 		  SCREEN_HEIGHT = 480;
@@ -51,5 +55,10 @@ int main (void) {
 	}
 	engine.mainLoop();
 	engine.quit();
+	*/
+	std::cout << "Matrix unit test:\n";
+	mathMatrixTest();
+//	std::cout << "Vector unit test:\n";
+//	mathVectorTest();
 	return 0;
 }

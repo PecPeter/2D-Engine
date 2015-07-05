@@ -67,13 +67,13 @@ void cCommandTestState::renderState (SDL_Renderer* renderer, double timelag) {
 }
 
 bool cCommandTestState::initState (SDL_Renderer* renderer) {
-	cCollWorld collWorld(cVector2(0,0),cVector2(640,480));
-	cCollAabb aabb(10,5);
-	cCollCircle circle(20);
-	cCollObject2D* boxObj = collWorld.createObject(cVector2(20,20),aabb),
-		*boxObj1 = collWorld.createObject(cVector2(100,40),aabb,eObjectType::DYNAMIC);
+//	cCollWorld collWorld(cVector2(0,0),cVector2(640,480));
+//	cCollAabb aabb(10,5);
+//	cCollCircle circle(20);
+//	cCollObject2D* boxObj = collWorld.createObject(cVector2(20,20),aabb),
+//		*boxObj1 = collWorld.createObject(cVector2(100,40),aabb,eObjectType::DYNAMIC);
 
-	cCollShape shape = collWorld.getShape(boxObj->getCollShapeIndex());
+//	const cCollShape* shape = boxObj->getCollShape();
 
 	return true;
 }
