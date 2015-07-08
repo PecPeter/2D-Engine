@@ -1,6 +1,6 @@
 #include "mathVector.hpp"
 
-cVector2::cVector2 (double x, double y): cMatrix(2,1) {
+cVector2::cVector2 (const double& x, const double& y): cMatrix(2,1) {
 	set(0,0) = x;
 	set(1,0) = y;
 }
@@ -9,12 +9,22 @@ cVector2::cVector2 (const cVector2& vector): cMatrix(vector) {}
 
 cVector2::~cVector2 (void) {}
 
-/*
-cVector2 cVector2::projection (const cVector2& projAxis) {
-	return;
-	return cVector2();
+cVector2 operator* (const double& lhs, const cVector2& rhs) {
+	return cVector2(lhs*rhs.getX(),lhs*rhs.getY());
 }
-*/
+
+cVector2 operator- (const cVector2& lhs, const cVector2& rhs) {
+	return cVector2(lhs.getX()-rhs.getX(),lhs.getY()-rhs.getY());
+}
+
+double cVector2::getX (void) const {
+	return get(0,0);
+}
+
+double cVector2::getY (void) const {
+	return get(1,0);
+}
+
 double vSqMagnitude (const cVector2& v1) {
 	double sqSum = 0;
 	int numRows = 0,
@@ -55,6 +65,11 @@ double angleDeg (const cVector2& v1, const cVector2& v2) {
 	return vAngleRad(v1,v2)*(180.0/3.14159265);
 }
 
+double vScalProj (const cVector2& projVec, const cVector2& projAxis) {
+	cVector2 unitProjAxis = vUnitVector(projAxis);
+	return vDotProd(projVec,unitProjAxis);
+}
+
 cVector2 vUnitVector (const cVector2& v1) {
 	cVector2 tmpVec(v1);
 	tmpVec *= 1.0/vMagnitude(v1);
@@ -67,4 +82,12 @@ cVector2 vAbsolute (const cVector2& v1) {
 
 cVector2 vNormal (const cVector2& v1) {
 	return cVector2(v1.get(1,0),-v1.get(0,1));
+}
+
+cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
+	// Scalar Projection: s = A dot uB, s = scalar projection, A
+	// projected Vector, uB = unit vector of axis
+	// Vector Projection: v = s * uB
+	cVector2 unitProjAxis = vUnitVector(projAxis);
+	return cVector2((vDotProd(projVec,unitProjAxis)*unitProjAxis));
 }

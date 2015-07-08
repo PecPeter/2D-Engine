@@ -13,7 +13,7 @@ cCollWorld::~cCollWorld (void) {
 
 cCollObject2D* cCollWorld::createObject (const cVector2& pos, const cCollShape& shape,
 		eObjectType objectType) {
-	cCollShape* objectShape = nullptr;
+/*	cCollShape* objectShape = nullptr;
 	int listSize = shapeList_.size();
 	for (int i = 0; i < listSize; ++i) {
 		cCollShape* tmpShape = &(shapeList_.at(i));
@@ -27,8 +27,8 @@ cCollObject2D* cCollWorld::createObject (const cVector2& pos, const cCollShape& 
 		objectShape = &(*(shapeList_.rbegin()));
 	}
 	cCollObject2D* collObject = new cCollObject2D(pos,objectShape,objectType);
-	collObjList_.push_back(collObject);
-	return collObject;
+	collObjList_.push_back(collObject);*/
+	return nullptr;
 }
 
 const cCollShape& cCollWorld::getShape (int shapeIndex) const {
