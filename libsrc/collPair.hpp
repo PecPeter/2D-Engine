@@ -15,8 +15,8 @@ class cCollPair {
 		cCollPair (cCollObject2D* object1, cCollObject2D* object2);
 		~cCollPair (void);
 
-		cCollObject2D* object1 (void);
-		cCollObject2D* object2 (void);
+		const cCollObject2D* object1 (void) const;
+		const cCollObject2D* object2 (void) const;
 		void setObjOverlap (const cVector2& overlap);
 		cVector2& getObjOverlap (void);
 		void setCollType (const eCollType& collType);

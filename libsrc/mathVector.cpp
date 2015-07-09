@@ -1,5 +1,7 @@
 #include "mathVector.hpp"
 
+cVector2::cVector2 (void): cMatrix(2,1) {}
+
 cVector2::cVector2 (const double& x, const double& y): cMatrix(2,1) {
 	set(0,0) = x;
 	set(1,0) = y;
@@ -7,15 +9,18 @@ cVector2::cVector2 (const double& x, const double& y): cMatrix(2,1) {
 
 cVector2::cVector2 (const cVector2& vector): cMatrix(vector) {}
 
+cVector2::cVector2 (const cMatrix& matrix) {
+	matrix.getSize(&nRows_,&nCols_);
+	if (nRows_ != 2 && nCols_ != 1) {
+		//Throw an error
+		;
+	}
+	for (int i = 0; i < nRows_; ++i) {
+		set(i,0) = matrix.get(i,0);
+	}
+}
+
 cVector2::~cVector2 (void) {}
-
-cVector2 operator* (const double& lhs, const cVector2& rhs) {
-	return cVector2(lhs*rhs.getX(),lhs*rhs.getY());
-}
-
-cVector2 operator- (const cVector2& lhs, const cVector2& rhs) {
-	return cVector2(lhs.getX()-rhs.getX(),lhs.getY()-rhs.getY());
-}
 
 double cVector2::getX (void) const {
 	return get(0,0);

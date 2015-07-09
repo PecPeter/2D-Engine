@@ -6,16 +6,15 @@
 
 class cVector2: public cMatrix {
 	public:
+		cVector2 (void);
 		cVector2 (const double& x, const double& y);
 		cVector2 (const cVector2& vector);
+		cVector2 (const cMatrix& matrix);
 		virtual ~cVector2 (void);
 
 		double getX (void) const;
 		double getY (void) const;
 };
-
-cVector2 operator* (const double& lhs, const cVector2& rhs);
-cVector2 operator- (const cVector2& lhs, const cVector2& rhs);
 
 double vSqMagnitude (const cVector2& v1);
 double vMagnitude (const cVector2& v1);

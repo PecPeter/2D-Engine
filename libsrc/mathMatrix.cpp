@@ -1,5 +1,7 @@
 #include "mathMatrix.hpp"
 
+cMatrix::cMatrix (void): nRows_(0), nCols_(0) {}
+
 cMatrix::cMatrix (const cMatrix& matrix): nRows_(matrix.getRowSize()),
 		nCols_(matrix.getColSize()) {
 	matrix_.resize(nRows_*nCols_);

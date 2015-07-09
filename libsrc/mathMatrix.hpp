@@ -7,6 +7,7 @@
 
 class cMatrix {
 	public:
+		cMatrix (void);
 		cMatrix (const cMatrix& matrix);
 		cMatrix (int nRows, int nCols);
 		cMatrix& operator= (const cMatrix& rhs);
