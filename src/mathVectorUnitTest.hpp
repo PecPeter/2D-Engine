@@ -4,13 +4,8 @@
 #include <iostream>
 #include "mathVector.hpp"
 
-void mathVectorTest (void) {
-	cVector2 v1(1,2.9),
-			 v2(v1);
-	std::cout << "Printing v1:\n";
-//	printMatrix(v1);
-	std::cout << "Printing v2:\n";
-//	printMatrix(v2);
-}
+void mathVectorUnitTest (void);
+void compareVectors (const cVector2& calculatedVector,
+		const cVector2& solutionVector);
 
 #endif

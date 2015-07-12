@@ -295,7 +295,7 @@ cMatrix& operator-= (cMatrix& lhs, const double& rhs) {
 	lhs.getSize(&nRows,&nCols);
 	for (int i = 0; i < nRows; ++i) {
 		for (int j = 0; j < nCols; ++j) {
-			lhs.set(i,j) += rhs;
+			lhs.set(i,j) -= rhs;
 		}
 	}
 	return lhs;

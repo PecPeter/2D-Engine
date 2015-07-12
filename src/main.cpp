@@ -58,7 +58,7 @@ int main (void) {
 	*/
 	std::cout << "Matrix unit test:\n";
 	mathMatrixTest();
-//	std::cout << "Vector unit test:\n";
-//	mathVectorTest();
+	std::cout << "Vector unit test:\n";
+	mathVectorUnitTest();
 	return 0;
 }

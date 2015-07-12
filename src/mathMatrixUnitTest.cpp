@@ -144,7 +144,133 @@ void mathMatrixTest (void) {
 	m4 += 1;
 	compareMatrices(m4,m1);
 
+	std::cout << "\t...operator- (cMatrix, cMatrix): ";
+	m1.resize(2,3);
+	m1.set(0,0) = 1.5;
+	m1.set(0,1) = 3;
+	m1.set(0,2) = 4.5;
+	m1.set(1,0) = 6;
+	m1.set(1,1) = 7.5;
+	m1.set(1,2) = 9;
 
+	m2.resize(2,3);
+	m2.set(0,0) = 1;
+	m2.set(0,1) = 2.5;
+	m2.set(0,2) = 4;
+	m2.set(1,0) = 5.5;
+	m2.set(1,1) = 7;
+	m2.set(1,2) = 8.5;
+
+	m3.resize(2,3);
+	m3.set(0,0) = 0.5;
+	m3.set(0,1) = 0.5;
+	m3.set(0,2) = 0.5;
+	m3.set(1,0) = 0.5;
+	m3.set(1,1) = 0.5;
+	m3.set(1,2) = 0.5;
+	
+	m4 = m1-m2;
+	compareMatrices(m4,m3);
+
+	std::cout << "\t...operator- (double, cMatrix): ";
+	m4 = -3-m1;
+
+	m3.set(0,0) = -4.5;
+	m3.set(0,1) = -6;
+	m3.set(0,2) = -7.5;
+	m3.set(1,0) = -9;
+	m3.set(1,1) = -10.5;
+	m3.set(1,2) = -12;
+	compareMatrices(m4,m3);
+
+	std::cout << "\t...operator- (cMatrix, double): ";
+	m4 = m1-3;
+	m3.set(0,0) = -1.5;
+	m3.set(0,1) = 0;
+	m3.set(0,2) = 1.5;
+	m3.set(1,0) = 3;
+	m3.set(1,1) = 4.5;
+	m3.set(1,2) = 6;
+	compareMatrices(m4,m3);
+
+	std::cout << "\t...operator-= (cMatrix, cMatrix): ";
+	m1.resize(2,3);
+	m1.set(0,0) = 1.5;
+	m1.set(0,1) = 3;
+	m1.set(0,2) = 4.5;
+	m1.set(1,0) = 6;
+	m1.set(1,1) = 7.5;
+	m1.set(1,2) = 9;
+
+	m2.resize(2,3);
+	m2.set(0,0) = 1;
+	m2.set(0,1) = 2.5;
+	m2.set(0,2) = 4;
+	m2.set(1,0) = 5.5;
+	m2.set(1,1) = 7;
+	m2.set(1,2) = 8.5;
+
+	m3.resize(2,3);
+	m3.set(0,0) = 0.5;
+	m3.set(0,1) = 0.5;
+	m3.set(0,2) = 0.5;
+	m3.set(1,0) = 0.5;
+	m3.set(1,1) = 0.5;
+	m3.set(1,2) = 0.5;
+
+	m1-=m2;
+	compareMatrices(m1,m3);
+
+	std::cout << "\t...operator-= (cMatrix, double): ";
+	m4.resize(2,3);
+	m4.set(0,0) = 0;
+	m4.set(0,1) = 0;
+	m4.set(0,2) = 0;
+	m4.set(1,0) = 0;
+	m4.set(1,1) = 0;
+	m4.set(1,2) = 0;
+
+	m3-=0.5;
+	compareMatrices(m3,m4);
+
+	std::cout << "Testing mTranspose (cMatrix): ";
+	m1 = mTranspose(m2);
+	m3.resize(3,2);
+	m3.set(0,0) = 1;
+	m3.set(0,1) = 5.5;
+	m3.set(1,0) = 2.5;
+	m3.set(1,1) = 7;
+	m3.set(2,0) = 4;
+	m3.set(2,1) = 8.5;
+	compareMatrices (m1,m3);
+
+	std::cout << "Testing mCoeffMult (cMatrix, cMatrix): ";
+
+	m1.resize(2,3);
+	m1.set(0,0) = 1;
+	m1.set(0,1) = 2;
+	m1.set(0,2) = 3;
+	m1.set(1,0) = 4;
+	m1.set(1,1) = 5;
+	m1.set(1,2) = 6;
+
+	m2.resize(2,3);
+	m2.set(0,0) = 6;
+	m2.set(0,1) = 5;
+	m2.set(0,2) = 4;
+	m2.set(1,0) = 3;
+	m2.set(1,1) = 2;
+	m2.set(1,2) = 1;
+
+	m3.resize(2,3);
+	m3.set(0,0) = 6;
+	m3.set(0,1) = 10;
+	m3.set(0,2) = 12;
+	m3.set(1,0) = 12;
+	m3.set(1,1) = 10;
+	m3.set(1,2) = 6;
+	m4 = mCoeffMult(m1,m2);
+	compareMatrices(m4,m3);
 }
 
 void compareMatrices (const cMatrix& calculatedMatrix,
