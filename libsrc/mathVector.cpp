@@ -2,7 +2,7 @@
 
 cVector2::cVector2 (void): cMatrix(2,1) {}
 
-cVector2::cVector2 (const double& x, const double& y): cMatrix(2,1) {
+cVector2::cVector2 (double x, double y): cMatrix(2,1) {
 	set(0,0) = x;
 	set(1,0) = y;
 }

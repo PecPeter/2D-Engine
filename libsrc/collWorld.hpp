@@ -7,6 +7,7 @@
 #include "collShape2D.hpp"
 #include "collObject.hpp"
 #include "collPair.hpp"
+#include "collTest2D.hpp"
 #include "collBroadphase.hpp"
 #include "mathVector.hpp"
 
@@ -26,6 +27,7 @@ class cCollWorld {
 		std::vector<cCollShape> shapeList_;
 		std::vector<cCollObject2D*> collObjList_;
 		std::queue<cCollPair> collPairList_;
+		cCollTestHandler testHandler_;
 };
 
 #endif

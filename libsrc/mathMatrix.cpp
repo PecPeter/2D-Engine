@@ -122,6 +122,18 @@ cMatrix operator* (const double& lhs, const cMatrix& rhs) {
 	return temp;
 }
 
+cMatrix operator* (const cMatrix& lhs, const double& rhs) {
+	int rows, cols;
+	lhs.getSize(&rows,&cols);
+	cMatrix temp(rows,cols);
+	for (int i = 0; i < rows; ++i) {
+		for (int j = 0; j < cols; ++j) {
+			temp.set(i,j) = lhs.get(i,j)*rhs;
+		}
+	}
+	return temp;
+}
+
 cMatrix& operator*= (cMatrix& lhs, const cMatrix& rhs) {
 	if (lhs.getColSize() != rhs.getRowSize()) {
 		//Throw error
@@ -130,22 +142,24 @@ cMatrix& operator*= (cMatrix& lhs, const cMatrix& rhs) {
 	int rows = lhs.getRowSize(),
 		cols = rhs.getColSize(),
 		colMax = lhs.getColSize();
+	cMatrix temp(rows,cols);
 	for (int rItr = 0; rItr < rows; rItr++) {
 		for (int cItr = 0; cItr < cols; cItr++) {
 			for (int itr = 0; itr < colMax; itr++) {
-				lhs.set(rItr,cItr) += lhs.get(rItr,itr)*rhs.get(itr,cItr);
+				temp.set(rItr,cItr) += lhs.get(rItr,itr)*rhs.get(itr,cItr);
 			}
 		}
 	}
+	lhs = temp;
 	return lhs;
 }
-
+	
 cMatrix& operator*= (cMatrix& lhs, const double& rhs) {
 	int rows, cols;
 	lhs.getSize(&rows,&cols);
 	for (int i = 0; i < rows; ++i) {
 		for (int j = 0; j < cols; ++j) {
-			lhs.set(i,j) = lhs.get(i,j)*rhs;
+			lhs.set(i,j) *= rhs;
 		}
 	}
 	return lhs;
@@ -202,7 +216,7 @@ cMatrix& operator+= (cMatrix& lhs, const cMatrix& rhs) {
 	}
 	for (int i = 0; i < nRowsL; ++i) {
 		for (int j = 0; j < nColsL; ++j) {
-			lhs.set(i,j) = lhs.get(i,j)+rhs.get(i,j);
+			lhs.set(i,j) += rhs.get(i,j);
 		}
 	}
 	return lhs;
@@ -213,7 +227,7 @@ cMatrix& operator+= (cMatrix& lhs, const double& rhs) {
 	lhs.getSize(&nRows,&nCols);
 	for (int i = 0; i < nRows; ++i) {
 		for (int j = 0; j < nCols; ++j) {
-			lhs.set(i,j) += lhs.get(i,j)+rhs;
+			lhs.set(i,j) += rhs;
 		}
 	}
 	return lhs;
@@ -270,7 +284,7 @@ cMatrix& operator-= (cMatrix& lhs, const cMatrix& rhs) {
 	}
 	for (int i = 0; i < nRowsL; ++i) {
 		for (int j = 0; j < nColsL; ++j) {
-			lhs.set(i,j) = lhs.get(i,j)-rhs.get(i,j);
+			lhs.set(i,j) -= rhs.get(i,j);
 		}
 	}
 	return lhs;
@@ -281,7 +295,7 @@ cMatrix& operator-= (cMatrix& lhs, const double& rhs) {
 	lhs.getSize(&nRows,&nCols);
 	for (int i = 0; i < nRows; ++i) {
 		for (int j = 0; j < nCols; ++j) {
-			lhs.set(i,j) += lhs.get(i,j)-rhs;
+			lhs.set(i,j) += rhs;
 		}
 	}
 	return lhs;

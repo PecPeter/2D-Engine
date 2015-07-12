@@ -1,15 +1,18 @@
 #include "collTest2D.hpp"
 
-cCollTestHandler::cCollTestHandler (void): noColl_(-1,-1), contactColl_(0,0) {}
+cCollTestHandler::cCollTestHandler (void): noColl_(-1,-1), contactColl_(0,0) {
+	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::AABB)] =
+		&cCollTestHandler::collTestAabbAabb;
+}
 
 void cCollTestHandler::operator() (cCollPair& collPair) {
 	const cCollObject2D* obj1 = collPair.object1(),
 		  *obj2 = collPair.object2();
 	eShapeType shape1 = obj1->getCollShape()->getShapeType(),
 			   shape2 = obj2->getCollShape()->getShapeType();
-	cVector2 collVector;
-	if (shape1 == eShapeType::AABB && shape2 == eShapeType::AABB)
-		collVector = collTestAabbAabb(*obj1,*obj2);
+	auto function = collTestMap_.at(collTestMapKey(shape1,shape2));
+	cVector2 collVector = (this->*function)(*obj1,*obj2);
+
 	if (collVector == noColl_)
 		collPair.setCollType(eCollType::NO_COLLISION);
 	else if (collVector == contactColl_)

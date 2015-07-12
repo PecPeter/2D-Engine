@@ -7,7 +7,7 @@
 class cVector2: public cMatrix {
 	public:
 		cVector2 (void);
-		cVector2 (const double& x, const double& y);
+		cVector2 (double x, double y);
 		cVector2 (const cVector2& vector);
 		cVector2 (const cMatrix& matrix);
 		virtual ~cVector2 (void);
