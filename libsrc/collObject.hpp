@@ -21,7 +21,6 @@ class cCollObject2D {
 	private:
 		cVector2 pos_;
 		const cCollShape* shape_;
-		int collShapeIndex_;
 		eObjectType objectType_;
 		// ADD SOMETHING ABOUT ROTATION?
 };

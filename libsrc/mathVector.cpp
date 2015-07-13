@@ -9,15 +9,14 @@ cVector2::cVector2 (double x, double y): cMatrix(2,1) {
 
 cVector2::cVector2 (const cVector2& vector): cMatrix(vector) {}
 
-cVector2::cVector2 (const cMatrix& matrix) {
+cVector2::cVector2 (const cMatrix& matrix): cMatrix(2,1) {
 	matrix.getSize(&nRows_,&nCols_);
 	if (nRows_ != 2 && nCols_ != 1) {
 		//Throw an error
 		;
 	}
-	for (int i = 0; i < nRows_; ++i) {
-		set(i,0) = matrix.get(i,0);
-	}
+	set(0,0) = matrix.get(0,0);
+	set(1,0) = matrix.get(1,0);
 }
 
 cVector2::~cVector2 (void) {}
@@ -66,7 +65,7 @@ double vAngleRad (const cVector2& v1, const cVector2& v2) {
 	return std::acos(vDotProd(v1,v2)/(vMagnitude(v1)*vMagnitude(v2)));
 }
 
-double angleDeg (const cVector2& v1, const cVector2& v2) {
+double vAngleDeg (const cVector2& v1, const cVector2& v2) {
 	return vAngleRad(v1,v2)*(180.0/3.14159265);
 }
 

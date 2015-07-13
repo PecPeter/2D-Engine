@@ -2,6 +2,8 @@
 
 #include "mathMatrixUnitTest.hpp"
 #include "mathVectorUnitTest.hpp"
+#include "collObjectUnitTest.hpp"
+#include "collPairUnitTest.hpp"
 
 #include "gameState.hpp"
 #include "stateHandler.hpp"
@@ -60,5 +62,9 @@ int main (void) {
 	mathMatrixTest();
 	std::cout << "Vector unit test:\n";
 	mathVectorUnitTest();
+	std::cout << "Collision object unit test:\n";
+	collObjectUnitTest();
+	std::cout << "Collision pair unit test:\n";
+	collPairUnitTest();
 	return 0;
 }

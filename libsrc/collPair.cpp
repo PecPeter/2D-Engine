@@ -1,8 +1,7 @@
 #include "collPair.hpp"
 
 cCollPair::cCollPair (cCollObject2D* object1, cCollObject2D* object2):
-	object1_(object1), object2_(object2), overlap_(2,1),
-	collType_(eCollType::NO_COLLISION) {}
+	object1_(object1), object2_(object2), collType_(eCollType::NO_COLLISION) {}
 
 cCollPair::~cCollPair (void) {}
 

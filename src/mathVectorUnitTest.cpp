@@ -15,6 +15,32 @@ void mathVectorUnitTest (void) {
 	std::cout << "\t...cVector2 (cVector2): ";
 	cVector2 v3(v1);
 	compareVectors(v3,v1);
+
+	std::cout << "\t...cVector2 (cMatrix): ";
+	cMatrix m1(2,1);
+	m1.set(0,0) = 10;
+	m1.set(1,0) = -10;
+	cVector2 v4(m1);
+	v1.set(0,0) = 10;
+	v1.set(1,0) = -10;
+	compareVectors(v4,v1);
+
+	v1.set(0,0) = 4;
+	v1.set(1,0) = -9.4;
+	v2.set(0,0) = 0.3;
+	v2.set(1,0) = 5;
+	std::cout << "Using vectors:\n" << v1 << "\nAnd:\n" << v2 << "\n";
+	std::cout << "Testing vector functions:\n" <<
+		"\t...vSqMagnitude: " << vSqMagnitude(v1) << "\n" <<
+		"\t...vMagnitude: " << vMagnitude(v1) << "\n" <<
+		"\t...vDotProd: " << vDotProd(v1,v2) << "\n" <<
+		"\t...vAngleRad: " << vAngleRad(v1,v2) << "\n" <<
+		"\t...vAngleDeg: " << vAngleDeg(v1,v2) << "\n" <<
+		"\t...vScalProj: " << vScalProj(v1,v2) << "\n" <<
+		"\t...vUnitVector:\n" << vUnitVector(v1) << "\n" <<
+		"\t...vAbsolute:\n" << vAbsolute(v1) << "\n" <<
+		"\t...vNormal:\n" << vNormal(v1) << "\n" <<
+		"\t...vVecProj:\n" << vVecProj(v1,v2) << "\n";
 }
 
 void compareVectors (const cVector2& calculatedVector,

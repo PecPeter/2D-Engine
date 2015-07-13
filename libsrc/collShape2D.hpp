@@ -21,7 +21,7 @@ class cCollShape {
 
 class cCollAabb : public cCollShape {
 	public:
-		cCollAabb (double hw, double hh);
+		cCollAabb (double hw, double hh); //This needs to throw in case negative values are given
 		~cCollAabb (void);
 
 		double getHalfWidth (void) const;
