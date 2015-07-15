@@ -12,7 +12,7 @@
 class cCollTestHandler {
 	public:
 		cCollTestHandler (void);
-		void operator() (cCollPair& collPair);
+		void testPair (cCollPair& collPair);
 	private:
 		cVector2 collTestAabbAabb (const cCollObject2D& aabb1,
 				const cCollObject2D& aabb2);

@@ -11,7 +11,7 @@ void collPairUnitTest (void) {
 	collPair.setObjOverlap(cVector2(2,-0.4444));
 	std::cout << "\nOverlap:\n" << collPair.getObjOverlap();
 	collPair.setCollType(eCollType::CONTACT);
-	eCollType type = collPair.getCollType();
+	collPair.getCollType();
 	delete shape1;
 	delete shape2;
 }

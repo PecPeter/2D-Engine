@@ -4,6 +4,7 @@
 #include "mathVectorUnitTest.hpp"
 #include "collObjectUnitTest.hpp"
 #include "collPairUnitTest.hpp"
+#include "collTestHandlerUnitTest.hpp"
 
 #include "gameState.hpp"
 #include "stateHandler.hpp"
@@ -66,5 +67,7 @@ int main (void) {
 	collObjectUnitTest();
 	std::cout << "Collision pair unit test:\n";
 	collPairUnitTest();
+	std::cout << "Collision test handler unit test:\n";
+	collTestHandlerUnitTest();
 	return 0;
 }

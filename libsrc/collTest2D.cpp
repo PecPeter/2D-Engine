@@ -1,11 +1,11 @@
 #include "collTest2D.hpp"
 
-cCollTestHandler::cCollTestHandler (void): noColl_(-1,-1), contactColl_(0,0) {
+cCollTestHandler::cCollTestHandler (void): noColl_(1,1), contactColl_(0,0) {
 	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::AABB)] =
 		&cCollTestHandler::collTestAabbAabb;
 }
 
-void cCollTestHandler::operator() (cCollPair& collPair) {
+void cCollTestHandler::testPair (cCollPair& collPair) {
 	const cCollObject2D* obj1 = collPair.object1(),
 		  *obj2 = collPair.object2();
 	eShapeType shape1 = obj1->getCollShape()->getShapeType(),

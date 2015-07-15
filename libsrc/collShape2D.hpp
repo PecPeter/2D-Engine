@@ -31,4 +31,6 @@ class cCollAabb : public cCollShape {
 			   halfHeight_;
 };
 
+bool operator== (const cCollShape& lhs, const cCollShape& rhs);
+
 #endif

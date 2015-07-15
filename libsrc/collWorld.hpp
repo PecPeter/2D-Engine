@@ -2,7 +2,7 @@
 #define COLLWORLD_HPP
 
 #include <vector>
-#include <queue>
+#include <deque>
 
 #include "collShape2D.hpp"
 #include "collObject.hpp"
@@ -13,21 +13,19 @@
 
 class cCollWorld {
 	public:
-		cCollWorld (double worldMinX, double worldMinY, double worldMaxX, double worldMaxY);
-		cCollWorld (const cVector2& worldDimMin, const cVector2& worldDimMax);
+		cCollWorld (const cCollBroadphase* broadphase);
 		~cCollWorld (void);
 		cCollObject2D* createObject (const cVector2& pos, const cCollShape& shape,
 				eObjectType objType=eObjectType::STATIC);
-		const cCollShape& getShape (int shapeIndex) const;
+		void checkColls (void);
 
 		/*void drawDebugWorld (void);*/
 	private:
-		cVector2 worldDimMin_,
-				 worldDimMax_;
 		std::vector<cCollShape> shapeList_;
 		std::vector<cCollObject2D*> collObjList_;
-		std::queue<cCollPair> collPairList_;
-		cCollTestHandler testHandler_;
+		std::deque<cCollPair> collPairList_;
+		const cCollBroadphase* broadphase_;
+		cCollTestHandler* testHandler_; // This is a pointer to make it easier to change the test handler
 };
 
 #endif
