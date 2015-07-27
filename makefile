@@ -25,6 +25,8 @@ vpath %.hpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.cpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.o ${OBJ_DIR} ${LIB_OBJ_DIR}
 
+libs: lib_debug lib_release
+
 debug: lib_debug src_debug
 
 release: lib_release src_release

@@ -5,7 +5,12 @@ cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),MS_PER_UPDATE((1.f/
 
 cEngine::~cEngine (void) {}
 
-bool cEngine::init (int screenWidth, int screenHeight, char* winTitle, cStateHandler* stateHandler) {
+bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle, cStateHandler* stateHandler) {
+	return init (screenWidth,screenHeight,std::string(winTitle),stateHandler);
+}
+
+bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
+		cStateHandler* stateHandler) {
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		std::cerr << "SDL could not be initialized, within cEngine::init()" <<
 			"\nSDL_Error: " << SDL_GetError() << std::endl;
@@ -16,7 +21,7 @@ bool cEngine::init (int screenWidth, int screenHeight, char* winTitle, cStateHan
 			"\nIMG_Error: " << IMG_GetError() << std::endl;
 		return false;
 	}
-	window_ = SDL_CreateWindow (winTitle, SDL_WINDOWPOS_UNDEFINED,
+	window_ = SDL_CreateWindow (winTitle.c_str(), SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
 	if (window_ == nullptr) {
 		std::cerr << "window could not be created." <<
@@ -49,9 +54,9 @@ bool cEngine::init (int screenWidth, int screenHeight, char* winTitle, cStateHan
 }
 
 void cEngine::quit (void) {
-	if (stateHandler_ != nullptr) {
-		delete stateHandler_;
-	}
+//	if (stateHandler_ != nullptr) {
+//		delete stateHandler_;
+//	}
 	stateHandler_ = nullptr;
 //	if (stateList_.empty() == false)
 //		for (auto& itr : stateList_)

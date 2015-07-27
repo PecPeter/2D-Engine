@@ -5,6 +5,7 @@
 #include "collObjectUnitTest.hpp"
 #include "collPairUnitTest.hpp"
 #include "collTestHandlerUnitTest.hpp"
+#include "collWorldUnitTest.hpp"
 
 #include "gameState.hpp"
 #include "stateHandler.hpp"
@@ -59,15 +60,17 @@ int main (void) {
 	engine.mainLoop();
 	engine.quit();
 	*/
-	std::cout << "Matrix unit test:\n";
-	mathMatrixTest();
-	std::cout << "Vector unit test:\n";
-	mathVectorUnitTest();
-	std::cout << "Collision object unit test:\n";
-	collObjectUnitTest();
-	std::cout << "Collision pair unit test:\n";
-	collPairUnitTest();
-	std::cout << "Collision test handler unit test:\n";
-	collTestHandlerUnitTest();
+//	std::cout << "Matrix unit test:\n";
+//	mathMatrixTest();
+//	std::cout << "Vector unit test:\n";
+//	mathVectorUnitTest();
+//	std::cout << "Collision object unit test:\n";
+//	collObjectUnitTest();
+//	std::cout << "Collision pair unit test:\n";
+//	collPairUnitTest();
+//	std::cout << "Collision test handler unit test:\n";
+//	collTestHandlerUnitTest();
+	std::cout << "Collision world unit test:\n";
+	collWorldUnitTest();
 	return 0;
 }

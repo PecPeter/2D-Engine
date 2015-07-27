@@ -16,6 +16,20 @@ class cVector2: public cMatrix {
 		double getY (void) const;
 };
 
+// This is untested in the unit test
+class cVector3 : public cMatrix {
+	public:
+		cVector3 (void);
+		cVector3 (double x, double y, double z);
+		cVector3 (const cVector3& vector);
+		cVector3 (const cMatrix& matrix);
+		~cVector3 (void);
+
+		double getX (void) const;
+		double getY (void) const;
+		double getZ (void) const;
+};
+
 double vSqMagnitude (const cVector2& v1);
 double vMagnitude (const cVector2& v1);
 double vDotProd (const cVector2& v1, const cVector2& v2);

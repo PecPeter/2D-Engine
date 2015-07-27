@@ -23,8 +23,8 @@ bool operator== (const cCollShape& lhs, const cCollShape& rhs) {
 	if (shape1 != shape2)
 		return false;
 	if (shape1 == eShapeType::AABB) {
-		const cCollAabb& aabb1 = dynamic_cast<const cCollAabb&>(lhs),
-			  &aabb2 = dynamic_cast<const cCollAabb&>(rhs);
+		const cCollAabb& aabb1 = dynamic_cast<const cCollAabb&>(lhs);
+		const cCollAabb& aabb2 = dynamic_cast<const cCollAabb&>(rhs);
 		if (aabb1.getHalfWidth() == aabb2.getHalfWidth() &&
 				aabb1.getHalfHeight() == aabb2.getHalfHeight())
 			return true;

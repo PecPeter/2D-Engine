@@ -29,6 +29,43 @@ double cVector2::getY (void) const {
 	return get(1,0);
 }
 
+
+cVector3::cVector3 (void): cMatrix(3,1) {}
+
+cVector3::cVector3 (double x, double y, double z): cMatrix(3,1) {
+	set(0,0) = x;
+	set(1,0) = y;
+	set(2,0) = z;
+}
+
+cVector3::cVector3 (const cVector3& vector): cMatrix(vector) {}
+
+cVector3::cVector3 (const cMatrix& matrix): cMatrix(3,1) {
+	matrix.getSize(&nRows_,&nCols_);
+	if (nRows_ != 3 && nCols_ != 1) {
+		//Throw an error
+		;
+	}
+	set(0,0) = matrix.get(0,0);
+	set(1,0) = matrix.get(1,0);
+	set(2,0) = matrix.get(2,0);
+}
+
+cVector3::~cVector3 (void) {}
+
+double cVector3::getX (void) const {
+	return get(0,0);
+}
+
+double cVector3::getY (void) const {
+	return get(1,0);
+}
+
+
+double cVector3::getZ (void) const {
+	return get(2,0);
+}
+
 double vSqMagnitude (const cVector2& v1) {
 	double sqSum = 0;
 	int numRows = 0,

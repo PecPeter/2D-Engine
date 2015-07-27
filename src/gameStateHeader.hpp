@@ -1,3 +1,0 @@
-#ifndef GAMESTATEHEADER_HPP
-#define GAMESTATEHEADER_HPP
-#endif

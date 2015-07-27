@@ -9,6 +9,7 @@
 #include "collPair.hpp"
 #include "collTest2D.hpp"
 #include "collBroadphase.hpp"
+#include "collDebugDrawer.hpp"
 #include "mathVector.hpp"
 
 class cCollWorld {
@@ -17,15 +18,17 @@ class cCollWorld {
 		~cCollWorld (void);
 		cCollObject2D* createObject (const cVector2& pos, const cCollShape& shape,
 				eObjectType objType=eObjectType::STATIC);
+//		void removeObject (void);
 		void checkColls (void);
 
-		/*void drawDebugWorld (void);*/
+		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
+		void drawDebugWorld (void);
 	private:
-		std::vector<cCollShape> shapeList_;
 		std::vector<cCollObject2D*> collObjList_;
 		std::deque<cCollPair> collPairList_;
 		const cCollBroadphase* broadphase_;
-		cCollTestHandler* testHandler_; // This is a pointer to make it easier to change the test handler
+		cCollTestHandler* testHandler_;
+		cCollDebugDrawer* debugDrawer_;
 };
 
 #endif

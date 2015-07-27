@@ -17,7 +17,10 @@ class cEngine {
 		cEngine (void);
 		~cEngine (void);
 
-		bool init (int screenWidth, int screenHeight, char* winTitle, cStateHandler* stateHandler);
+		bool init (int screenWidth, int screenHeight, const char* winTitle,
+				cStateHandler* stateHandler);
+		bool init (int screenWidth, int screenHeight, std::string winTitle,
+				cStateHandler* stateHandler);
 		void quit (void);
 
 		void mainLoop (void);

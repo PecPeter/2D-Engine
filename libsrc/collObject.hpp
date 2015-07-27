@@ -16,13 +16,17 @@ class cCollObject2D {
 		~cCollObject2D (void);
 		void translate (double dx, double dy);
 		void translate (const cVector2& dv);
-		const cVector2& getPosition (void) const {return pos_;}
-		const cCollShape* getCollShape (void) const {return shape_;}
+		const cVector2& getPosition (void) const; 
+		const cCollShape* getCollShape (void) const;
+		eObjectType getObjectType (void) const;
+		void setObjPtr (void* objPtr);
+		void* getObjPtr (void);
 	private:
 		cVector2 pos_;
 		const cCollShape* shape_;
 		eObjectType objectType_;
 		// ADD SOMETHING ABOUT ROTATION?
+		void* objPtr_;
 };
 
 #endif
