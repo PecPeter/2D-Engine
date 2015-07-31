@@ -1,20 +1,20 @@
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 
 cCollShape::cCollShape (eShapeType shapeType): shapeType_(shapeType) {}
 
 cCollShape::~cCollShape (void) {}
 
 cCollAabb::cCollAabb (double hw, double hh): cCollShape(eShapeType::AABB),
-		halfWidth_(hw), halfHeight_(hh) {}
+		hw_(hw), hh_(hh) {}
 
 cCollAabb::~cCollAabb (void) {}
 
-double cCollAabb::getHalfWidth (void) const {
-	return halfWidth_;
+double cCollAabb::getHW (void) const {
+	return hw_;
 }
 
-double cCollAabb::getHalfHeight (void) const {
-	return halfHeight_; 
+double cCollAabb::getHH (void) const {
+	return hh_; 
 }
 
 bool operator== (const cCollShape& lhs, const cCollShape& rhs) {
@@ -25,8 +25,8 @@ bool operator== (const cCollShape& lhs, const cCollShape& rhs) {
 	if (shape1 == eShapeType::AABB) {
 		const cCollAabb& aabb1 = dynamic_cast<const cCollAabb&>(lhs);
 		const cCollAabb& aabb2 = dynamic_cast<const cCollAabb&>(rhs);
-		if (aabb1.getHalfWidth() == aabb2.getHalfWidth() &&
-				aabb1.getHalfHeight() == aabb2.getHalfHeight())
+		if (aabb1.getHW() == aabb2.getHW() &&
+				aabb1.getHH() == aabb2.getHH())
 			return true;
 	}
 	return false;

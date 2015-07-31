@@ -1,17 +1,18 @@
 #include <iostream>
 
+#include "gameState.hpp"
+#include "stateHandler.hpp"
+#include "engine.hpp"
+#include "gameStateTypes.hpp"
+#include "commandTestState.hpp"
+
 #include "mathMatrixUnitTest.hpp"
 #include "mathVectorUnitTest.hpp"
 #include "collObjectUnitTest.hpp"
 #include "collPairUnitTest.hpp"
 #include "collTestHandlerUnitTest.hpp"
 #include "collWorldUnitTest.hpp"
-
-#include "gameState.hpp"
-#include "stateHandler.hpp"
-#include "engine.hpp"
-#include "gameStateTypes.hpp"
-#include "commandTestState.hpp"
+#include "collDebugDrawerUnitTest.hpp"
 
 class handler: public cStateHandler {
 	public:
@@ -46,7 +47,7 @@ class handler: public cStateHandler {
 };
 
 int main (void) {
-	/*
+/*	
 	cEngine engine;
 	const int SCREEN_WIDTH = 640,
 		  SCREEN_HEIGHT = 480;
@@ -59,18 +60,20 @@ int main (void) {
 	}
 	engine.mainLoop();
 	engine.quit();
-	*/
-//	std::cout << "Matrix unit test:\n";
-//	mathMatrixTest();
-//	std::cout << "Vector unit test:\n";
-//	mathVectorUnitTest();
-//	std::cout << "Collision object unit test:\n";
-//	collObjectUnitTest();
-//	std::cout << "Collision pair unit test:\n";
-//	collPairUnitTest();
-//	std::cout << "Collision test handler unit test:\n";
-//	collTestHandlerUnitTest();
+*/	
+	std::cout << "Matrix unit test:\n";
+	mathMatrixTest();
+	std::cout << "Vector unit test:\n";
+	mathVectorUnitTest();
+	std::cout << "Collision object unit test:\n";
+	collObjectUnitTest();
+	std::cout << "Collision pair unit test:\n";
+	collPairUnitTest();
+	std::cout << "Collision test handler unit test:\n";
+	collTestHandlerUnitTest();
 	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
+	std::cout << "Collision world debug drawer unit test:\n";
+	collDebugDrawerUnitTest();
 	return 0;
 }

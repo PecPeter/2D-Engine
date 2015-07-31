@@ -4,8 +4,9 @@
 #include <cmath>
 #include <utility>
 #include <map>
+
 #include "mathVector.hpp"
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "collObject.hpp"
 #include "collPair.hpp"
 
@@ -14,15 +15,15 @@ class cCollTestHandler {
 		cCollTestHandler (void);
 		void testPair (cCollPair& collPair);
 	private:
-		cVector2 collTestAabbAabb (const cCollObject2D& aabb1,
-				const cCollObject2D& aabb2);
+		cVector2 collTestAabbAabb (const cCollObj& aabb1,
+				const cCollObj& aabb2);
 
 		cVector2 noColl_,
 				 contactColl_;
 
 		typedef std::pair<eShapeType,eShapeType> collTestMapKey;
 		typedef cVector2 (cCollTestHandler::*collTestMapPtr)
-			(const cCollObject2D&,const cCollObject2D&);
+			(const cCollObj&,const cCollObj&);
 		std::map <collTestMapKey,collTestMapPtr> collTestMap_;
 };
 

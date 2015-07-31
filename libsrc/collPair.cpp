@@ -1,15 +1,15 @@
 #include "collPair.hpp"
 
-cCollPair::cCollPair (cCollObject2D* object1, cCollObject2D* object2):
+cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 	object1_(object1), object2_(object2), collType_(eCollType::NO_COLLISION) {}
 
 cCollPair::~cCollPair (void) {}
 
-const cCollObject2D* cCollPair::object1 (void) const {
+const cCollObj* cCollPair::object1 (void) const {
 	return object1_;
 }
 
-const cCollObject2D* cCollPair::object2 (void) const {
+const cCollObj* cCollPair::object2 (void) const {
 	return object2_;
 }
 

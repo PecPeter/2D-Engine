@@ -1,5 +1,5 @@
-#ifndef COLLSHAPE2D_HPP
-#define COLLSHAPE2D_HPP
+#ifndef COLLSHAPE_HPP
+#define COLLSHAPE_HPP
 
 #include <vector>
 
@@ -24,11 +24,11 @@ class cCollAabb : public cCollShape {
 		cCollAabb (double hw, double hh); //This needs to throw in case negative values are given
 		~cCollAabb (void);
 
-		double getHalfWidth (void) const;
-		double getHalfHeight (void) const;
+		double getHW (void) const;
+		double getHH (void) const;
 	private:
-		double halfWidth_,
-			   halfHeight_;
+		double hw_,
+			   hh_;
 };
 
 bool operator== (const cCollShape& lhs, const cCollShape& rhs);

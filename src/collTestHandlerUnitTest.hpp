@@ -4,7 +4,7 @@
 #include "mathVector.hpp"
 #include "collObject.hpp"
 #include "collPair.hpp"
-#include "collTest2D.hpp"
+#include "collTest.hpp"
 
 void collTestHandlerUnitTest (void);
 

@@ -10,9 +10,18 @@ void collWorldUnitTest (void) {
 			 pos2(2,0),
 			 pos3(1,0),
 			 pos4(0.5,0.5);
-	cCollObject2D* obj1 = world.createObject(pos1,shape),
+	cCollObj* obj1 = world.createObject(pos1,shape),
 		*obj2 = world.createObject(pos2,shape),
 		*obj3 = world.createObject(pos3,shape),
 		*obj4 = world.createObject(pos4,shape);
 	world.checkColls();
+	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Window* window = SDL_CreateWindow("TEST",SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,640,480,SDL_WINDOW_SHOWN);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window,-1,
+			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_SetRenderDrawColor(renderer,0,0,0,255);
+	SDL_RenderClear(renderer);
+	world.drawDebugWorld(renderer);
+	SDL_RenderPresent(renderer);
 }

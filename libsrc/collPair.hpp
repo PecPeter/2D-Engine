@@ -12,17 +12,17 @@ enum class eCollType {
 
 class cCollPair {
 	public:
-		cCollPair (cCollObject2D* object1, cCollObject2D* object2);
+		cCollPair (cCollObj* object1, cCollObj* object2);
 		~cCollPair (void);
 
-		const cCollObject2D* object1 (void) const;
-		const cCollObject2D* object2 (void) const;
+		const cCollObj* object1 (void) const;
+		const cCollObj* object2 (void) const;
 		void setObjOverlap (const cVector2& overlap);
 		cVector2& getObjOverlap (void);
 		void setCollType (const eCollType& collType);
 		eCollType getCollType (void);
 	private:
-		cCollObject2D* object1_, *object2_;
+		cCollObj* object1_, *object2_;
 		cVector2 overlap_;
 		eCollType collType_;
 };

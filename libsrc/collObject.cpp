@@ -1,36 +1,36 @@
 #include "collObject.hpp"
 
-cCollObject2D::cCollObject2D (const cVector2& pos, const cCollShape* shape,
-		eObjectType objectType): pos_(pos),shape_(shape),
-		objectType_(objectType), objPtr_(nullptr) {}
+cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
+		eObjType objType, void* usrPtr): pos_(pos),shape_(shape),
+		objType_(objType), usrPtr_(usrPtr) {}
 
-cCollObject2D::~cCollObject2D (void) {}
+cCollObj::~cCollObj (void) {}
 
-void cCollObject2D::translate (double dx, double dy) {
+void cCollObj::translate (double dx, double dy) {
 	cVector2 dv(dx,dy);
 	pos_ += dv;
 }
 
-void cCollObject2D::translate (const cVector2& dv) {
+void cCollObj::translate (const cVector2& dv) {
 	pos_ += dv;
 }
 
-const cVector2& cCollObject2D::getPosition (void) const {
+const cVector2& cCollObj::getObjPos (void) const {
 	return pos_;
 }
 
-const cCollShape* cCollObject2D::getCollShape (void) const {
+const cCollShape* cCollObj::getCollShape (void) const {
 	return shape_;
 }
 
-eObjectType cCollObject2D::getObjectType (void) const {
-	return objectType_;
+eObjType cCollObj::getObjType (void) const {
+	return objType_;
 }
 
-void cCollObject2D::setObjPtr (void* objPtr) {
-	objPtr_ = objPtr;
+void cCollObj::setUsrPtr (void* usrPtr) {
+	usrPtr_ = usrPtr;
 }
 
-void* cCollObject2D::getObjPtr (void) {
-	return objPtr_;
+void* cCollObj::getUsrPtr (void) {
+	return usrPtr_;
 }

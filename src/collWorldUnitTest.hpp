@@ -3,8 +3,10 @@
 
 #include <iostream>
 
+#include <SDL2/SDL.h>
+
 #include "mathVector.hpp"
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "collObject.hpp"
 #include "collBroadphase.hpp"
 #include "collWorld.hpp"

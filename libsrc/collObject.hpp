@@ -1,32 +1,37 @@
 #ifndef COLLOBJECT_HPP
 #define COLLOBJECT_HPP
 
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "mathVector.hpp"
 
-enum class eObjectType {
+enum class eObjType {
 	STATIC,
 	DYNAMIC
 };
 
-class cCollObject2D {
+enum class eObjState {
+	ACTIVE,
+	INACTIVE
+};
+
+class cCollObj {
 	public:
-		cCollObject2D (const cVector2& pos, const cCollShape* shape,
-				eObjectType objectType=eObjectType::STATIC);
-		~cCollObject2D (void);
+		cCollObj (const cVector2& pos, const cCollShape* shape,
+				eObjType objType=eObjType::STATIC, void* usrPtr = nullptr);
+		~cCollObj (void);
 		void translate (double dx, double dy);
 		void translate (const cVector2& dv);
-		const cVector2& getPosition (void) const; 
+		const cVector2& getObjPos (void) const; 
 		const cCollShape* getCollShape (void) const;
-		eObjectType getObjectType (void) const;
-		void setObjPtr (void* objPtr);
-		void* getObjPtr (void);
+		eObjType getObjType (void) const;
+		void setUsrPtr (void* objPtr);
+		void* getUsrPtr (void);
 	private:
 		cVector2 pos_;
 		const cCollShape* shape_;
-		eObjectType objectType_;
+		eObjType objType_;
 		// ADD SOMETHING ABOUT ROTATION?
-		void* objPtr_;
+		void* usrPtr_;
 };
 
 #endif

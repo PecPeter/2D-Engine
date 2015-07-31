@@ -10,9 +10,9 @@ cCollWorld::~cCollWorld (void) {
 	delete testHandler_;
 }
 
-cCollObject2D* cCollWorld::createObject (const cVector2& pos,
-		const cCollShape& shape, eObjectType objectType) {
-	cCollObject2D* collObject = new cCollObject2D(pos,&shape,objectType);
+cCollObj* cCollWorld::createObject (const cVector2& pos,
+		const cCollShape& shape, eObjType objType) {
+	cCollObj* collObject = new cCollObj(pos,&shape,objType);
 	collObjList_.push_back(collObject);
 	return collObject;
 }
@@ -33,11 +33,11 @@ void cCollWorld::setDebugDraw (cCollDebugDrawer* debugDrawer) {
 	debugDrawer_ = debugDrawer;
 }
 
-void cCollWorld::drawDebugWorld (void) {
+void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 	if (debugDrawer_ != nullptr) {
 		for (auto& itr : collObjList_) {
 			cVector3 colour;
-			if (itr->getObjectType() == eObjectType::STATIC) {
+			if (itr->getObjType() == eObjType::STATIC) {
 				colour.set(0,0) = 0;
 				colour.set(1,0) = 1;
 				colour.set(2,0) = 0;
@@ -47,7 +47,13 @@ void cCollWorld::drawDebugWorld (void) {
 				colour.set(1,0) = 0;
 				colour.set(2,0) = 1;
 			}
-			debugDrawer_->drawShape(*(itr->getCollShape()),colour);
+			eShapeType shapeType = itr->getCollShape()->getShapeType();
+			if (shapeType == eShapeType::AABB) {
+				const cCollAabb* shape =
+					static_cast<const cCollAabb*>(itr->getCollShape());
+				debugDrawer_->drawRect(renderer,itr->getObjPos(),
+						shape->getHW(),shape->getHH(),colour);
+			}
 		}
 	}
 }

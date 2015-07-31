@@ -7,7 +7,7 @@
 #include "gameState.hpp"
 #include "commandHandler.hpp"
 #include "collWorld.hpp"
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "collObject.hpp"
 #include "mathVector.hpp"
 

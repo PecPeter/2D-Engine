@@ -2,7 +2,7 @@
 #define	COLLPAIRUNITTEST_HPP 
 
 #include "mathVector.hpp"
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "collObject.hpp"
 #include "collPair.hpp"
 

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "mathVector.hpp"
-#include "collShape2D.hpp"
+#include "collShape.hpp"
 #include "collObject.hpp"
 
 void collObjectUnitTest (void);

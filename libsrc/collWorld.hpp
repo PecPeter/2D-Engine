@@ -4,10 +4,12 @@
 #include <vector>
 #include <deque>
 
-#include "collShape2D.hpp"
+#include <SDL2/SDL.h>
+
+#include "collShape.hpp"
 #include "collObject.hpp"
 #include "collPair.hpp"
-#include "collTest2D.hpp"
+#include "collTest.hpp"
 #include "collBroadphase.hpp"
 #include "collDebugDrawer.hpp"
 #include "mathVector.hpp"
@@ -16,15 +18,15 @@ class cCollWorld {
 	public:
 		cCollWorld (const cCollBroadphase* broadphase);
 		~cCollWorld (void);
-		cCollObject2D* createObject (const cVector2& pos, const cCollShape& shape,
-				eObjectType objType=eObjectType::STATIC);
+		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
+				eObjType objType=eObjType::STATIC);
 //		void removeObject (void);
 		void checkColls (void);
 
 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
-		void drawDebugWorld (void);
+		void drawDebugWorld (SDL_Renderer* renderer);
 	private:
-		std::vector<cCollObject2D*> collObjList_;
+		std::vector<cCollObj*> collObjList_;
 		std::deque<cCollPair> collPairList_;
 		const cCollBroadphase* broadphase_;
 		cCollTestHandler* testHandler_;

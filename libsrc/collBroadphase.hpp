@@ -8,7 +8,7 @@
 #include "collPair.hpp"
 
 typedef std::deque<cCollPair> pairCont;
-typedef std::vector<cCollObject2D*> objCont;
+typedef std::vector<cCollObj*> objCont;
 
 //maybe make these templated so that the queue doesnt have to be hardcoded,
 //same with the vector (it may change in the future);
