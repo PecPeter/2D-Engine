@@ -18,13 +18,13 @@ void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj) {
 }
 
 void cCollDebugDrawer::drawStrL (SDL_Renderer* rend, TTF_Font* font,
-		const std::string& text, const cVector2& p, const cVector3& col) {
+		const cVector2& p, const char* text, const cVector3& col) {
 	SDL_Color textColor;
 	textColor.a = 255;
 	textColor.r = col.getX();
 	textColor.g = col.getY();
 	textColor.b = col.getZ();
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text.c_str(),textColor);
+	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text,textColor);
 	if (textSurface != nullptr) {
 		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(rend,
 				textSurface);
@@ -39,13 +39,13 @@ void cCollDebugDrawer::drawStrL (SDL_Renderer* rend, TTF_Font* font,
 }
 
 void cCollDebugDrawer::drawStrR (SDL_Renderer* rend, TTF_Font* font,
-		const std::string& text, const cVector2& p, const cVector3& col) {
+		const cVector2& p, const char* text, const cVector3& col) {
 	SDL_Color textColor;
 	textColor.a = 255;
 	textColor.r = col.getX();
 	textColor.g = col.getY();
 	textColor.b = col.getZ();
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text.c_str(),textColor);
+	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text,textColor);
 	if (textSurface != nullptr) {
 		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(rend,
 				textSurface);
@@ -57,6 +57,12 @@ void cCollDebugDrawer::drawStrR (SDL_Renderer* rend, TTF_Font* font,
 		SDL_RenderCopy(rend,textTexture,NULL,&renderRect);
 		SDL_DestroyTexture(textTexture);
 	}
+}
+
+void cCollDebugDrawer::drawPoint (SDL_Renderer* rend, const cVector2& p,
+		const cVector3& col) {
+	pixelRGBA(rend,p.getX(),p.getY(),col.getX(),col.getY(),
+			col.getZ(),alphaLevel_);
 }
 
 void cCollDebugDrawer::drawLine (SDL_Renderer* rend, const cVector2& p1,
@@ -90,7 +96,7 @@ void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 		const std::vector<cVector2>& pList, const cVector3& col) {
 	Sint16* vx = new Sint16[pList.size()];
 	Sint16* vy = new Sint16[pList.size()];
-	for (int i = 0; i < pList.size(); ++i) {
+	for (unsigned int i = 0; i < pList.size(); ++i) {
 		vx[i] = pList.at(i).getX();
 		vy[i] = pList.at(i).getY();
 	}

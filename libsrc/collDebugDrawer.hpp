@@ -18,13 +18,15 @@ class cCollDebugDrawer {
 
 		void drawObj (SDL_Renderer* rend, const cCollObj& obj);
 		void drawStrL (SDL_Renderer* rend, TTF_Font* font,
-				const std::string& text, const cVector2& p, const cVector3& col);
+				const cVector2& p, const char* text, const cVector3& col);
 		void drawStrR (SDL_Renderer* rend, TTF_Font* font,
-				const std::string& text, const cVector2& p, const cVector3& col);
+				 const cVector2& p, const char* text, const cVector3& col);
 
-//	private:
+	private:
+		void drawPoint (SDL_Renderer* rend, const cVector2& p,
+				const cVector3& col);
 		void drawLine (SDL_Renderer* rend, const cVector2& p1,
-				const cVector2& p2,const cVector3& col);
+				const cVector2& p2, const cVector3& col);
 		void drawSphere (SDL_Renderer* rend, const cVector2& p,
 				const double& rad, const cVector3& col);
 		void drawTriangle (SDL_Renderer* rend, const cVector2& v1,
