@@ -23,7 +23,7 @@ class cCollPair {
 		eCollType getCollType (void);
 	private:
 		cCollObj* object1_, *object2_;
-		cVector2 overlap_;
+		cVector2 overlap_; // Overlap if wrt what obj1 has to do to get out of collision
 		eCollType collType_;
 };
 

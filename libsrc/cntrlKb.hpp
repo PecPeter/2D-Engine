@@ -1,5 +1,5 @@
-#ifndef COMMANDHANDLER_HPP
-#define COMMANDHANDLER_HPP
+#ifndef CNTRLKB_HPP
+#define CNTRLKB_HPP
 
 #include <forward_list>
 #include <map>
@@ -7,9 +7,9 @@
 #include <SDL2/SDL.h>
 
 template <class T>
-class cKbCommandHandler {
+class cCntrlKb {
 	public:
-		~cKbCommandHandler (void);
+		~cCntrlKb (void);
 
 		void addCommand (T action, SDL_Keycode keyCode, SDL_Keymod modCode=KMOD_NONE);
 		void addCommand (T action, std::vector<SDL_Keycode>& keyCodes, SDL_Keymod modCode=KMOD_NONE);
@@ -28,23 +28,24 @@ class cKbCommandHandler {
 };
 
 template <class T>
-cKbCommandHandler<T>::~cKbCommandHandler (void) {
+cCntrlKb<T>::~cCntrlKb (void) {
 	for (auto& commandItr : commandList_) {
 		commandItr->keyStates_.clear();
 		delete commandItr;
 	}
+	commandList_.clear();
 	kbWatchKeys_.clear();
 }
 
 template <class T>
-void cKbCommandHandler<T>::addCommand (T action, SDL_Keycode keyCode, SDL_Keymod modCode) {
+void cCntrlKb<T>::addCommand (T action, SDL_Keycode keyCode, SDL_Keymod modCode) {
 	std::vector<SDL_Keycode> commandVec(1,keyCode);
 	addCommand(action,commandVec,modCode);
 }
 	
 template <class T>
-void cKbCommandHandler<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, SDL_Keymod modCode) {
-	cKbCommandHandler<T>::sCommandInfo* commandInfo = new sCommandInfo;
+void cCntrlKb<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, SDL_Keymod modCode) {
+	sCommandInfo* commandInfo = new sCommandInfo;
 	commandInfo->linkedAction_ = action;
 	for (const auto& itr : keyCodes) {
 		auto watchKeyItr = kbWatchKeys_.insert(std::pair<SDL_Keycode,bool>(itr,false));
@@ -55,7 +56,7 @@ void cKbCommandHandler<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCo
 }
 
 template <class T>
-void cKbCommandHandler<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCommands) {
+void cCntrlKb<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCommands) {
 	updateWatchKey(key);
 
 	returnCommands->clear();
@@ -76,7 +77,7 @@ void cKbCommandHandler<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>*
 }
 
 template <class T>
-void cKbCommandHandler<T>::updateWatchKey (SDL_KeyboardEvent& key) {
+void cCntrlKb<T>::updateWatchKey (SDL_KeyboardEvent& key) {
 	auto itr = kbWatchKeys_.find(key.keysym.sym);
 	if (itr != kbWatchKeys_.end()) {
 		if (key.state == SDL_PRESSED)

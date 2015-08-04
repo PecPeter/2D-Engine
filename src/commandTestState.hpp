@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 
 #include "gameState.hpp"
-#include "commandHandler.hpp"
+#include "cntrlKb.hpp"
 #include "collWorld.hpp"
 #include "collShape.hpp"
 #include "collObject.hpp"
@@ -33,7 +33,7 @@ class cCommandTestState: public cGameState {
 		};
 
 		std::vector<eKbAction> kbActions_;
-		cKbCommandHandler<eKbAction> kbCommandHandler_;
+		cCntrlKb<eKbAction> kbCommandHandler_;
 		SDL_Rect rect;
 };
 

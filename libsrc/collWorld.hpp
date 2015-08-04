@@ -21,7 +21,7 @@ class cCollWorld {
 		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
 				eObjType objType=eObjType::STATIC);
 //		void removeObject (void);
-		void checkColls (void);
+		std::deque<cCollPair>* checkColls (void);
 
 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
@@ -29,7 +29,7 @@ class cCollWorld {
 		std::vector<cCollObj*> collObjList_;
 		std::deque<cCollPair> collPairList_;
 		const cCollBroadphase* broadphase_;
-		cCollTestHandler* testHandler_;
+		cCollTest* testHandler_;
 		cCollDebugDrawer* debugDrawer_;
 };
 

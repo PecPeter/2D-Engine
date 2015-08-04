@@ -7,7 +7,8 @@
 #include "mathVector.hpp"
 
 enum class eShapeType {
-	AABB
+	AABB,
+	LINE
 };
 
 class cCollShape {
@@ -29,6 +30,22 @@ class cCollAabb : public cCollShape {
 	private:
 		double hw_,
 			   hh_;
+};
+
+class cCollLine : public cCollShape {
+	public:
+		//coll|no coll
+		//    |
+		//    |
+		//    |-> right normal
+		//    |
+		//    |
+		cCollLine (const cVector2& p1, const cVector2& p2);
+		cCollLine (const cVector2& dir);
+		cVector2 getDir (void) const;
+
+	private:
+		cVector2 dir_;
 };
 
 bool operator== (const cCollShape& lhs, const cCollShape& rhs);

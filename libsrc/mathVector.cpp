@@ -132,3 +132,31 @@ cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
 	cVector2 unitProjAxis = vUnitVector(projAxis);
 	return cVector2((vDotProd(projVec,unitProjAxis)*unitProjAxis));
 }
+
+cVector2 intrsctPt (const cVector2& pt1, const cVector2& lineDir1,
+		const cVector2& pt2, const cVector2& lineDir2) {
+	double m1, m2;
+	lineDir1.getX() == 0 ?
+		m1 = 99999999999*lineDir1.getY() :
+		m1 = lineDir1.getY()/lineDir1.getX();
+	lineDir2.getX() == 0 ?
+		m2 = 99999999999*lineDir2.getY() :
+		m2 = lineDir2.getY()/lineDir2.getX();
+	// if m1 == m2, throw an error -> no intersection
+	// or assert
+	// same thing for infinite number of intersection points
+
+	// b1: intercept for line equation y = mx + b1
+	// b2: intercept for normal line equation y = nx + b2
+	double b1 = pt1.getY()-m1*pt1.getX(),
+		   b2 = pt2.getY()-m2*pt2.getX(),
+		   xInt = (b2-b1)/(m1-m2),
+		   yInt = m1*xInt+b1;
+	return cVector2(xInt,yInt);
+}
+
+double distPtToLine (const cVector2& pt, const cVector2& lineDir,
+		const cVector2& ptLine) {
+	cVector2 normDir = vNormal(lineDir);
+	return vMagnitude(intrsctPt(pt,normDir,ptLine,lineDir));
+}

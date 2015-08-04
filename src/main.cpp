@@ -13,6 +13,7 @@
 #include "collTestHandlerUnitTest.hpp"
 #include "collWorldUnitTest.hpp"
 #include "collDebugDrawerUnitTest.hpp"
+#include "commandHandlerUnitTest.hpp"
 
 class handler: public cStateHandler {
 	public:
@@ -60,7 +61,7 @@ int main (void) {
 	}
 	engine.mainLoop();
 	engine.quit();
-*/	
+*/
 	std::cout << "Matrix unit test:\n";
 	mathMatrixTest();
 	std::cout << "Vector unit test:\n";
@@ -75,5 +76,7 @@ int main (void) {
 	collWorldUnitTest();
 	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
+	std::cout << "Command handler unit test:\n";
+	commandHandlerUnitTest();
 	return 0;
 }

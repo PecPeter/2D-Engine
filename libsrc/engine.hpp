@@ -15,7 +15,6 @@
 class cEngine {
 	public:
 		cEngine (void);
-		~cEngine (void);
 
 		bool init (int screenWidth, int screenHeight, const char* winTitle,
 				cStateHandler* stateHandler);
