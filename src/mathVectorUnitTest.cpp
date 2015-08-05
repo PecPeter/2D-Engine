@@ -41,6 +41,18 @@ void mathVectorUnitTest (void) {
 		"\t...vAbsolute:\n" << vAbsolute(v1) << "\n" <<
 		"\t...vNormal:\n" << vNormal(v1) << "\n" <<
 		"\t...vVecProj:\n" << vVecProj(v1,v2) << "\n";
+	std::cout << "Testing line intersection solver:\n";
+	v1.set(0,0) = 5;
+	v1.set(1,0) = 0;
+	v2.set(0,0) = 0;
+	v2.set(1,0) = -10;
+	cVector2 dir1(1,1),
+			 dir2(1,1);
+	std::cout << "\tIntersection point using pt1: " <<
+		v1 << "\n\tdir1: " << dir1 << "\n\tpt2: " <<
+		v2 << "\n\tdir2: " << dir2;
+	cVector2 intersectionPt = intersectionLineLine(v1,dir1,v2,dir2);
+	std::cout << "\n\tPoint: " << intersectionPt;
 }
 
 void compareVectors (const cVector2& calculatedVector,

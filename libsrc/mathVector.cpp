@@ -11,10 +11,8 @@ cVector2::cVector2 (const cVector2& vector): cMatrix(vector) {}
 
 cVector2::cVector2 (const cMatrix& matrix): cMatrix(2,1) {
 	matrix.getSize(&nRows_,&nCols_);
-	if (nRows_ != 2 && nCols_ != 1) {
-		//Throw an error
-		;
-	}
+	if (nRows_ != 2 && nCols_ != 1)
+		throw(std::range_error("Matrix dimensions are wrong"));
 	set(0,0) = matrix.get(0,0);
 	set(1,0) = matrix.get(1,0);
 }
@@ -42,10 +40,8 @@ cVector3::cVector3 (const cVector3& vector): cMatrix(vector) {}
 
 cVector3::cVector3 (const cMatrix& matrix): cMatrix(3,1) {
 	matrix.getSize(&nRows_,&nCols_);
-	if (nRows_ != 3 && nCols_ != 1) {
-		//Throw an error
-		;
-	}
+	if (nRows_ != 3 && nCols_ != 1)
+		throw(std::range_error("Matrix dimensions are wrong"));
 	set(0,0) = matrix.get(0,0);
 	set(1,0) = matrix.get(1,0);
 	set(2,0) = matrix.get(2,0);
@@ -60,7 +56,6 @@ double cVector3::getX (void) const {
 double cVector3::getY (void) const {
 	return get(1,0);
 }
-
 
 double cVector3::getZ (void) const {
 	return get(2,0);
@@ -122,7 +117,7 @@ cVector2 vAbsolute (const cVector2& v1) {
 }
 
 cVector2 vNormal (const cVector2& v1) {
-	return cVector2(v1.get(1,0),-v1.get(0,1));
+	return vUnitVector(cVector2(v1.get(1,0),-v1.get(0,1)));
 }
 
 cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
@@ -133,30 +128,61 @@ cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
 	return cVector2((vDotProd(projVec,unitProjAxis)*unitProjAxis));
 }
 
-cVector2 intrsctPt (const cVector2& pt1, const cVector2& lineDir1,
+cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 		const cVector2& pt2, const cVector2& lineDir2) {
-	double m1, m2;
-	lineDir1.getX() == 0 ?
-		m1 = 99999999999*lineDir1.getY() :
+	double m1, m2, b1, b2, xInt, yInt;
+	m1 = m2 = b1 = b2 = xInt = yInt = std::nan("");
+	if ((lineDir1.getX() == 0 && lineDir2.getX() == 0) ||
+			(lineDir1.getY() == 0 && lineDir2.getY() == 0))
+		// throw an error, lines are parallel
+		throw(std::runtime_error("Lines are parallel"));
+	if (lineDir1.getX() == 0) {
+		// Vertical asymptote
+		xInt = pt1.getX();
+		m1 = 1;
+		b1 = 0;
+	}
+	if (lineDir1.getY() == 0) {
+		// Horizontal asymptote
+		yInt = pt1.getY();
+		m1 = 0;
+	}
+	if (lineDir2.getX() == 0) {
+		// Vertical asymptote
+		xInt = pt2.getX();
+		m2 = 1;
+		b2 = 0;
+	}
+	if (lineDir2.getY() == 0) {
+		// Horizontal asymptote
+		yInt = pt2.getY();
+		m2 = 0;
+	}
+	if (std::isnan(m1) == true)
 		m1 = lineDir1.getY()/lineDir1.getX();
-	lineDir2.getX() == 0 ?
-		m2 = 99999999999*lineDir2.getY() :
+	if (std::isnan(m2) == true)
 		m2 = lineDir2.getY()/lineDir2.getX();
-	// if m1 == m2, throw an error -> no intersection
-	// or assert
-	// same thing for infinite number of intersection points
-
-	// b1: intercept for line equation y = mx + b1
-	// b2: intercept for normal line equation y = nx + b2
-	double b1 = pt1.getY()-m1*pt1.getX(),
-		   b2 = pt2.getY()-m2*pt2.getX(),
-		   xInt = (b2-b1)/(m1-m2),
-		   yInt = m1*xInt+b1;
+	if (m1 == m2)
+		throw(std::runtime_error("Lines are parallel"));
+	if (std::isnan(b1) == true)
+		b1 = pt1.getY()-m1*pt1.getX();
+	if (std::isnan(b2) == true)
+		b2 = pt2.getY()-m2*pt2.getX();
+	if (std::isnan(xInt) == true && std::isnan(yInt) == true) {
+		xInt = (b2-b1)/(m1-m2);
+		yInt = m1*xInt+b1;
+	}
+	if (std::isnan(xInt) == false && std::isnan(yInt) == true) {
+		yInt = m1*xInt+b1;
+	}
+	if (std::isnan(xInt) == true && std::isnan(yInt) == false) {
+		xInt = (yInt-b1)/m1;
+	}
 	return cVector2(xInt,yInt);
 }
 
 double distPtToLine (const cVector2& pt, const cVector2& lineDir,
 		const cVector2& ptLine) {
 	cVector2 normDir = vNormal(lineDir);
-	return vMagnitude(intrsctPt(pt,normDir,ptLine,lineDir));
+	return vMagnitude(intersectionLineLine(pt,normDir,ptLine,lineDir));
 }

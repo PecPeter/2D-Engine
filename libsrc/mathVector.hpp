@@ -1,8 +1,11 @@
 #ifndef MATHVECTOR_HPP
 #define MATHVECTOR_HPP
 
+#include <stdexcept>
 #include <cassert>
 #include <cmath>
+#include <limits>
+
 #include "mathMatrix.hpp"
 
 class cVector2: public cMatrix {
@@ -42,7 +45,7 @@ cVector2 vAbsolute (const cVector2& v1);
 cVector2 vNormal (const cVector2& v1);
 cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis);
 
-cVector2 intersctPt (const cVector2& pt1, const cVector2& lineDir1,
+cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 		const cVector2& pt2, const cVector2& lineDir2);
 double distPtToLine (const cVector2& pt, const cVector2& lineDir,
 		const cVector2& ptLine);

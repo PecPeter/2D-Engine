@@ -67,7 +67,7 @@ cVector2 cCollTest::collTestAabbLine (const cCollObj& aabb,
 	double rotHw = shapeAabb->getHW()*trigVal+shapeAabb->getHH()*trigVal;
 	
 	//Determine distance between points
-	cVector2 intrsctPt = intersctPt(aabb.getObjPos(),vNormal(lineDir),
+	cVector2 intrsctPt = intersectionLineLine(aabb.getObjPos(),vNormal(lineDir),
 			line.getObjPos(),lineDir),
 			 dv = intrsctPt-aabb.getObjPos();
 	if (vMagnitude(dv) < rotHw)
@@ -79,7 +79,7 @@ cVector2 cCollTest::collTestAabbLine (const cCollObj& aabb,
 
 cVector2 cCollTest::collTestLineAabb (const cCollObj& line,
 		const cCollObj& aabb) {
-	return collTestAabbLine(aabb,line);
+	return cVector2(-1*collTestAabbLine(aabb,line));
 }
 
 cVector2 cCollTest::collTestLineLine (const cCollObj& line1,
