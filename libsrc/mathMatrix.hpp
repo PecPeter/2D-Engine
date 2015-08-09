@@ -4,6 +4,7 @@
 // Remove iostream when testing is completed
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 class cMatrix {
 	public:

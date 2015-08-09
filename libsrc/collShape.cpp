@@ -6,6 +6,7 @@ cCollShape::cCollShape (eShapeType shapeType, int numNorms): shapeType_(shapeTyp
 
 cCollShape::~cCollShape (void) {
 	normList_.clear();
+	data_.clear();
 }
 
 const eShapeType& cCollShape::getShapeType (void) const {
@@ -16,69 +17,44 @@ const std::vector<cVector2>& cCollShape::getNormList (void) const {
 	return normList_;
 }
 
-cCollLine::cCollLine (const cVector2& p1, const cVector2& p2):
-		cCollShape(eShapeType::LINE,1) {
-	cVector2 dv = p2-p1;
-	dir_ = vUnitVector(dv);
+const std::vector<cVector2>& cCollShape::getData (void) const {
+	return data_;
 }
 
-cCollLine::cCollLine (const cVector2& dir): cCollShape(eShapeType::LINE,1),
-	dir_(dir) {}
+cCollLine::cCollLine (const cVector2& p1, const cVector2& p2):
+	cCollLine(cVector2(p2-p1)) {}
 
-cVector2 cCollLine::getDir (void) const {
-	return dir_;
-};
+cCollLine::cCollLine (const cVector2& dir): cCollShape(eShapeType::LINE,1) {
+	normList_.push_back(vNormal(dir));
+	data_.push_back(vUnitVector(dir));
+}
 
 cCollTri::cCollTri (const cVector2& pt1, const cVector2& pt2, const cVector2& pt3):
-		cCollShape(eShapeType::TRI,3) {
+		cCollShape(eShapeType::POLY,3) {
 	// "Normalize the points, making it so that the centroid is at 0,0
 	std::vector<cVector2> pts = {pt1,pt2,pt3,pt1};
 	cVector2 centroid = polygonCentroid(pts);
-	ptList_.resize(3);
-	ptList_.at(0) = pt1-centroid;
-	ptList_.at(1) = pt2-centroid;
-	ptList_.at(2) = pt3-centroid;
+	data_ = {pt1-centroid,pt2-centroid,pt3-centroid};
 
 	// Calculate Normals
-	normList_.at(0) = vNormal(pt2-pt1);
-	normList_.at(1) = vNormal(pt3-pt2);
-	normList_.at(2) = vNormal(pt1-pt3);
+	normList_ = {vNormal(pt2-pt1),vNormal(pt3-pt2),vNormal(pt1-pt3)};
 }
 
 cCollTri::cCollTri (double x1, double y1, double x2, double y2, double x3, double y3):
 		cCollTri(cVector2(x1,y1),cVector2(x2,y2),cVector2(x3,y3)) {}
 
-cCollTri::~cCollTri (void) {
-	ptList_.clear();
-}
-
-const std::vector<cVector2>& cCollTri::getPtList (void) const {
-	return ptList_;
-}
-
-cCollAabb::cCollAabb (double hw, double hh): cCollShape(eShapeType::AABB,2),
-		hw_(hw), hh_(hh) {
-	normList_.at(0) = cVector2(1,0);
-	normList_.at(1) = cVector2(0,1);
-}
-
-cCollAabb::~cCollAabb (void) {}
-
-double cCollAabb::getHW (void) const {
-	return hw_;
-}
-
-double cCollAabb::getHH (void) const {
-	return hh_; 
+cCollAabb::cCollAabb (double hw, double hh): cCollShape(eShapeType::POLY,2) {
+	normList_ = {cVector2(1,0),cVector2(0,1)};
+	data_ = {cVector2(hw,hh),cVector2(-hw,hh),cVector2(-hw,-hh),cVector2(hw,-hh)};
 }
 
 //Incorporate an epsilon value
 cCollPoly::cCollPoly (const std::vector<cVector2>& pts): cCollShape(eShapeType::POLY,0) {
 	// "Normalize" points around the centroid, which is set to 0,0.
 	cVector2 centroid = polygonCentroid(pts);
-	ptList_.resize(pts.size()-1);
-	for (std::size_t i = 0; i < ptList_.size(); ++i)
-		ptList_.at(i) = pts.at(i)-centroid;
+	data_.resize(pts.size()-1);
+	for (std::size_t i = 0; i < data_.size(); ++i)
+		data_.at(i) = pts.at(i)-centroid;
 	
 	// Calculate unique normals
 	for (std::size_t i = 0; i < pts.size()-1; ++i) {
@@ -92,51 +68,14 @@ cCollPoly::cCollPoly (const std::vector<cVector2>& pts): cCollShape(eShapeType::
 	}
 }
 
-cCollPoly::~cCollPoly (void) {
-	ptList_.clear();
-}
-
-const std::vector<cVector2>& cCollPoly::getPtList (void) const {
-	return ptList_;
+cCollCircle::cCollCircle (double radius): cCollShape(eShapeType::CIRCLE,0) {
+	data_.push_back(cVector2(radius,0));
 }
 
 //Incorporate an epsilon value
 bool operator== (const cCollShape& lhs, const cCollShape& rhs) {
-	const eShapeType shape1 = lhs.getShapeType(),
-		  shape2 = rhs.getShapeType();
-	if (shape1 != shape2)
-		return false;
-	if (shape1 == eShapeType::POINT) {
+	if (lhs.getShapeType() == rhs.getShapeType() && lhs.getData() == rhs.getData())
 		return true;
-	}
-	else if (shape1 == eShapeType::LINE) {
-		const cCollLine& line1 = static_cast<const cCollLine&>(lhs);
-		const cCollLine& line2 = static_cast<const cCollLine&>(rhs);
-		if (line1.getDir() == line2.getDir())
-			return true;
-	}
-	else if (shape1 == eShapeType::TRI) {
-		const cCollTri& tri1 = static_cast<const cCollTri&>(lhs);
-		const cCollTri& tri2 = static_cast<const cCollTri&>(rhs);
-		if (tri1.getPtList() == tri2.getPtList())
-			return true;
-	}
-	else if (shape1 == eShapeType::AABB) {
-		const cCollAabb& aabb1 = static_cast<const cCollAabb&>(lhs);
-		const cCollAabb& aabb2 = static_cast<const cCollAabb&>(rhs);
-		if (aabb1.getHW() == aabb2.getHW() &&
-				aabb1.getHH() == aabb2.getHH())
-			return true;
-	}
-	else if (shape1 == eShapeType::OOBB) {
-		return true;
-	}
-	else if (shape1 == eShapeType::POLY) {
-		return true;
-	}
-	else if (shape1 == eShapeType::CIRCLE) {
-		return true;
-	}
 	return false;
 }
 

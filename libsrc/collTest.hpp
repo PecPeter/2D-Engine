@@ -18,16 +18,7 @@ class cCollTest {
 		// These collision test should always return what object
 		// 1 has to do to get out of the collision
 
-		cVector2 collTestAabbAabb (const cCollObj& aabb1,
-				const cCollObj& aabb2);
-
-		// THESE NEED TO BE TESTED
-		cVector2 collTestAabbLine (const cCollObj& aabb,
-				const cCollObj& line);
-		cVector2 collTestLineAabb (const cCollObj& line,
-				const cCollObj& aabb);
-		cVector2 collTestLineLine (const cCollObj& line1, //Returns noColl_
-				const cCollObj& line2);					  //No need to test
+		cVector2 collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2);
 
 		cVector2 noColl_,
 				 contactColl_;
@@ -37,5 +28,9 @@ class cCollTest {
 			(const cCollObj&,const cCollObj&);
 		std::map <collTestMapKey,collTestMapPtr> collTestMap_;
 };
+
+void genNormList (const std::vector<cVector2>& nList1, const std::vector<cVector2>& nList2,
+		std::vector<cVector2>* normList);
+
 
 #endif

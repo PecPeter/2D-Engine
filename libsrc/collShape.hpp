@@ -10,9 +10,6 @@
 enum class eShapeType {
 	POINT,
 	LINE,
-	TRI,
-	AABB,
-	OOBB,
 	POLY,
 	CIRCLE
 };
@@ -24,13 +21,18 @@ class cCollShape {
 
 		const eShapeType& getShapeType (void) const;
 		const std::vector<cVector2>& getNormList (void) const;
+		const std::vector<cVector2>& getData (void) const;
 	protected:
 		eShapeType shapeType_;
 		std::vector<cVector2> normList_;
+		std::vector<cVector2> data_;
 };
 
 class cCollLine : public cCollShape {
 	public:
+		/*
+		 * data_: direction of the line
+		 */
 		//coll|no coll
 		//    |
 		//    |
@@ -39,46 +41,42 @@ class cCollLine : public cCollShape {
 		//    |
 		cCollLine (const cVector2& p1, const cVector2& p2);
 		cCollLine (const cVector2& dir);
-		cVector2 getDir (void) const;
-
-	private:
-		cVector2 dir_;
 };
 
 class cCollTri : public cCollShape {
 	public:
+		/*
+		 * data_: points of the triangle, with the centroid at 0,0
+		 */
 		cCollTri (const cVector2& pt1, const cVector2& pt2, const cVector2& pt3);
 		cCollTri (double x1, double y1, double x2, double y2, double x3, double x4);
-		~cCollTri (void);
-
-		const std::vector<cVector2>& getPtList (void) const;
-	private:
-		std::vector<cVector2> ptList_;
 };
 
 class cCollAabb : public cCollShape {
 	public:
+		/*
+		 * data_: points of the AABB, with the centroid at 0,0
+		 */
 		cCollAabb (double hw, double hh); //This needs to throw in case negative values are given
-		~cCollAabb (void);
-
-		double getHW (void) const;
-		double getHH (void) const;
-	private:
-		double hw_,
-			   hh_;
 };
 
 class cCollPoly : public cCollShape {
 	public:
+		/*
+		 * data_: points of the polygon, with the centroid at 0,0
+		 */
 		// The polygon must be non-self-intersecting, and closed (ie. the
 		// first point must be the last point as well). The points should be
 		// defined in CCW order
 		cCollPoly (const std::vector<cVector2>& pts);
-		~cCollPoly (void);
+};
 
-		const std::vector<cVector2>& getPtList (void) const;
-	private:
-		std::vector<cVector2> ptList_;
+class cCollCircle : public cCollShape {
+	public:
+		/*
+		 * data_: radius of the circle
+		 */
+		cCollCircle (double radius);
 };
 
 bool operator== (const cCollShape& lhs, const cCollShape& rhs);

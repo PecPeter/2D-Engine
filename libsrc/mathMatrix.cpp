@@ -80,8 +80,10 @@ bool operator== (const cMatrix& lhs, const cMatrix& rhs) {
 	}
 	for (int i = 0; i < nRowsL; ++i) {
 		for (int j = 0; j < nColsL; ++j) {
-			if (lhs.get(i,j) != rhs.get(i,j))
-				return false;
+			if (std::isnan(lhs.get(i,j)) == false &&
+					std::isnan(rhs.get(i,j)) == false)
+				if (lhs.get(i,j) != rhs.get(i,j))
+					return false;
 		}
 	}
 	return true;

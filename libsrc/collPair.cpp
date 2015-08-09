@@ -5,11 +5,11 @@ cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 
 cCollPair::~cCollPair (void) {}
 
-const cCollObj* cCollPair::object1 (void) const {
+const cCollObj* cCollPair::obj1 (void) const {
 	return object1_;
 }
 
-const cCollObj* cCollPair::object2 (void) const {
+const cCollObj* cCollPair::obj2 (void) const {
 	return object2_;
 }
 

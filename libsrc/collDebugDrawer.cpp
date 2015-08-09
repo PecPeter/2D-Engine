@@ -9,11 +9,8 @@ void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj) {
 	cVector2 objPos = obj.getObjPos();
 	eShapeType shapeType = obj.getCollShape()->getShapeType();
 	
-	if (shapeType == eShapeType::AABB) {
-		const cCollAabb* aabb =
-			static_cast<const cCollAabb*>(obj.getCollShape());
-		drawRect(rend,objPos,aabb->getHW(),aabb->getHH(),
-				colMap_.at(obj.getObjType()));
+	if (shapeType == eShapeType::POLY) {
+		drawPoly(rend,obj.getCollShape()->getData(),colMap_.at(obj.getObjType()));
 	}
 }
 
@@ -102,6 +99,8 @@ void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 	}
 	filledPolygonRGBA(rend,vx,vy,pList.size(),col.getX(),col.getY(),
 			col.getZ(),alphaLevel_);
+	delete[] vx;
+	delete[] vy;
 /*
 	auto prevItr = pList.begin();
 	for (auto itr = prevItr+1; itr != pList.end(); itr++, prevItr++) {
