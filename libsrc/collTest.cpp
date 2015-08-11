@@ -1,15 +1,12 @@
 #include "collTest.hpp"
 
 cCollTest::cCollTest (void): noColl_(std::nan(""),std::nan("")), contactColl_(0,0) {
-/*	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::AABB)] =
-		&cCollTest::collTestAabbAabb;
-	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::LINE)] = 
-		&cCollTest::collTestAabbLine;
-	collTestMap_[collTestMapKey(eShapeType::LINE,eShapeType::AABB)] = 
-		&cCollTest::collTestLineAabb;
-		*/
 	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::POLY)] =
 		&cCollTest::collTestPolyPoly;
+	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::CIRCLE)] = 
+		&cCollTest::collTestPolyCircle;
+	collTestMap_[collTestMapKey(eShapeType::CIRCLE,eShapeType::POLY)] = 
+		&cCollTest::collTestCirclePoly;
 }
 
 void cCollTest::testPair (cCollPair& collPair) {
@@ -18,14 +15,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 	eShapeType shape1 = obj1->getCollShape()->getShapeType(),
 			   shape2 = obj2->getCollShape()->getShapeType();
 	auto& function = collTestMap_.at(collTestMapKey(shape1,shape2));
-/*	collTestMapPtr function;
-	if (shape1 != eShapteType::POLY
-	if ((shape1 == eShapeType::LINE) || (shape1 == eShapeType::CIRCLE) ||
-				(shape2 == eShapeType::LINE) || (shape2 == eShapeType::CIRCLE))
-		function = collTestMap_.at(collTestMapKey(shape1,shape2));
-	else
-		function = &cCollTest::collTestPolyPoly;
-*/	cVector2 collVector = (this->*function)(*obj1,*obj2);
+	cVector2 collVector = (this->*function)(*obj1,*obj2);
 
 	if (collVector == noColl_)
 		collPair.setCollType(eCollType::NO_COLLISION);
@@ -44,8 +34,8 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2
 	std::vector<cVector2> overlapList;
 	for (auto& normListItr : normList) {
 		double obj1Min, obj1Max, obj2Min, obj2Max;
-		obj1Min = obj2Min = 99999999.0;
-		obj1Max = obj2Max = -9999999.0;
+		obj1Min = obj2Min = std::numeric_limits<double>::max();
+		obj1Max = obj2Max = -obj1Min;
 		cVector2 obj1Pos = obj1.getObjPos(),
 				 obj2Pos = obj2.getObjPos();
 		for (auto& obj1PtItr : shape1->getData()) {
@@ -86,6 +76,76 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2
 	return collVector;
 }
 
+cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& circle) {
+	// Create norm list
+	// Find the closest poly vertex to the centroid of a circle,
+	// add the centroid->vertex as an axis to test for collision
+	std::vector<cVector2> normList = poly.getCollShape()->getNormList();
+	const cCollShape* shape1 = poly.getCollShape(),
+		  *shape2 = circle.getCollShape();
+	cVector2 satAxis;
+	double ptDistance = std::numeric_limits<double>::max();
+	for (auto& polyPtItr : poly.getCollShape()->getData()) {
+		cVector2 tempAxis = (polyPtItr+poly.getObjPos())-circle.getObjPos();
+		double distance = vSqMagnitude(tempAxis);
+		if (distance < ptDistance) {
+			ptDistance = distance;
+			satAxis = tempAxis;
+		}
+	}
+	normList.push_back(satAxis);
+
+	// Test each norm
+	std::vector<cVector2> overlapList;
+	for (auto& normListItr : normList) {
+		double polyMin, polyMax, circleMin, circleMax;
+		polyMin = circleMin = std::numeric_limits<double>::max();
+		polyMax = circleMax = -polyMin;
+		cVector2 polyPos = poly.getObjPos();
+		for (auto& polyPtItr : shape1->getData()) {
+			cVector2 ptPos = polyPtItr+polyPos;
+			double projValue = vScalProj(ptPos,normListItr);
+			if (projValue < polyMin)
+				polyMin = projValue;
+			if (projValue > polyMax)
+				polyMax = projValue;
+		}
+		double circleRadius = shape2->getData().at(0).getX();
+		double circlePos = vScalProj(circle.getObjPos(),normListItr);
+		circleMin = circlePos-circleRadius;
+		circleMax = circlePos+circleRadius;
+		if (circleMin > circleMax)
+			std::swap(circleMin,circleMax);
+
+		if (polyMax > circleMax) {
+			if (polyMin > circleMax)
+				return noColl_;
+			overlapList.push_back(cVector2((circleMax-polyMin)*normListItr));
+		}
+		else if (circleMax > polyMax) {
+			if (circleMin > polyMax)
+				return noColl_;
+			overlapList.push_back(cVector2((polyMax-circleMin)*normListItr));
+		}
+	}
+	cVector2 collVector = *overlapList.begin();
+	double collVectorMag = vSqMagnitude(collVector);
+	for (std::size_t i = 1; i < overlapList.size(); ++i) {
+		if (vSqMagnitude(overlapList.at(i)) < collVectorMag) {
+			collVector = overlapList.at(i);
+			collVectorMag = vSqMagnitude(overlapList.at(i));
+		}
+	}
+	return collVector;
+}
+
+cVector2 cCollTest::collTestCirclePoly (const cCollObj& circle, const cCollObj& poly) {
+	cVector2 collVector = collTestPolyCircle(poly,circle);
+	if (collVector == noColl_ || collVector == contactColl_)
+		return collVector;
+	return (-1*collVector);
+}
+
 void genNormList (const std::vector<cVector2>& nList1,
 		const std::vector<cVector2>& nList2, std::vector<cVector2>* finNList) {
 	if (nList1.size() == 0 && nList2.size() != 0) {
@@ -107,81 +167,3 @@ void genNormList (const std::vector<cVector2>& nList1,
 			finNList->push_back(nList2Itr);
 	}
 }
-
-
-
-/*
-cVector2 cCollTest::collTestAabbAabb (const cCollObj& obj1,
-		const cCollObj& obj2) {
-	const cCollAabb* shapeAabb1 = static_cast<const cCollAabb*>(obj1.getCollShape());
-	const cCollAabb* shapeAabb2 = static_cast<const cCollAabb*>(obj2.getCollShape());
-
-	std::vector<cVector2> normList = {cVector2(1,0),cVector2(0,1)};
-}
-*/
-
-
-
-
-/*
-cVector2 cCollTest::collTestAabbAabb (const cCollObj& obj1,
-		const cCollObj& obj2) {
-	cVector2 dv(obj2.getObjPos()-obj1.getObjPos());
-	const cCollAabb* shapeAabb1 = static_cast<const cCollAabb*>(obj1.getCollShape());
-	const cCollAabb* shapeAabb2 = static_cast<const cCollAabb*>(obj2.getCollShape());
-	double dHalfWidth = shapeAabb1->getHW()+shapeAabb2->getHW(),
-		   xOverlap = std::abs(dv.getX())-dHalfWidth,
-		   dHalfHeight = shapeAabb1->getHH()+shapeAabb2->getHH(),
-		   yOverlap = std::abs(dv.getY())-dHalfHeight;
-	if (dv.getX() < 0)
-		dHalfWidth *= -1.0;
-	if (dv.getY() < 0)
-		dHalfHeight *= -1.0;
-	if (xOverlap < 0) {
-		if (yOverlap < 0)
-			return cVector2(dv-cVector2(dHalfWidth,dHalfHeight));
-		else if (yOverlap == 0)
-			return contactColl_;
-		return noColl_;
-	}
-	else if (xOverlap == 0) {
-		if (yOverlap <= 0)
-			return contactColl_;
-	}
-	return noColl_;
-}
-
-cVector2 cCollTest::collTestAabbLine (const cCollObj& aabb,
-		const cCollObj& line) {
-	//Determine the angle
-	cVector2 lineDir =
-		static_cast<const cCollLine*>(line.getCollShape())->getDir();
-	double trigVal = std::cos(vAngleRad(lineDir,cVector2(1,0)));
-//	double angleRad = vAngleRad(lineDir,cVector2(1,0));
-	//Determine the length of the rotated half width
-	const cCollAabb* shapeAabb =
-		static_cast<const cCollAabb*>(aabb.getCollShape());
-//	double trigVal = std::cos(angleRad
-	double rotHw = shapeAabb->getHW()*trigVal+shapeAabb->getHH()*trigVal;
-	
-	//Determine distance between points
-	cVector2 intrsctPt = intersectionLineLine(aabb.getObjPos(),vNormal(lineDir),
-			line.getObjPos(),lineDir),
-			 dv = intrsctPt-aabb.getObjPos();
-	if (vMagnitude(dv) < rotHw)
-		return cVector2(dv-vUnitVector(dv)*rotHw);
-	else if (vMagnitude(dv) == rotHw)
-		return contactColl_;
-	return noColl_;
-}
-
-cVector2 cCollTest::collTestLineAabb (const cCollObj& line,
-		const cCollObj& aabb) {
-	return cVector2(-1*collTestAabbLine(aabb,line));
-}
-
-cVector2 cCollTest::collTestLineLine (const cCollObj& line1,
-		const cCollObj& line2) {
-	return noColl_;
-}
-*/
