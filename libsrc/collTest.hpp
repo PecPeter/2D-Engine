@@ -1,7 +1,6 @@
 #ifndef COLLTEST2D_HPP
 #define COLLTEST2D_HPP
 
-#include <iostream>
 #include <cmath>
 #include <limits>
 #include <utility>
@@ -20,9 +19,10 @@ class cCollTest {
 		// These collision test should always return what object
 		// 1 has to do to get out of the collision
 
-		cVector2 collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2);
-		cVector2 collTestPolyCircle (const cCollObj& poly, const cCollObj& circle);
-		cVector2 collTestCirclePoly (const cCollObj& circle, const cCollObj& poly);
+		cVector2 collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& objPoly2);
+		cVector2 collTestPolyCircle (const cCollObj& objPoly, const cCollObj& objCircle);
+		cVector2 collTestCirclePoly (const cCollObj& objCircle, const cCollObj& objPoly);
+		cVector2 collTestCircleCircle (const cCollObj& objCircle1, const cCollObj& objCircle2);
 
 		cVector2 noColl_,
 				 contactColl_;

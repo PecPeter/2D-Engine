@@ -13,10 +13,10 @@ void collTestHandlerUnitTest (void) {
 			 blue(0,0,255);
 
 	// Implement a graphical view for collision detection
-	cVector2 pos1(0,0), pos2(200,200);
+	cVector2 pos1(150,200), pos2(200,200);
 	cCollAabb shape1(5,5), shape2(10,10);
-	cCollCircle shape3(50);
-	cCollObj obj1(pos1,&shape1), obj2(pos2,&shape3);
+	cCollCircle shape3(5), shape4(50);
+	cCollObj obj1(pos1,&shape3), obj2(pos2,&shape4);
 	cCollPair pair(&obj1,&obj2);
 	cCollTest testHandler;
 

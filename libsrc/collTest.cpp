@@ -7,6 +7,8 @@ cCollTest::cCollTest (void): noColl_(std::nan(""),std::nan("")), contactColl_(0,
 		&cCollTest::collTestPolyCircle;
 	collTestMap_[collTestMapKey(eShapeType::CIRCLE,eShapeType::POLY)] = 
 		&cCollTest::collTestCirclePoly;
+	collTestMap_[collTestMapKey(eShapeType::CIRCLE,eShapeType::CIRCLE)] =
+		&cCollTest::collTestCircleCircle;
 }
 
 void cCollTest::testPair (cCollPair& collPair) {
@@ -26,19 +28,19 @@ void cCollTest::testPair (cCollPair& collPair) {
 	collPair.setObjOverlap(collVector);
 }
 
-cVector2 cCollTest::collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2) {
+cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& objPoly2) {
 	std::vector<cVector2> normList;
-	const cCollShape* shape1 = obj1.getCollShape(),
-		  *shape2 = obj2.getCollShape();
-	genNormList(shape1->getNormList(),shape2->getNormList(),&normList);
+	const cCollShape* polyShape1 = objPoly1.getCollShape(),
+		  *polyShape2 = objPoly2.getCollShape();
+	genNormList(polyShape1->getNormList(),polyShape2->getNormList(),&normList);
 	std::vector<cVector2> overlapList;
 	for (auto& normListItr : normList) {
 		double obj1Min, obj1Max, obj2Min, obj2Max;
 		obj1Min = obj2Min = std::numeric_limits<double>::max();
 		obj1Max = obj2Max = -obj1Min;
-		cVector2 obj1Pos = obj1.getObjPos(),
-				 obj2Pos = obj2.getObjPos();
-		for (auto& obj1PtItr : shape1->getData()) {
+		cVector2 obj1Pos = objPoly1.getObjPos(),
+				 obj2Pos = objPoly2.getObjPos();
+		for (auto& obj1PtItr : polyShape1->getData()) {
 			cVector2 ptPos = obj1PtItr+obj1Pos;
 			double projValue = vScalProj(ptPos,normListItr);
 			if (projValue < obj1Min)
@@ -46,7 +48,7 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2
 			if (projValue > obj1Max)
 				obj1Max = projValue;
 		}
-		for (auto& obj2PtItr : shape2->getData()) {
+		for (auto& obj2PtItr : polyShape2->getData()) {
 			cVector2 ptPos = obj2PtItr+obj2Pos;
 			double projValue = vScalProj(ptPos,normListItr);
 			if (projValue < obj2Min)
@@ -76,24 +78,24 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& obj1, const cCollObj& obj2
 	return collVector;
 }
 
-cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& circle) {
+cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj& objCircle) {
 	// Create norm list
 	// Find the closest poly vertex to the centroid of a circle,
 	// add the centroid->vertex as an axis to test for collision
-	std::vector<cVector2> normList = poly.getCollShape()->getNormList();
-	const cCollShape* shape1 = poly.getCollShape(),
-		  *shape2 = circle.getCollShape();
+	std::vector<cVector2> normList = objPoly.getCollShape()->getNormList();
+	const cCollShape* polyShape = objPoly.getCollShape(),
+		  *circleShape = objCircle.getCollShape();
 	cVector2 satAxis;
 	double ptDistance = std::numeric_limits<double>::max();
-	for (auto& polyPtItr : poly.getCollShape()->getData()) {
-		cVector2 tempAxis = (polyPtItr+poly.getObjPos())-circle.getObjPos();
+	for (auto& polyPtItr : objPoly.getCollShape()->getData()) {
+		cVector2 tempAxis = objCircle.getObjPos()-(polyPtItr+objPoly.getObjPos());
 		double distance = vSqMagnitude(tempAxis);
 		if (distance < ptDistance) {
 			ptDistance = distance;
 			satAxis = tempAxis;
 		}
 	}
-	normList.push_back(satAxis);
+	normList.push_back(vUnitVector(satAxis));
 
 	// Test each norm
 	std::vector<cVector2> overlapList;
@@ -101,8 +103,8 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& ci
 		double polyMin, polyMax, circleMin, circleMax;
 		polyMin = circleMin = std::numeric_limits<double>::max();
 		polyMax = circleMax = -polyMin;
-		cVector2 polyPos = poly.getObjPos();
-		for (auto& polyPtItr : shape1->getData()) {
+		cVector2 polyPos = objPoly.getObjPos();
+		for (auto& polyPtItr : polyShape->getData()) {
 			cVector2 ptPos = polyPtItr+polyPos;
 			double projValue = vScalProj(ptPos,normListItr);
 			if (projValue < polyMin)
@@ -110,8 +112,8 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& ci
 			if (projValue > polyMax)
 				polyMax = projValue;
 		}
-		double circleRadius = shape2->getData().at(0).getX();
-		double circlePos = vScalProj(circle.getObjPos(),normListItr);
+		double circleRadius = circleShape->getData().at(0).getX();
+		double circlePos = vScalProj(objCircle.getObjPos(),normListItr);
 		circleMin = circlePos-circleRadius;
 		circleMax = circlePos+circleRadius;
 		if (circleMin > circleMax)
@@ -125,7 +127,7 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& ci
 		else if (circleMax > polyMax) {
 			if (circleMin > polyMax)
 				return noColl_;
-			overlapList.push_back(cVector2((polyMax-circleMin)*normListItr));
+			overlapList.push_back(cVector2((circleMin-polyMax)*normListItr));
 		}
 	}
 	cVector2 collVector = *overlapList.begin();
@@ -139,11 +141,42 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& poly, const cCollObj& ci
 	return collVector;
 }
 
-cVector2 cCollTest::collTestCirclePoly (const cCollObj& circle, const cCollObj& poly) {
-	cVector2 collVector = collTestPolyCircle(poly,circle);
+cVector2 cCollTest::collTestCirclePoly (const cCollObj& objCircle, const cCollObj& objPoly) {
+	cVector2 collVector = collTestPolyCircle(objPoly,objCircle);
+	std::cout << "\nOverlap:\n" << collVector;
 	if (collVector == noColl_ || collVector == contactColl_)
 		return collVector;
 	return (-1*collVector);
+}
+
+cVector2 cCollTest::collTestCircleCircle (const cCollObj& objCircle1, const cCollObj& objCircle2) {
+	cVector2 obj1Pos = objCircle1.getObjPos(),
+			 obj2Pos = objCircle2.getObjPos();
+	double obj1Rad = objCircle1.getCollShape()->getData().at(0).getX(),
+		   obj2Rad = objCircle2.getCollShape()->getData().at(0).getX();
+	cVector2 satAxis = vUnitVector(obj2Pos-obj1Pos);
+	double obj1Min = vScalProj(obj1Pos,satAxis)-obj1Rad,
+		   obj1Max = vScalProj(obj1Pos,satAxis)+obj1Rad,
+		   obj2Min = vScalProj(obj2Pos,satAxis)-obj2Rad,
+		   obj2Max = vScalProj(obj2Pos,satAxis)+obj2Rad;
+
+	if (obj1Min > obj1Max)
+		std::swap(obj1Min,obj1Max);
+	if (obj2Min > obj2Max)
+		std::swap(obj2Min,obj2Max);
+
+	cVector2 collVector;
+	if (obj1Max > obj2Max) {
+		if (obj1Min > obj2Max)
+			return noColl_;
+		collVector = cVector2((obj2Max-obj1Min)*satAxis);
+	}
+	else if (obj2Max > obj1Max) {
+		if (obj2Min > obj1Max)
+			return noColl_;
+		collVector = cVector2((obj2Min-obj1Max)*satAxis);
+	}
+	return collVector;
 }
 
 void genNormList (const std::vector<cVector2>& nList1,
