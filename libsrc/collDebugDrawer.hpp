@@ -41,6 +41,4 @@ class cCollDebugDrawer {
 		std::map<eObjType,cVector3> colMap_;
 };
 
-cMatrix solveRotationMatrix (double rotnRad);
-
 #endif

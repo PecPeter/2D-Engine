@@ -13,7 +13,7 @@ void collTestHandlerUnitTest (void) {
 			 green(0,255,0),
 			 blue(0,0,255);
 
-	cVector2 pos1(150,200), pos2(200,200);
+	cVector2 pos1(157.5,200), pos2(200,200);
 	cCollAabb shape1(5,5), shape2(10,10);
 	cCollCircle shape3(5), shape4(50);
 	std::vector<cVector2> polyPtList = {cVector2(0,50),cVector2(-25,25),cVector2(-15,-25),cVector2(15,-25),
@@ -28,21 +28,21 @@ void collTestHandlerUnitTest (void) {
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderClear(renderer);
 
-		double dx = 2, dy = 0;
+//		double dx = 2, dy = 0;
 //		std::cout << "dx: ";
 //		std::cin >> dx;
 //		std::cout << "dy: ";
 //		std::cin >> dy;
 //		obj1.translate(dx,dy);
-		obj2.rotate(0.05);
+		obj2.rotate(0.005);
 /*		std::cout << "OBJ2 ROTN: " << obj2.getRotation() << "\n";
 		std::cout << "Obj1 Pos:\n" << obj1.getObjPos() <<
-			"\nObj2 Pos:\n" << obj2.getObjPos();
+			"\nObj2 Pos:\n" << obj2.getObjPos();*/
 		testHandler.testPair(pair);
 		if (pair.getCollType() == eCollType::COLLISION) {
 			std::cout << "\nCollision Overlap:\n" << pair.getObjOverlap() << "\n";
 		}
-		else if (pair.getCollType() == eCollType::CONTACT) {
+/*		else if (pair.getCollType() == eCollType::CONTACT) {
 			std::cout << "\nContact\n";
 		}
 		else if (pair.getCollType() == eCollType::NO_COLLISION)

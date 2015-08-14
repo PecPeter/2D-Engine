@@ -33,24 +33,44 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& 
 	const cCollShape* polyShape1 = objPoly1.getCollShape(),
 		  *polyShape2 = objPoly2.getCollShape();
 	genNormList(polyShape1->getNormList(),polyShape2->getNormList(),&normList);
+
+	//Update shape data to account for obj position and rotation
+	std::vector<cVector2> ptList1 = objPoly1.getCollShape()->getData(),
+		ptList2 = objPoly2.getCollShape()->getData();
+	cVector2 obj1Pos = objPoly1.getObjPos(),
+			 obj2Pos = objPoly2.getObjPos();
+	if (objPoly1.getRotation() != 0) {
+		cMatrix rotnMatrix = solveRotationMatrix(objPoly1.getRotation());
+		for (auto& ptListItr : ptList1)
+			ptListItr = rotnMatrix*ptListItr+obj1Pos;
+	}
+	else
+		for (auto& ptListItr : ptList1)
+			ptListItr += obj1Pos;
+	if (objPoly2.getRotation() != 0) {
+		cMatrix rotnMatrix = solveRotationMatrix(objPoly2.getRotation());
+		for (auto& ptListItr : ptList2)
+			ptListItr = rotnMatrix*ptListItr+obj2Pos;
+	}
+	else
+		for (auto& ptListItr : ptList2)
+			ptListItr += obj2Pos;
+
+	//Test for overlap
 	std::vector<cVector2> overlapList;
 	for (auto& normListItr : normList) {
 		double obj1Min, obj1Max, obj2Min, obj2Max;
 		obj1Min = obj2Min = std::numeric_limits<double>::max();
 		obj1Max = obj2Max = -obj1Min;
-		cVector2 obj1Pos = objPoly1.getObjPos(),
-				 obj2Pos = objPoly2.getObjPos();
-		for (auto& obj1PtItr : polyShape1->getData()) {
-			cVector2 ptPos = obj1PtItr+obj1Pos;
-			double projValue = vScalProj(ptPos,normListItr);
+		for (auto& ptListItr : ptList1) {
+			double projValue = vScalProj(ptListItr,normListItr);
 			if (projValue < obj1Min)
 				obj1Min = projValue;
 			if (projValue > obj1Max)
 				obj1Max = projValue;
 		}
-		for (auto& obj2PtItr : polyShape2->getData()) {
-			cVector2 ptPos = obj2PtItr+obj2Pos;
-			double projValue = vScalProj(ptPos,normListItr);
+		for (auto& ptListItr: ptList2) {
+			double projValue = vScalProj(ptListItr,normListItr);
 			if (projValue < obj2Min)
 				obj2Min = projValue;
 			if (projValue > obj2Max)
@@ -67,6 +87,8 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& 
 			overlapList.push_back(cVector2((obj1Max-obj2Min)*normListItr));
 		}
 	}
+
+	//If no SA found, return that which has the smallest displacement
 	cVector2 collVector = *overlapList.begin();
 	double collVectorMag = vSqMagnitude(collVector);
 	for (std::size_t i = 1; i < overlapList.size(); ++i) {
@@ -83,12 +105,25 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj&
 	// Find the closest poly vertex to the centroid of a circle,
 	// add the centroid->vertex as an axis to test for collision
 	std::vector<cVector2> normList = objPoly.getCollShape()->getNormList();
-	const cCollShape* polyShape = objPoly.getCollShape(),
-		  *circleShape = objCircle.getCollShape();
+	const cCollShape* circleShape = objCircle.getCollShape();
+
+	//Update shape data to account for obj position and rotation
+	std::vector<cVector2> polyPtList = objPoly.getCollShape()->getData();
+	cVector2 polyPos = objPoly.getObjPos();
+	if (objPoly.getRotation() != 0) {
+		cMatrix rotnMatrix = solveRotationMatrix(objPoly.getRotation());
+		for (auto& ptListItr : polyPtList)
+			ptListItr = rotnMatrix*ptListItr+polyPos;
+	}
+	else
+		for (auto& ptListItr : polyPtList)
+			ptListItr += polyPos;
+
+	//Test distance to each poly point
 	cVector2 satAxis;
 	double ptDistance = std::numeric_limits<double>::max();
-	for (auto& polyPtItr : objPoly.getCollShape()->getData()) {
-		cVector2 tempAxis = objCircle.getObjPos()-(polyPtItr+objPoly.getObjPos());
+	for (auto& polyPtItr : polyPtList) {
+		cVector2 tempAxis = objCircle.getObjPos()-polyPtItr;
 		double distance = vSqMagnitude(tempAxis);
 		if (distance < ptDistance) {
 			ptDistance = distance;
@@ -103,10 +138,8 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj&
 		double polyMin, polyMax, circleMin, circleMax;
 		polyMin = circleMin = std::numeric_limits<double>::max();
 		polyMax = circleMax = -polyMin;
-		cVector2 polyPos = objPoly.getObjPos();
-		for (auto& polyPtItr : polyShape->getData()) {
-			cVector2 ptPos = polyPtItr+polyPos;
-			double projValue = vScalProj(ptPos,normListItr);
+		for (auto& polyPtItr : polyPtList) {
+			double projValue = vScalProj(polyPtItr,normListItr);
 			if (projValue < polyMin)
 				polyMin = projValue;
 			if (projValue > polyMax)

@@ -2,6 +2,7 @@
 #define COLLOBJECT_HPP
 
 #include "collShape.hpp"
+#include "mathMatrix.hpp"
 #include "mathVector.hpp"
 #include "mathConstants.hpp"
 
@@ -35,8 +36,9 @@ class cCollObj {
 		double rotnRad_;
 		const cCollShape* shape_;
 		eObjType objType_;
-		// ADD SOMETHING ABOUT ROTATION?
 		void* usrPtr_;
 };
+
+cMatrix solveRotationMatrix (double rotnRad);
 
 #endif
