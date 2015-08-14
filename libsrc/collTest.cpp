@@ -143,7 +143,6 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj&
 
 cVector2 cCollTest::collTestCirclePoly (const cCollObj& objCircle, const cCollObj& objPoly) {
 	cVector2 collVector = collTestPolyCircle(objPoly,objCircle);
-	std::cout << "\nOverlap:\n" << collVector;
 	if (collVector == noColl_ || collVector == contactColl_)
 		return collVector;
 	return (-1*collVector);

@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "mathMatrix.hpp"
+#include "mathConstants.hpp"
 
 class cVector2: public cMatrix {
 	public:
@@ -42,8 +43,10 @@ double vAngleDeg (const cVector2& v1, const cVector2& v2);
 double vScalProj (const cVector2& projVec, const cVector2& projAxis);
 cVector2 vUnitVector (const cVector2& v1); //check for divide by 0
 cVector2 vAbsolute (const cVector2& v1);
-cVector2 vNormal (const cVector2& v1);
+cVector2 vNormalR (const cVector2& v1);
+cVector2 vNormalL (const cVector2& v1);
 cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis);
+cVector2 vRotate (const cVector2& v1, const double& rotnRad);
 
 cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 		const cVector2& pt2, const cVector2& lineDir2);

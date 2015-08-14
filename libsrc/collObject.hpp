@@ -3,6 +3,7 @@
 
 #include "collShape.hpp"
 #include "mathVector.hpp"
+#include "mathConstants.hpp"
 
 enum class eObjType {
 	STATIC,
@@ -22,12 +23,16 @@ class cCollObj {
 		void translate (double dx, double dy);
 		void translate (const cVector2& dv);
 		const cVector2& getObjPos (void) const; 
+		void rotate (double rotnRad);
+		void setRotation (double rotnRad);
+		const double getRotation (void) const;
 		const cCollShape* getCollShape (void) const;
 		eObjType getObjType (void) const;
 		void setUsrPtr (void* objPtr);
 		void* getUsrPtr (void);
 	private:
 		cVector2 pos_;
+		double rotnRad_;
 		const cCollShape* shape_;
 		eObjType objType_;
 		// ADD SOMETHING ABOUT ROTATION?

@@ -6,11 +6,36 @@ cCollDebugDrawer::cCollDebugDrawer (int alpha): alphaLevel_(alpha) {
 }
 
 void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj) {
+	drawObj(rend,obj,colMap_.at(obj.getObjType()));
+}
+
+void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
 	cVector2 objPos = obj.getObjPos();
 	eShapeType shapeType = obj.getCollShape()->getShapeType();
 	
 	if (shapeType == eShapeType::POLY) {
-		drawPoly(rend,obj.getCollShape()->getData(),colMap_.at(obj.getObjType()));
+		std::vector<cVector2> ptList = obj.getCollShape()->getData();
+		double objRotn = obj.getRotation();
+		if (objRotn != 0.0) {
+			cMatrix rotnMatrix = solveRotationMatrix(obj.getRotation());
+			for (auto& ptListItr : ptList)
+				ptListItr = rotnMatrix*ptListItr+objPos;
+		}
+		else {
+			for (auto& ptListItr : ptList)
+				ptListItr += objPos;
+		}
+		ptList.push_back(*ptList.begin());
+		drawPoly(rend,ptList,col);
+	}
+	else if (shapeType == eShapeType::CIRCLE) {
+		drawCircle(rend,objPos,obj.getCollShape()->getData().at(0).getX(),col);
+	}
+	else if (shapeType == eShapeType::LINE) {
+//		drawLine(rend...);
+	}
+	else if (shapeType == eShapeType::POINT) {
+//		drawPoint(rend,...);
 	}
 }
 
@@ -68,27 +93,6 @@ void cCollDebugDrawer::drawLine (SDL_Renderer* rend, const cVector2& p1,
 			col.getX(),col.getY(),col.getZ(),alphaLevel_);
 }
 
-void cCollDebugDrawer::drawSphere (SDL_Renderer* rend, const cVector2& p,
-		const double& rad, const cVector3& col) {
-	filledCircleRGBA(rend,p.getX(),p.getY(),rad, col.getX(),col.getY(),
-			col.getZ(),alphaLevel_);
-}
-
-void cCollDebugDrawer::drawTriangle (SDL_Renderer* rend, const cVector2& v1,
-		const cVector2& v2, const cVector2& v3, const cVector3& col) {
-	filledTrigonRGBA(rend,v1.getX(),v1.getY(),v2.getX(),v2.getY(),v3.getX(),
-			v3.getY(),col.getX(),col.getY(),col.getZ(),alphaLevel_);
-//	drawLine(rend,v1,v2,col);
-//	drawLine(rend,v1,v3,col);
-//	drawLine(rend,v2,v3,col);
-}
-
-void cCollDebugDrawer::drawRect (SDL_Renderer* rend, const cVector2& p,
-		const double& hw, const double& hh, const cVector3& col) {
-	boxRGBA(rend,p.getX()-hw,p.getY()-hh, p.getX()+hw,p.getY()+hh,
-			col.getX(),col.getY(),col.getZ(),alphaLevel_);
-}
-
 void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 		const std::vector<cVector2>& pList, const cVector3& col) {
 	Sint16* vx = new Sint16[pList.size()];
@@ -101,10 +105,19 @@ void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 			col.getZ(),alphaLevel_);
 	delete[] vx;
 	delete[] vy;
-/*
-	auto prevItr = pList.begin();
-	for (auto itr = prevItr+1; itr != pList.end(); itr++, prevItr++) {
-		drawLine(rend,*itr,*prevItr,col);
-	}
-	drawLine(rend,*pList.begin(),*pList.rbegin(),col);*/
+}
+
+void cCollDebugDrawer::drawCircle (SDL_Renderer* rend, const cVector2& p,
+		const double& rad, const cVector3& col) {
+	filledCircleRGBA(rend,p.getX(),p.getY(),rad, col.getX(),col.getY(),
+			col.getZ(),alphaLevel_);
+}
+
+cMatrix solveRotationMatrix (double rotnRad) {
+	cMatrix rotnMatrix(2,2);
+	rotnMatrix.set(0,0) = std::cos(rotnRad);
+	rotnMatrix.set(0,1) = -std::sin(rotnRad);
+	rotnMatrix.set(1,0) = std::sin(rotnRad);
+	rotnMatrix.set(1,1) = std::cos(rotnRad);
+	return rotnMatrix;
 }

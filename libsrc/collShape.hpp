@@ -21,7 +21,7 @@ class cCollShape {
 
 		const eShapeType& getShapeType (void) const;
 		const std::vector<cVector2>& getNormList (void) const;
-		const std::vector<cVector2>& getData (void) const;
+		const std::vector<cVector2> getData (void) const;
 	protected:
 		eShapeType shapeType_;
 		std::vector<cVector2> normList_;

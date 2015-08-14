@@ -17,7 +17,7 @@ const std::vector<cVector2>& cCollShape::getNormList (void) const {
 	return normList_;
 }
 
-const std::vector<cVector2>& cCollShape::getData (void) const {
+const std::vector<cVector2> cCollShape::getData (void) const {
 	return data_;
 }
 
@@ -25,7 +25,7 @@ cCollLine::cCollLine (const cVector2& p1, const cVector2& p2):
 	cCollLine(cVector2(p2-p1)) {}
 
 cCollLine::cCollLine (const cVector2& dir): cCollShape(eShapeType::LINE,1) {
-	normList_.push_back(vNormal(dir));
+	normList_.push_back(vNormalR(dir));
 	data_.push_back(vUnitVector(dir));
 }
 
@@ -37,7 +37,7 @@ cCollTri::cCollTri (const cVector2& pt1, const cVector2& pt2, const cVector2& pt
 	data_ = {pt1-centroid,pt2-centroid,pt3-centroid};
 
 	// Calculate Normals
-	normList_ = {vNormal(pt2-pt1),vNormal(pt3-pt2),vNormal(pt1-pt3)};
+	normList_ = {vNormalR(pt2-pt1),vNormalR(pt3-pt2),vNormalR(pt1-pt3)};
 }
 
 cCollTri::cCollTri (double x1, double y1, double x2, double y2, double x3, double y3):
@@ -58,10 +58,10 @@ cCollPoly::cCollPoly (const std::vector<cVector2>& pts): cCollShape(eShapeType::
 	
 	// Calculate unique normals
 	for (std::size_t i = 0; i < pts.size()-1; ++i) {
-		cVector2 normal = vNormal(pts.at(i+1)-pts.at(i));
+		cVector2 normal = vNormalR(pts.at(i+1)-pts.at(i));
 		bool uniqueNormal = true;
 		for (auto& normListItr : normList_)
-			if (vAbsolute(normal) == vAbsolute(normListItr))
+			if ((normal == normListItr) || ((-1*normal) == normListItr))
 				uniqueNormal = false;
 		if (uniqueNormal == true)
 			normList_.push_back(normal);
@@ -91,10 +91,14 @@ cVector2 polygonCentroid (const std::vector<cVector2>& pts) {
 		   cY = 0,
 		   area = 0;
 	for (std::size_t i = 0; i < (pts.size()-1); ++i) {
-		commonTerm = pts.at(i).getX()*pts.at(i+1).getY()-pts.at(i+1).getX()*pts.at(i).getY();
+		double curPtX = pts.at(i).getX(),
+			   curPtY = pts.at(i).getY(),
+			   nextPtX = pts.at(i+1).getX(),
+			   nextPtY = pts.at(i+1).getY();
+		commonTerm = curPtX*nextPtY-nextPtX*curPtY;
 		area += commonTerm;
-		cX += (pts.at(i).getX()+pts.at(i+1).getX())*commonTerm;
-		cY += (pts.at(i).getY()+pts.at(i+1).getY())*commonTerm;
+		cX += (curPtX+nextPtX)*commonTerm;
+		cY += (curPtY+nextPtY)*commonTerm;
 	}
 	area *= 0.5;
 	double multiplier = 1.0/(6.0*area);

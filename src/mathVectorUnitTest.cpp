@@ -39,7 +39,8 @@ void mathVectorUnitTest (void) {
 		"\t...vScalProj: " << vScalProj(v1,v2) << "\n" <<
 		"\t...vUnitVector:\n" << vUnitVector(v1) << "\n" <<
 		"\t...vAbsolute:\n" << vAbsolute(v1) << "\n" <<
-		"\t...vNormal:\n" << vNormal(v1) << "\n" <<
+		"\t...vNormalR:\n" << vNormalR(v1) << "\n" <<
+		"\t...vNormalL:\n" << vNormalL(v1) << "\n" <<
 		"\t...vVecProj:\n" << vVecProj(v1,v2) << "\n";
 	std::cout << "Testing line intersection solver:\n";
 	v1.set(0,0) = 5;

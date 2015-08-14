@@ -1,7 +1,7 @@
 #include "collObject.hpp"
 
 cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
-		eObjType objType, void* usrPtr): pos_(pos),shape_(shape),
+		eObjType objType, void* usrPtr): pos_(pos),rotnRad_(0.0),shape_(shape),
 		objType_(objType), usrPtr_(usrPtr) {}
 
 cCollObj::~cCollObj (void) {}
@@ -17,6 +17,22 @@ void cCollObj::translate (const cVector2& dv) {
 
 const cVector2& cCollObj::getObjPos (void) const {
 	return pos_;
+}
+
+void cCollObj::rotate (double rotnRad) {
+	rotnRad_ += rotnRad;
+	int numRotations = rotnRad_/PI_2;
+	rotnRad_ -= numRotations*PI_2;
+}
+
+void cCollObj::setRotation (double rotnRad) {
+	rotnRad_ = rotnRad;
+	int numRotations = rotnRad_/PI_2;
+	rotnRad_ -= numRotations*PI_2;
+}
+
+const double cCollObj::getRotation (void) const {
+	return rotnRad_;
 }
 
 const cCollShape* cCollObj::getCollShape (void) const {

@@ -98,7 +98,7 @@ double vAngleRad (const cVector2& v1, const cVector2& v2) {
 }
 
 double vAngleDeg (const cVector2& v1, const cVector2& v2) {
-	return vAngleRad(v1,v2)*(180.0/3.14159265);
+	return vAngleRad(v1,v2)*RAD_TO_DEG;
 }
 
 double vScalProj (const cVector2& projVec, const cVector2& projAxis) {
@@ -116,8 +116,12 @@ cVector2 vAbsolute (const cVector2& v1) {
 	return cVector2(std::abs(v1.get(0,0)),std::abs(v1.get(1,0)));
 }
 
-cVector2 vNormal (const cVector2& v1) {
-	return vUnitVector(cVector2(v1.get(1,0),-v1.get(0,1)));
+cVector2 vNormalR (const cVector2& v1) {
+	return vUnitVector(cVector2(v1.get(1,0),-v1.get(0,0)));
+}
+
+cVector2 vNormalL (const cVector2& v1) {
+	return vUnitVector(cVector2(-v1.get(1,0),v1.get(0,0)));
 }
 
 cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
@@ -126,6 +130,15 @@ cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
 	// Vector Projection: v = s * uB
 	cVector2 unitProjAxis = vUnitVector(projAxis);
 	return cVector2((vDotProd(projVec,unitProjAxis)*unitProjAxis));
+}
+
+cVector2 vRotate (const cVector2& v1, const double& rotRad) {
+	cMatrix rotMatrix(2,2);
+	rotMatrix.set(0,0) = std::cos(rotRad);
+	rotMatrix.set(0,1) = -std::sin(rotRad);
+	rotMatrix.set(1,0) = -rotMatrix.get(0,1);
+	rotMatrix.set(1,1) = rotMatrix.get(0,0);
+	return cVector2(rotMatrix*v1);
 }
 
 cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
@@ -183,6 +196,6 @@ cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 
 double distPtToLine (const cVector2& pt, const cVector2& lineDir,
 		const cVector2& ptLine) {
-	cVector2 normDir = vNormal(lineDir);
+	cVector2 normDir = vNormalR(lineDir);
 	return vMagnitude(intersectionLineLine(pt,normDir,ptLine,lineDir));
 }
