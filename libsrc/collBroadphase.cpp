@@ -13,7 +13,7 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const 
 		objCont::const_iterator cItr2 = cItr1;
 		++cItr2;
 		for (; cItr2 != objList.end(); ++cItr2) {
-			pairList.push_back(cCollPair(*cItr1,*cItr2));
+			pairList.push_front(cCollPair(*cItr1,*cItr2));
 		}
 	}
 }

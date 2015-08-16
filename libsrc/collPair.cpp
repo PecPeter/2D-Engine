@@ -25,6 +25,6 @@ void cCollPair::setCollType (const eCollType& collType) {
 	collType_ = collType;
 }
 
-eCollType cCollPair::getCollType (void) {
+eCollType cCollPair::getCollType (void) const {
 	return collType_;
 }

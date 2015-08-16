@@ -23,16 +23,16 @@ void cCollWorld::removeObject (void) {
 
 }
 */
-std::deque<cCollPair>* cCollWorld::checkColls (void) {
+std::forward_list<cCollPair>* cCollWorld::checkColls (void) {
 	collPairList_.empty();
 	// Run broadphase
 	broadphase_->genList(collPairList_,collObjList_);
 	// Run narrow phase
-	for (auto qItr : collPairList_)
+	for (auto& qItr : collPairList_)
 		testHandler_->testPair(qItr);
-	for (auto qItr : collPairList_)
-		if (qItr.getCollType() == eCollType::NO_COLLISION)
-			collPairList_.pop_front();
+	collPairList_.remove_if([](const cCollPair& pair) {
+			return pair.getCollType() == eCollType::NO_COLLISION ? true : false;
+			});
 	return &collPairList_;
 }
 

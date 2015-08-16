@@ -47,7 +47,7 @@ template <class T>
 void cCntrlKb<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, SDL_Keymod modCode) {
 	sCommandInfo* commandInfo = new sCommandInfo;
 	commandInfo->linkedAction_ = action;
-	for (const auto& itr : keyCodes) {
+	for (auto& itr : keyCodes) {
 		auto watchKeyItr = kbWatchKeys_.insert(std::pair<SDL_Keycode,bool>(itr,false));
 		commandInfo->keyStates_.push_front(&(watchKeyItr.first->second));
 	}

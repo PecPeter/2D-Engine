@@ -2,12 +2,12 @@
 #define COLLBROADPHASE_HPP
 
 #include <vector>
-#include <deque>
+#include <forward_list>
 
 #include "collObject.hpp"
 #include "collPair.hpp"
 
-typedef std::deque<cCollPair> pairCont;
+typedef std::forward_list<cCollPair> pairCont;
 typedef std::vector<cCollObj*> objCont;
 
 //maybe make these templated so that the queue doesnt have to be hardcoded,

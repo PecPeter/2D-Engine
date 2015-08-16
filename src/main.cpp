@@ -71,10 +71,10 @@ int main (void) {
 	std::cout << "Collision pair unit test:\n";
 	collPairUnitTest();
 	std::cout << "Collision test handler unit test:\n";
-*/	collTestHandlerUnitTest();
-/*	std::cout << "Collision world unit test:\n";
+	collTestHandlerUnitTest();
+*/	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-	std::cout << "Collision world debug drawer unit test:\n";
+/*	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
 	std::cout << "Command handler unit test:\n";
 	commandHandlerUnitTest();

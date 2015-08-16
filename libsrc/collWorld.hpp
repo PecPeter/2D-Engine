@@ -2,7 +2,7 @@
 #define COLLWORLD_HPP
 
 #include <vector>
-#include <deque>
+#include <forward_list>
 
 #include <SDL2/SDL.h>
 
@@ -21,13 +21,13 @@ class cCollWorld {
 		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
 				eObjType objType=eObjType::STATIC);
 //		void removeObject (void);
-		std::deque<cCollPair>* checkColls (void);
+		std::forward_list<cCollPair>* checkColls (void);
 
 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
 	private:
 		std::vector<cCollObj*> collObjList_;
-		std::deque<cCollPair> collPairList_;
+		std::forward_list<cCollPair> collPairList_;
 		const cCollBroadphase* broadphase_;
 		cCollTest* testHandler_;
 		cCollDebugDrawer* debugDrawer_;

@@ -20,7 +20,7 @@ class cCollPair {
 		void setObjOverlap (const cVector2& overlap);
 		cVector2& getObjOverlap (void);
 		void setCollType (const eCollType& collType);
-		eCollType getCollType (void);
+		eCollType getCollType (void) const;
 	private:
 		cCollObj* object1_, *object2_;
 		cVector2 overlap_; // Overlap if wrt what obj1 has to do to get out of collision
