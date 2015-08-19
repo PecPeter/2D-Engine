@@ -20,6 +20,8 @@ class cCollBroadphase {
 		//maybe make one that takes 2 lists, 1 dynamic and the other static.
 		//This should make pairing easier
 		virtual void genList (pairCont& pairList, const objCont& objList) const = 0;
+		virtual void genList (pairCont& pairList, const objCont& objListDyn,
+				const objCont& objListStatic) const = 0;
 };
 
 // This is a "general" broadphase. It just takes the list and 
@@ -29,6 +31,8 @@ class cGenBroadphase : public cCollBroadphase {
 		cGenBroadphase (void);
 		~cGenBroadphase(void);
 		void genList (pairCont& pairList, const objCont& objList) const;
+		void genList (pairCont& pairList, const objCont& objListDyn,
+				const objCont& objListStatic) const;
 };
 
 //Grid based broadphase

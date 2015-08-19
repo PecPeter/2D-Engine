@@ -26,7 +26,8 @@ class cCollWorld {
 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
 	private:
-		std::vector<cCollObj*> collObjList_;
+		std::vector<cCollObj*> collObjListStatic_,
+			collObjListDyn_;
 		std::forward_list<cCollPair> collPairList_;
 		const cCollBroadphase* broadphase_;
 		cCollTest* testHandler_;

@@ -5,9 +5,13 @@ cCollWorld::cCollWorld (const cCollBroadphase* broadphase):
 	debugDrawer_(nullptr) {}
 
 cCollWorld::~cCollWorld (void) {
-	for (auto itr : collObjList_)
+	for (auto itr : collObjListStatic_)
 		delete itr;
-	collObjList_.clear();
+	for (auto itr : collObjListDyn_)
+		delete itr;
+	collObjListStatic_.clear();
+	collObjListDyn_.clear();
+//	collObjList_.clear();
 	collPairList_.clear();
 	delete testHandler_;
 }
@@ -15,7 +19,10 @@ cCollWorld::~cCollWorld (void) {
 cCollObj* cCollWorld::createObject (const cVector2& pos,
 		const cCollShape& shape, eObjType objType) {
 	cCollObj* collObject = new cCollObj(pos,&shape,objType);
-	collObjList_.push_back(collObject);
+	if (objType == eObjType::STATIC)
+		collObjListStatic_.push_back(collObject);
+	else if (objType == eObjType::DYNAMIC)
+		collObjListDyn_.push_back(collObject);
 	return collObject;
 }
 /*
@@ -26,7 +33,7 @@ void cCollWorld::removeObject (void) {
 std::forward_list<cCollPair>* cCollWorld::checkColls (void) {
 	collPairList_.empty();
 	// Run broadphase
-	broadphase_->genList(collPairList_,collObjList_);
+	broadphase_->genList(collPairList_,collObjListDyn_,collObjListStatic_);
 	// Run narrow phase
 	for (auto& qItr : collPairList_)
 		testHandler_->testPair(qItr);
@@ -42,7 +49,10 @@ void cCollWorld::setDebugDraw (cCollDebugDrawer* debugDrawer) {
 
 void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 	if (debugDrawer_ != nullptr) {
-		for (auto& itr : collObjList_) {
+		for (auto& itr : collObjListStatic_) {
+			debugDrawer_->drawObj(renderer,*itr);
+		}
+		for (auto& itr : collObjListDyn_) {
 			debugDrawer_->drawObj(renderer,*itr);
 		}
 	}

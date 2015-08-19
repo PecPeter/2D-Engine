@@ -17,7 +17,7 @@ void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj, const c
 		std::vector<cVector2> ptList = obj.getCollShape()->getData();
 		double objRotn = obj.getRotation();
 		if (objRotn != 0.0) {
-			cMatrix rotnMatrix = solveRotationMatrix(obj.getRotation());
+			cMatrix rotnMatrix = rotnTransform(obj.getRotation());
 			for (auto& ptListItr : ptList)
 				ptListItr = rotnMatrix*ptListItr+objPos;
 		}

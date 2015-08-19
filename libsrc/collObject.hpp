@@ -5,6 +5,7 @@
 #include "mathMatrix.hpp"
 #include "mathVector.hpp"
 #include "mathConstants.hpp"
+#include "mathLinAlgebra.hpp"
 
 enum class eObjType {
 	STATIC,
@@ -38,7 +39,5 @@ class cCollObj {
 		eObjType objType_;
 		void* usrPtr_;
 };
-
-cMatrix solveRotationMatrix (double rotnRad);
 
 #endif

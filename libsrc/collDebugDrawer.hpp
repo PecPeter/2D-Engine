@@ -13,6 +13,7 @@
 #include "collObject.hpp"
 #include "mathMatrix.hpp"
 #include "mathVector.hpp"
+#include "mathLinAlgebra.hpp"
 
 class cCollDebugDrawer {
 	public:

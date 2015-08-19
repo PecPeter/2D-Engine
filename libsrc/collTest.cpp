@@ -1,6 +1,6 @@
 #include "collTest.hpp"
 
-cCollTest::cCollTest (void): noColl_(std::nan(""),std::nan("")), contactColl_(0,0) {
+cCollTest::cCollTest (void) {
 	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::POLY)] =
 		&cCollTest::collTestPolyPoly;
 	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::CIRCLE)] = 
@@ -30,9 +30,8 @@ void cCollTest::testPair (cCollPair& collPair) {
 
 cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& objPoly2) {
 	std::vector<cVector2> normList;
-	const cCollShape* polyShape1 = objPoly1.getCollShape(),
-		  *polyShape2 = objPoly2.getCollShape();
-	genNormList(polyShape1->getNormList(),polyShape2->getNormList(),&normList);
+	genNormList(objPoly1.getCollShape()->getNormList(),
+			objPoly2.getCollShape()->getNormList(),&normList);
 
 	//Update shape data to account for obj position and rotation
 	std::vector<cVector2> ptList1 = objPoly1.getCollShape()->getData(),
@@ -40,7 +39,7 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& 
 	cVector2 obj1Pos = objPoly1.getObjPos(),
 			 obj2Pos = objPoly2.getObjPos();
 	if (objPoly1.getRotation() != 0) {
-		cMatrix rotnMatrix = solveRotationMatrix(objPoly1.getRotation());
+		cMatrix rotnMatrix = rotnTransform(objPoly1.getRotation());
 		for (auto& ptListItr : ptList1)
 			ptListItr = rotnMatrix*ptListItr+obj1Pos;
 	}
@@ -48,7 +47,7 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& 
 		for (auto& ptListItr : ptList1)
 			ptListItr += obj1Pos;
 	if (objPoly2.getRotation() != 0) {
-		cMatrix rotnMatrix = solveRotationMatrix(objPoly2.getRotation());
+		cMatrix rotnMatrix = rotnTransform(objPoly2.getRotation());
 		for (auto& ptListItr : ptList2)
 			ptListItr = rotnMatrix*ptListItr+obj2Pos;
 	}
@@ -76,18 +75,12 @@ cVector2 cCollTest::collTestPolyPoly (const cCollObj& objPoly1, const cCollObj& 
 			if (projValue > obj2Max)
 				obj2Max = projValue;
 		}
-		if (obj1Max > obj2Max) {
-			if (obj1Min > obj2Max)
-				return noColl_;
-			overlapList.push_back(cVector2((obj2Max-obj1Min)*normListItr));
-		}
-		else if (obj2Max > obj1Max) {
-			if (obj2Min > obj1Max)
-				return noColl_;
-			overlapList.push_back(cVector2((obj1Max-obj2Min)*normListItr));
-		}
-	}
 
+		cVector2 dispVector = minDisplacement(obj1Min,obj1Max,obj2Min,obj2Max,normListItr);
+		if (dispVector == noColl_ || dispVector == contactColl_)
+			return dispVector;
+		overlapList.push_back(dispVector);
+	}
 	//If no SA found, return that which has the smallest displacement
 	cVector2 collVector = *overlapList.begin();
 	double collVectorMag = vSqMagnitude(collVector);
@@ -111,7 +104,7 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj&
 	std::vector<cVector2> polyPtList = objPoly.getCollShape()->getData();
 	cVector2 polyPos = objPoly.getObjPos();
 	if (objPoly.getRotation() != 0) {
-		cMatrix rotnMatrix = solveRotationMatrix(objPoly.getRotation());
+		cMatrix rotnMatrix = rotnTransform(objPoly.getRotation());
 		for (auto& ptListItr : polyPtList)
 			ptListItr = rotnMatrix*ptListItr+polyPos;
 	}
@@ -152,16 +145,10 @@ cVector2 cCollTest::collTestPolyCircle (const cCollObj& objPoly, const cCollObj&
 		if (circleMin > circleMax)
 			std::swap(circleMin,circleMax);
 
-		if (polyMax > circleMax) {
-			if (polyMin > circleMax)
-				return noColl_;
-			overlapList.push_back(cVector2((circleMax-polyMin)*normListItr));
-		}
-		else if (circleMax > polyMax) {
-			if (circleMin > polyMax)
-				return noColl_;
-			overlapList.push_back(cVector2((circleMin-polyMax)*normListItr));
-		}
+		cVector2 dispVector = minDisplacement(polyMin,polyMax,circleMin,circleMax,normListItr);
+		if (dispVector == noColl_ || dispVector == contactColl_)
+			return dispVector;
+		overlapList.push_back(dispVector);
 	}
 	cVector2 collVector = *overlapList.begin();
 	double collVectorMag = vSqMagnitude(collVector);
@@ -197,18 +184,7 @@ cVector2 cCollTest::collTestCircleCircle (const cCollObj& objCircle1, const cCol
 	if (obj2Min > obj2Max)
 		std::swap(obj2Min,obj2Max);
 
-	cVector2 collVector;
-	if (obj1Max > obj2Max) {
-		if (obj1Min > obj2Max)
-			return noColl_;
-		collVector = cVector2((obj2Max-obj1Min)*satAxis);
-	}
-	else if (obj2Max > obj1Max) {
-		if (obj2Min > obj1Max)
-			return noColl_;
-		collVector = cVector2((obj2Min-obj1Max)*satAxis);
-	}
-	return collVector;
+	return minDisplacement(obj1Min,obj1Max,obj2Min,obj2Max,satAxis);
 }
 
 void genNormList (const std::vector<cVector2>& nList1,
@@ -221,14 +197,34 @@ void genNormList (const std::vector<cVector2>& nList1,
 		*finNList = nList1;
 		return;
 	}
+	else if (nList1.size() == 0 && nList2.size() == 0)
+		return;
 	*finNList = nList1;
 	for (auto& nList2Itr : nList2) {
 		bool uniqueNorm = true;
-		for (auto& nList1Itr :nList1) {
-			if (nList1Itr == nList2Itr)
+		for (auto& nList1Itr : nList1) {
+			if (nList1Itr == nList2Itr || -1*nList1Itr == nList2Itr) {
 				uniqueNorm = false;
+				break;
+			}
 		}
 		if (uniqueNorm == true)
 			finNList->push_back(nList2Itr);
 	}
+}
+
+cVector2 minDisplacement (double obj1Min, double obj1Max, double obj2Min, double obj2Max, cVector2 axis) {
+	double diff1 = obj2Min-obj1Max,
+		   diff2 = obj2Max-obj1Min;
+	if (diff1*diff2 < 0) {
+		//There's a collision in this state
+		if (std::abs(diff1) > std::abs(diff2))
+			return cVector2(diff2*axis);
+		else
+			return cVector2(diff1*axis);
+	}
+	else if (diff1*diff2 == 0)
+		return contactColl_;
+	else
+		return noColl_;
 }

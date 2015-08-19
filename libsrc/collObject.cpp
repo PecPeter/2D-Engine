@@ -50,12 +50,3 @@ void cCollObj::setUsrPtr (void* usrPtr) {
 void* cCollObj::getUsrPtr (void) {
 	return usrPtr_;
 }
-
-cMatrix solveRotationMatrix (double rotnRad) {
-	cMatrix rotnMatrix(2,2);
-	rotnMatrix.set(0,0) = std::cos(rotnRad);
-	rotnMatrix.set(0,1) = -std::sin(rotnRad);
-	rotnMatrix.set(1,0) = std::sin(rotnRad);
-	rotnMatrix.set(1,1) = std::cos(rotnRad);
-	return rotnMatrix;
-}

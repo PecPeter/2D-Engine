@@ -17,3 +17,17 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const 
 		}
 	}
 }
+
+void cGenBroadphase::genList (pairCont& pairList, const objCont& objListDyn,
+		const objCont& objListStatic) const {
+	for (objCont::const_iterator cItr1 = objListDyn.begin(); cItr1 != objListDyn.end(); ++cItr1) {
+		objCont::const_iterator cItr2 = cItr1;
+		++cItr2;
+		for (; cItr2 != objListDyn.end(); ++cItr2) {
+			pairList.push_front(cCollPair(*cItr1,*cItr2));
+		}
+		for (objCont::const_iterator cItr3 = objListStatic.begin(); cItr3 != objListStatic.end(); ++cItr3) {
+			pairList.push_front(cCollPair(*cItr1,*cItr3));
+		}
+	}
+}

@@ -15,10 +15,10 @@ class cCollPair {
 		cCollPair (cCollObj* object1, cCollObj* object2);
 		~cCollPair (void);
 
-		const cCollObj* obj1 (void) const;
-		const cCollObj* obj2 (void) const;
+		cCollObj* obj1 (void) const;
+		cCollObj* obj2 (void) const;
 		void setObjOverlap (const cVector2& overlap);
-		cVector2& getObjOverlap (void);
+		const cVector2& getObjOverlap (void) const;
 		void setCollType (const eCollType& collType);
 		eCollType getCollType (void) const;
 	private:
