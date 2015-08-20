@@ -1,8 +1,25 @@
 #include "collBroadphase.hpp"
 
-cCollBroadphase::cCollBroadphase (void) {}
+cCollBroadphase::cCollBroadphase (void) {
+	//The default is from collObject.hpp
+	collMaskMap_.insert(std::pair<int,int>(DEFAULT_OBJMASK,1));
+}
 
-cCollBroadphase::~cCollBroadphase (void) {}
+cCollBroadphase::~cCollBroadphase (void) {
+	collMaskMap_.clear();
+}
+
+void cCollBroadphase::addCollMask (int objMask, int collMask) {
+	collMaskMap_.insert(std::pair<int,int>(objMask,collMask));
+}
+
+bool cCollBroadphase::compareCollMask (int objMask1, int objMask2) const {
+	int collMask1 = collMaskMap_.at(objMask1),
+		collMask2 = collMaskMap_.at(objMask2);
+	if (((collMask1&objMask2)*(collMask2&objMask1)) != 0)
+		return true;
+	return false;
+}
 
 cGenBroadphase::cGenBroadphase (void) {}
 
@@ -13,7 +30,8 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const 
 		objCont::const_iterator cItr2 = cItr1;
 		++cItr2;
 		for (; cItr2 != objList.end(); ++cItr2) {
-			pairList.push_front(cCollPair(*cItr1,*cItr2));
+			if (compareCollMask((*cItr1)->getObjMask(),(*cItr2)->getObjMask()) == true)
+				pairList.push_front(cCollPair(*cItr1,*cItr2));
 		}
 	}
 }
@@ -24,10 +42,12 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objListDyn,
 		objCont::const_iterator cItr2 = cItr1;
 		++cItr2;
 		for (; cItr2 != objListDyn.end(); ++cItr2) {
-			pairList.push_front(cCollPair(*cItr1,*cItr2));
+			if (compareCollMask((*cItr1)->getObjMask(),(*cItr2)->getObjMask()) == true)
+				pairList.push_front(cCollPair(*cItr1,*cItr2));
 		}
 		for (objCont::const_iterator cItr3 = objListStatic.begin(); cItr3 != objListStatic.end(); ++cItr3) {
-			pairList.push_front(cCollPair(*cItr1,*cItr3));
+			if (compareCollMask((*cItr1)->getObjMask(),(*cItr3)->getObjMask()) == true)
+				pairList.push_front(cCollPair(*cItr1,*cItr3));
 		}
 	}
 }

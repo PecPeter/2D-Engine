@@ -2,7 +2,7 @@
 
 cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
 		eObjType objType, void* usrPtr): pos_(pos),rotnRad_(0.0),shape_(shape),
-		objType_(objType), usrPtr_(usrPtr) {}
+		objType_(objType), objMask_(DEFAULT_OBJMASK), usrPtr_(usrPtr) {}
 
 cCollObj::~cCollObj (void) {}
 
@@ -43,10 +43,18 @@ eObjType cCollObj::getObjType (void) const {
 	return objType_;
 }
 
+void cCollObj::setObjMask (int objMask) {
+	objMask_ = objMask;
+}
+
+int cCollObj::getObjMask (void) const {
+	return objMask_;
+}
+
 void cCollObj::setUsrPtr (void* usrPtr) {
 	usrPtr_ = usrPtr;
 }
 
-void* cCollObj::getUsrPtr (void) {
+void* cCollObj::getUsrPtr (void) const {
 	return usrPtr_;
 }

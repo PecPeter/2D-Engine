@@ -1,7 +1,6 @@
 #include "engine.hpp"
 
-cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),MS_PER_UPDATE((1.f/120.f)*1000.f),
-	MS_PER_RENDER((1.f/250.f)*1000.f),MAX_UPDATE_COUNT(10),stateHandler_(nullptr) {}
+cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),stateHandler_(nullptr) {}
 
 bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle, cStateHandler* stateHandler) {
 	return init (screenWidth,screenHeight,std::string(winTitle),stateHandler);
@@ -90,9 +89,10 @@ void cEngine::mainLoop (void) {
 		renderTime += dTime;
 
 		int updateCount = 0;
-		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT && (stateHandler_->getNumStates() > 0)) {
+		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT &&
+				(stateHandler_->getNumStates() > 0)) {
 			handleEvents();
-			updateState();
+			updateState(TICK_RATE);
 			updateTime -= MS_PER_UPDATE;
 			++updateCount;
 			++numUpdates;
@@ -123,10 +123,10 @@ void cEngine::handleEvents (void) {
 		currentState->handleEvents(&event_);
 }
 
-void cEngine::updateState (void) {
+void cEngine::updateState (double tickRate) {
 	auto currentState = stateHandler_->getState();
 	if (currentState != nullptr)
-		stateHandler_->changeState(currentState->update());
+		stateHandler_->changeState(currentState->update(tickRate));
 }
 
 void cEngine::renderState (double timeLag) {

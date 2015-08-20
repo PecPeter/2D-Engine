@@ -11,10 +11,10 @@ void cGameState::handleEvents (SDL_Event* event) {
 			handleState(*event);
 }
 
-int cGameState::update (void) {
+int cGameState::update (double tickRate) {
 	int stateAction(noStateChange_);
 	if (stateStage_ == eStateStage::NONE)
-		stateAction = updateState();
+		stateAction = updateState(tickRate);
 	else if (stateStage_ == eStateStage::EXIT_STATE)
 		return removeState_;
 	return stateAction;

@@ -1,8 +1,10 @@
 #ifndef COLLBROADPHASE_HPP
 #define COLLBROADPHASE_HPP
 
+#include <map>
 #include <vector>
 #include <forward_list>
+#include <utility>
 
 #include "collObject.hpp"
 #include "collPair.hpp"
@@ -22,6 +24,10 @@ class cCollBroadphase {
 		virtual void genList (pairCont& pairList, const objCont& objList) const = 0;
 		virtual void genList (pairCont& pairList, const objCont& objListDyn,
 				const objCont& objListStatic) const = 0;
+		void addCollMask (int objMask, int collMask);
+	protected:
+		bool compareCollMask (int objMask1, int objMask2) const;
+		std::map<int,int> collMaskMap_;
 };
 
 // This is a "general" broadphase. It just takes the list and 
