@@ -2,7 +2,7 @@
 
 cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
 		eObjType objType, void* usrPtr): pos_(pos),rotnRad_(0.0),shape_(shape),
-		objType_(objType), objMask_(DEFAULT_OBJMASK), usrPtr_(usrPtr) {}
+		objType_(objType), objMask_(DEFAULT_OBJMASK), collCallback_(nullptr), usrPtr_(usrPtr) {}
 
 cCollObj::~cCollObj (void) {}
 
@@ -49,6 +49,15 @@ void cCollObj::setObjMask (int objMask) {
 
 int cCollObj::getObjMask (void) const {
 	return objMask_;
+}
+
+void cCollObj::setCollCallback (collCallbackFunc collCallback) {
+	collCallback_ = collCallback;
+}
+
+void cCollObj::collCallback (const cCollObj* obj, cVector2 collVector) {
+	if (collCallback_ != nullptr)
+		collCallback_(obj,collVector);
 }
 
 void cCollObj::setUsrPtr (void* usrPtr) {
