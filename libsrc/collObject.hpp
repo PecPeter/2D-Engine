@@ -8,7 +8,7 @@
 #include "mathLinAlgebra.hpp"
 
 class cCollObj;
-typedef void (*collCallbackFunc) (const cCollObj* obj, cVector2 collVector);
+typedef void (*collCallbackFunc) (const cCollObj* obj1, const cCollObj* obj2, cVector2 collVector);
 const int DEFAULT_OBJMASK = 1;
 
 enum class eObjType {
@@ -37,7 +37,7 @@ class cCollObj {
 		void setObjMask (int objMask);
 		int getObjMask (void) const;
 		void setCollCallback (collCallbackFunc collCallback);
-		void collCallback (const cCollObj* obj, cVector2 collVector);
+		void collCallback (const cCollObj* obj1, const cCollObj* obj2, cVector2 collVector);
 		void setUsrPtr (void* objPtr);
 		void* getUsrPtr (void) const;
 	private:

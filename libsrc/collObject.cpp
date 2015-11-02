@@ -55,9 +55,9 @@ void cCollObj::setCollCallback (collCallbackFunc collCallback) {
 	collCallback_ = collCallback;
 }
 
-void cCollObj::collCallback (const cCollObj* obj, cVector2 collVector) {
+void cCollObj::collCallback (const cCollObj* obj1, const cCollObj* obj2, cVector2 collVector) {
 	if (collCallback_ != nullptr)
-		collCallback_(obj,collVector);
+		collCallback_(obj1,obj2,collVector);
 }
 
 void cCollObj::setUsrPtr (void* usrPtr) {

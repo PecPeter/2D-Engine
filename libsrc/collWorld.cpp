@@ -1,8 +1,10 @@
 #include "collWorld.hpp"
 
-cCollWorld::cCollWorld (const cCollBroadphase* broadphase):
-	broadphase_(broadphase), testHandler_(new cCollTest()),
-	debugDrawer_(nullptr) {}
+cCollWorld::cCollWorld (cCollBroadphase* broadphase):
+		broadphase_(broadphase), testHandler_(new cCollTest()),
+		debugDrawer_(nullptr) {
+	assert((broadphase != nullptr || broadphase != NULL) && "Broadphase is not set.");
+}
 
 cCollWorld::~cCollWorld (void) {
 	for (auto itr : collObjListStatic_)
@@ -11,7 +13,6 @@ cCollWorld::~cCollWorld (void) {
 		delete itr;
 	collObjListStatic_.clear();
 	collObjListDyn_.clear();
-//	collObjList_.clear();
 	collPairList_.clear();
 	delete testHandler_;
 }
@@ -56,4 +57,8 @@ void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 			debugDrawer_->drawObj(renderer,*itr);
 		}
 	}
+}
+
+void cCollWorld::addCollMask (int objMask, int collMask) {
+	broadphase_->addCollMask(objMask,collMask);
 }

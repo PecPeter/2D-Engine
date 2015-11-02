@@ -19,7 +19,7 @@ class cCommandTestState: public cGameState {
 		~cCommandTestState (void);
 	private:
 		void handleState (SDL_Event& event);
-		int updateState (void);
+		int updateState (double tickRate);
 		void renderState (SDL_Renderer* renderer, double timeLag);
 
 		bool initState (SDL_Renderer* renderer);

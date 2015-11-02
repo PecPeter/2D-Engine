@@ -16,7 +16,7 @@
 
 class cCollWorld {
 	public:
-		cCollWorld (const cCollBroadphase* broadphase);
+		cCollWorld (cCollBroadphase* broadphase);
 		~cCollWorld (void);
 		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
 				eObjType objType=eObjType::STATIC);
@@ -25,11 +25,12 @@ class cCollWorld {
 
 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
+		void addCollMask (int objMask, int collMask);
 	private:
 		std::vector<cCollObj*> collObjListStatic_,
 			collObjListDyn_;
 		std::forward_list<cCollPair> collPairList_;
-		const cCollBroadphase* broadphase_;
+		cCollBroadphase* broadphase_;
 		cCollTest* testHandler_;
 		cCollDebugDrawer* debugDrawer_;
 };

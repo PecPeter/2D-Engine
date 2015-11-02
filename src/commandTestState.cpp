@@ -33,7 +33,7 @@ void cCommandTestState::handleState (SDL_Event& event) {
 	}
 }
 
-int cCommandTestState::updateState (void) {
+int cCommandTestState::updateState (double tickRate) {
 	if (kbActions_.size() > 0) {
 		for (auto& kbCommand : kbActions_) {
 			switch (kbCommand) {
