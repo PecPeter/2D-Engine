@@ -47,6 +47,7 @@ cVector2 vNormalR (const cVector2& v1);
 cVector2 vNormalL (const cVector2& v1);
 cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis);
 cVector2 vRotate (const cVector2& v1, const double& rotnRad);
+cVector2 vMirror (const cVector2& v1, const cVector2& vMirror);
 
 cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 		const cVector2& pt2, const cVector2& lineDir2);

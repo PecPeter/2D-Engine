@@ -141,6 +141,10 @@ cVector2 vRotate (const cVector2& v1, const double& rotRad) {
 	return cVector2(rotMatrix*v1);
 }
 
+cVector2 vMirror (const cVector2& v1, const cVector2& vMirror) {
+	return cVector2((2*vVecProj(v1,vMirror))-v1);
+}
+
 cVector2 intersectionLineLine (const cVector2& pt1, const cVector2& lineDir1,
 		const cVector2& pt2, const cVector2& lineDir2) {
 	double m1, m2, b1, b2, xInt, yInt;
