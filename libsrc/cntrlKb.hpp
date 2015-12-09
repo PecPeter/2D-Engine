@@ -80,9 +80,9 @@ template <class T>
 void cCntrlKb<T>::updateWatchKey (SDL_KeyboardEvent& key) {
 	auto itr = kbWatchKeys_.find(key.keysym.sym);
 	if (itr != kbWatchKeys_.end()) {
-		if (key.state == SDL_PRESSED)
+		if (key.type == SDL_KEYDOWN)
 			itr->second = true;
-		else if (key.state == SDL_RELEASED)
+		else if (key.type == SDL_KEYUP)
 			itr->second = false;
 	}
 }

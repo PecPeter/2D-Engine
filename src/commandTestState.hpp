@@ -26,15 +26,20 @@ class cCommandTestState: public cGameState {
 
 		enum class eKbAction {
 			ESCAPE=0,
-			MOVE_LEFT,
-			MOVE_RIGHT,
-			MOVE_UP,
-			MOVE_DOWN
+			M1_LEFT,
+			M2_LEFT,
+			M1_RIGHT,
+			M2_RIGHT,
+			M1_UP,
+			M2_UP,
+			M1_DOWN,
+			M2_DOWN
 		};
 
 		std::vector<eKbAction> kbActions_;
 		cCntrlKb<eKbAction> kbCommandHandler_;
-		SDL_Rect rect;
+		SDL_Rect rect,
+				 rect1;
 };
 
 #endif
