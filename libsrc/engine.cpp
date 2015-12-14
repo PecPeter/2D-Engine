@@ -125,8 +125,10 @@ void cEngine::handleEvents (void) {
 
 void cEngine::updateState (double tickRate) {
 	auto currentState = stateHandler_->getState();
-	if (currentState != nullptr)
-		stateHandler_->changeState(currentState->update(tickRate));
+	if (currentState != nullptr) {
+		void* interStateInfo = stateHandler_->getInterStateInfo();
+		stateHandler_->changeState(currentState->update(tickRate,interStateInfo));
+	}
 }
 
 void cEngine::renderState (double timeLag) {

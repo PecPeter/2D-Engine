@@ -1,10 +1,10 @@
 #include "commandTestState.hpp"
 
 cCommandTestState::cCommandTestState (void): cGameState(eStateAction::NONE,eStateAction::REMOVE_STATE) { kbCommandHandler_.addCommand(eKbAction::ESCAPE,SDLK_ESCAPE);
-	kbCommandHandler_.addCommand(eKbAction::M1_LEFT,SDLK_a);
-	kbCommandHandler_.addCommand(eKbAction::M1_RIGHT,SDLK_d);
-	kbCommandHandler_.addCommand(eKbAction::M1_UP,SDLK_w);
-	kbCommandHandler_.addCommand(eKbAction::M1_DOWN,SDLK_s);
+	kbCommandHandler_.addCommand(eKbAction::M1_LEFT,SDLK_a,false);
+	kbCommandHandler_.addCommand(eKbAction::M1_RIGHT,SDLK_d,false);
+	kbCommandHandler_.addCommand(eKbAction::M1_UP,SDLK_w,false);
+	kbCommandHandler_.addCommand(eKbAction::M1_DOWN,SDLK_s,false);
 	kbCommandHandler_.addCommand(eKbAction::M2_LEFT,SDLK_LEFT);
 	kbCommandHandler_.addCommand(eKbAction::M2_RIGHT,SDLK_RIGHT);
 	kbCommandHandler_.addCommand(eKbAction::M2_UP,SDLK_UP);
@@ -38,7 +38,7 @@ void cCommandTestState::handleState (SDL_Event& event) {
 	}
 }
 
-int cCommandTestState::updateState (double tickRate) {
+int cCommandTestState::updateState (double tickRate, void* interStateInfo) {
 	if (kbActions_.size() > 0) {
 		for (auto& kbCommand : kbActions_) {
 			switch (kbCommand) {
