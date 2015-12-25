@@ -11,7 +11,7 @@ void cGameState::handleEvents (SDL_Event* event) {
 			handleState(*event);
 }
 
-int cGameState::update (double tickRate, void* interStateInfo) {
+int cGameState::update (double tickRate, void** interStateInfo) {
 	int stateAction(noStateChange_);
 	if (stateStage_ == eStateStage::NONE)
 		stateAction = updateState(tickRate,interStateInfo);

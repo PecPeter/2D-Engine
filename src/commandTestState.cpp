@@ -5,7 +5,7 @@ cCommandTestState::cCommandTestState (void): cGameState(eStateAction::NONE,eStat
 	kbCommandHandler_.addCommand(eKbAction::M1_RIGHT,SDLK_d,false);
 	kbCommandHandler_.addCommand(eKbAction::M1_UP,SDLK_w,false);
 	kbCommandHandler_.addCommand(eKbAction::M1_DOWN,SDLK_s,false);
-	kbCommandHandler_.addCommand(eKbAction::M2_LEFT,SDLK_LEFT);
+	kbCommandHandler_.addCommand(eKbAction::M2_LEFT,SDLK_LEFT,false);
 	kbCommandHandler_.addCommand(eKbAction::M2_RIGHT,SDLK_RIGHT);
 	kbCommandHandler_.addCommand(eKbAction::M2_UP,SDLK_UP);
 	kbCommandHandler_.addCommand(eKbAction::M2_DOWN,SDLK_DOWN);
@@ -38,7 +38,9 @@ void cCommandTestState::handleState (SDL_Event& event) {
 	}
 }
 
-int cCommandTestState::updateState (double tickRate, void* interStateInfo) {
+int cCommandTestState::updateState (double tickRate, void** interStateInfo) {
+	//Remove repeated commands
+	kbCommandHandler_.removeRepeatCommands(&kbActions_);
 	if (kbActions_.size() > 0) {
 		for (auto& kbCommand : kbActions_) {
 			switch (kbCommand) {
@@ -58,7 +60,7 @@ int cCommandTestState::updateState (double tickRate, void* interStateInfo) {
 					rect.y += 1;
 					break;
 				case eKbAction::M2_LEFT:
-					rect1.x -= 1;
+					rect1.x -= 10;
 					break;
 				case eKbAction::M2_RIGHT:
 					rect1.x += 1;

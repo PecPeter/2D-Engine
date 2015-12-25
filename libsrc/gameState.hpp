@@ -13,11 +13,11 @@ class cGameState {
 		void handleEvents (SDL_Event *event);
 		// When a new gameState needs to be added, this function will return
 		// an index for which one needs to be added, from eStateAction. 
-		int update (double tickRate, void* interStateInfo);
+		int update (double tickRate, void** interStateInfo);
 		void render (SDL_Renderer* renderer, double timeLag);
 	protected:
 		virtual void handleState (SDL_Event& event) = 0;
-		virtual int updateState (double tickRate, void* interStateInfo) = 0;
+		virtual int updateState (double tickRate, void** interStateInfo) = 0;
 		virtual void renderState (SDL_Renderer* renderer, double timeLag) = 0;
 		// These operations will run the transitions between states. They can
 		// run different rendering patterns, and then load up an alternate

@@ -10,6 +10,7 @@
 
 #include "gameState.hpp"
 #include "stateHandler.hpp"
+#include "timer.hpp"
 
 const double TICK_RATE = 120;
 const double FRAME_RATE = 250;

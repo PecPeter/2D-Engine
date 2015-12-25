@@ -11,7 +11,7 @@ class cStateHandler {
 		virtual cGameState* getState (void) = 0;
 		virtual void changeState (int stateAction) = 0;
 		virtual int getNumStates (void);
-		virtual void* getInterStateInfo (void);
+		virtual void** getInterStateInfo (void);
 	protected:
 		int numStates_;
 		void* interStateInfo_;

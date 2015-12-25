@@ -78,8 +78,11 @@ void cEngine::mainLoop (void) {
 		   dTime,
 		   updateTime = 0.0,
 		   renderTime = 0.0;
-	int numUpdates = 0,
-		numFrames = 0;
+	double numUpdates = 0,
+		   numFrames = 0;
+	cTickCounter tickRateCounter(1000),
+				 fpsRateCounter(1000);
+	double tickRate = 0, fpsRate = 0;
 	while (stateHandler_->getNumStates() > 0) {
 		//As long as there is a state on the list, don't end the game
 		curTime = SDL_GetTicks();
@@ -91,20 +94,24 @@ void cEngine::mainLoop (void) {
 		int updateCount = 0;
 		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT &&
 				(stateHandler_->getNumStates() > 0)) {
+		tickRateCounter.startLoop();
 			handleEvents();
 			updateState(TICK_RATE);
 			updateTime -= MS_PER_UPDATE;
 			++updateCount;
 			++numUpdates;
+		tickRateCounter.endLoop();
 		}
 
 		int renderCount = 0;
 		if ((renderTime >= MS_PER_RENDER || updateCount > 0) && (stateHandler_->getNumStates() > 0)) {
+		fpsRateCounter.startLoop();
 			// Do interpolation calculations here, send to render
 			renderState(updateTime);	// change updateTime to the interpolation value once its calced.
 			++renderCount;
 			renderTime -= (MS_PER_RENDER == 0.0 ? renderTime : MS_PER_RENDER);
 			++numFrames;
+		fpsRateCounter.endLoop();
 		}
 
 		if (updateCount == 0 && renderCount == 0) {
@@ -114,6 +121,17 @@ void cEngine::mainLoop (void) {
 				SDL_Delay (sleepTime-1);
 			}
 		}
+		if (tickRateCounter.getTicks() >= 1000) {
+			std::cout << tickRateCounter.getRate() << "\t" << fpsRateCounter.getRate() << "\n";
+//			tickRate = numUpdates/tickRateCounter.getTicksAndClear();
+//			numUpdates = 0;
+//			std::cout << tickRate << "\t" << fpsRate << "\n";
+		}
+//		if (fpsRateCounter.getTicks() >= 1000) {
+//			fpsRate = numFrames/fpsRateCounter.getTicksAndClear();
+//			numFrames = 0;
+//			std::cout << tickRate << "\t" << fpsRate << "\n";
+//		}
 	}
 }
 
@@ -126,7 +144,7 @@ void cEngine::handleEvents (void) {
 void cEngine::updateState (double tickRate) {
 	auto currentState = stateHandler_->getState();
 	if (currentState != nullptr) {
-		void* interStateInfo = stateHandler_->getInterStateInfo();
+		void** interStateInfo = stateHandler_->getInterStateInfo();
 		stateHandler_->changeState(currentState->update(tickRate,interStateInfo));
 	}
 }

@@ -1,9 +1,11 @@
 #ifndef CNTRLKB_HPP
 #define CNTRLKB_HPP
 
+#include <algorithm>
 #include <forward_list>
 #include <map>
 #include <vector>
+
 #include <SDL2/SDL.h>
 
 template <class T>
@@ -14,6 +16,7 @@ class cCntrlKb {
 		void addCommand (T action, SDL_Keycode keyCode, bool repeatCommand=true, SDL_Keymod modCode=KMOD_NONE);
 		void addCommand (T action, std::vector<SDL_Keycode>& keyCodes, bool repeatCommand=true, SDL_Keymod modCode=KMOD_NONE);
 		void checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCommands);
+		void removeRepeatCommands (std::vector<T>* commands);
 	private:
 		void updateWatchKey (SDL_KeyboardEvent& key);
 
@@ -23,6 +26,7 @@ class cCntrlKb {
 			SDL_Keymod modcode_;
 		};
 
+		std::vector<T> prevCommands_;
 		std::vector<sCommandInfo*> commandList_;
 		std::map<SDL_Keycode,bool> kbWatchKeys_;
 		std::map<T,bool> nonRepeatCommands_;
@@ -59,12 +63,12 @@ void cCntrlKb<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, bool
 		nonRepeatCommands_[action] = false;
 }
 
-// Preventing repeated actions doesnt work as intended yet. It's either too
-// slow or doesnt trigger at all...still working on this feature
 template <class T>
 void cCntrlKb<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCommands) {
+	//Get the keyboard state
 	updateWatchKey(key);
 	returnCommands->clear();
+
 	for (const auto& commandItr : commandList_) {
 		if ((commandItr->modcode_^key.keysym.mod) == 0) {
 			bool isValidCommand = true;
@@ -90,6 +94,27 @@ void cCntrlKb<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCo
 			}
 		}
 	}
+}
+
+template <class T>
+void cCntrlKb<T>::removeRepeatCommands (std::vector<T>* commands) {
+	std::vector<T> tempCommandsList = *commands;
+	// Convert to list from vector
+	std::forward_list<T> commandList;
+	for (auto& commandItr : *commands)
+		commandList.push_front(commandItr);
+	for (const auto& mapItr : nonRepeatCommands_) {
+		for (auto& prevCommandItr : prevCommands_) {
+			if (mapItr.first == prevCommandItr) {
+				commandList.remove(prevCommandItr);
+			}
+		}
+	}
+	commands->clear();
+	for (auto& commandItr : commandList)
+		commands->push_back(commandItr);
+	prevCommands_.clear();
+	prevCommands_ = tempCommandsList;
 }
 
 template <class T>
