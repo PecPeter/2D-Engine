@@ -37,6 +37,7 @@ void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj, const c
 	else if (shapeType == eShapeType::POINT) {
 //		drawPoint(rend,...);
 	}
+	drawCentrPoint(rend,objPos,col);
 }
 
 void cCollDebugDrawer::drawStrL (SDL_Renderer* rend, TTF_Font* font,
@@ -101,7 +102,7 @@ void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 		vx[i] = pList.at(i).getX();
 		vy[i] = pList.at(i).getY();
 	}
-	filledPolygonRGBA(rend,vx,vy,pList.size(),col.getX(),col.getY(),
+	polygonRGBA(rend,vx,vy,pList.size(),col.getX(),col.getY(),
 			col.getZ(),alphaLevel_);
 	delete[] vx;
 	delete[] vy;
@@ -109,6 +110,17 @@ void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
 
 void cCollDebugDrawer::drawCircle (SDL_Renderer* rend, const cVector2& p,
 		const double& rad, const cVector3& col) {
-	filledCircleRGBA(rend,p.getX(),p.getY(),rad, col.getX(),col.getY(),
+	circleRGBA(rend,p.getX(),p.getY(),rad, col.getX(),col.getY(),
 			col.getZ(),alphaLevel_);
+}
+
+void cCollDebugDrawer::drawCross (SDL_Renderer* rend, const cVector2& p,
+		const double& l, const cVector3& col) {
+	drawLine(rend,cVector2(p.getX()-l/2.0,p.getY()),cVector2(p.getX()+l/2.0,p.getY()),col);
+	drawLine(rend,cVector2(p.getX(),p.getY()-l/2.0),cVector2(p.getX(),p.getY()+l/2.0),col);
+}
+void cCollDebugDrawer::drawCentrPoint (SDL_Renderer* rend, const cVector2& p,
+		const cVector3& col) {
+	drawCross(rend,p,6,col);
+	drawCircle(rend,p,2,col);
 }

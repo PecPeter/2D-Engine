@@ -35,6 +35,10 @@ class cCollDebugDrawer {
 				const cVector3& col);
 		void drawCircle (SDL_Renderer* rend, const cVector2& p,
 				const double& rad, const cVector3& col);
+		void drawCross (SDL_Renderer* rend, const cVector2& p,
+				const double& l, const cVector3& col);
+		void drawCentrPoint (SDL_Renderer* rend, const cVector2& p,
+				const cVector3& col);
 
 		int alphaLevel_; // This is not used when drawing strings
 //		typedef std::pair<eObjectType,eObjectState> colIndex;

@@ -121,6 +121,7 @@ void cEngine::mainLoop (void) {
 				SDL_Delay (sleepTime-1);
 			}
 		}
+		/*
 		if (tickRateCounter.getTicks() >= 1000) {
 			std::cout << tickRateCounter.getRate() << "\t" << fpsRateCounter.getRate() << "\n";
 //			tickRate = numUpdates/tickRateCounter.getTicksAndClear();
@@ -132,6 +133,7 @@ void cEngine::mainLoop (void) {
 //			numFrames = 0;
 //			std::cout << tickRate << "\t" << fpsRate << "\n";
 //		}
+*/
 	}
 }
 

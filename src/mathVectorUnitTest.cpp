@@ -48,7 +48,7 @@ void mathVectorUnitTest (void) {
 	v2.set(0,0) = 0;
 	v2.set(1,0) = -10;
 	cVector2 dir1(1,1),
-			 dir2(1,1);
+			 dir2(1,2);
 	std::cout << "\tIntersection point using pt1: " <<
 		v1 << "\n\tdir1: " << dir1 << "\n\tpt2: " <<
 		v2 << "\n\tdir2: " << dir2;

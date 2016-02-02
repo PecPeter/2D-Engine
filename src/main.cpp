@@ -48,7 +48,7 @@ class handler: public cStateHandler {
 };
 
 int main (void) {
-	
+/*
 	cEngine engine;
 	const int SCREEN_WIDTH = 640,
 		  SCREEN_HEIGHT = 480;
@@ -62,7 +62,7 @@ int main (void) {
 	engine.mainLoop();
 	engine.quit();
 
-/*	std::cout << "Matrix unit test:\n";
+*/	std::cout << "Matrix unit test:\n";
 	mathMatrixTest();
 	std::cout << "Vector unit test:\n";
 	mathVectorUnitTest();
@@ -78,5 +78,5 @@ int main (void) {
 	collDebugDrawerUnitTest();
 	std::cout << "Command handler unit test:\n";
 	commandHandlerUnitTest();
-*/	return 0;
+	return 0;
 }

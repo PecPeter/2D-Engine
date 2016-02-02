@@ -41,7 +41,7 @@ void collTestHandlerUnitTest (void) {
 		if (pair.getCollType() == eCollType::COLLISION) {
 			std::cout << "\nCollision Overlap:\n" << pair.getObjOverlap() << "\n";
 		}
-		if (dx == -0.123 && dy == -0.123)
+		if (dx == -0.1 && dy == -0.1)
 			runLoop = false;
 
 		// Render shapes
