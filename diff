@@ -1,0 +1,407 @@
+diff --git a/libsrc/collPair.hpp b/libsrc/collPair.hpp
+index 6a6b380..35c9f0c 100644
+--- a/libsrc/collPair.hpp
++++ b/libsrc/collPair.hpp
+@@ -23,7 +23,7 @@ class cCollPair {
+ 		eCollType getCollType (void);
+ 	private:
+ 		cCollObj* object1_, *object2_;
+-		cVector2 overlap_;
++		cVector2 overlap_; // Overlap if wrt what obj1 has to do to get out of collision
+ 		eCollType collType_;
+ };
+ 
+diff --git a/libsrc/collShape.cpp b/libsrc/collShape.cpp
+index 1c30943..aa235d0 100644
+--- a/libsrc/collShape.cpp
++++ b/libsrc/collShape.cpp
+@@ -17,17 +17,36 @@ double cCollAabb::getHH (void) const {
+ 	return hh_; 
+ }
+ 
++cCollLine::cCollLine (const cVector2& p1, const cVector2& p2):
++		cCollShape(eShapeType::LINE) {
++	cVector2 dv = p2-p1;
++	dir_ = vUnitVector(dv);
++}
++
++cCollLine::cCollLine (const cVector2& dir): cCollShape(eShapeType::LINE),
++	dir_(dir) {}
++
++cVector2 cCollLine::getDir (void) const {
++	return dir_;
++};
++
+ bool operator== (const cCollShape& lhs, const cCollShape& rhs) {
+ 	const eShapeType shape1 = lhs.getShapeType(),
+ 		  shape2 = rhs.getShapeType();
+ 	if (shape1 != shape2)
+ 		return false;
+ 	if (shape1 == eShapeType::AABB) {
+-		const cCollAabb& aabb1 = dynamic_cast<const cCollAabb&>(lhs);
+-		const cCollAabb& aabb2 = dynamic_cast<const cCollAabb&>(rhs);
++		const cCollAabb& aabb1 = static_cast<const cCollAabb&>(lhs);
++		const cCollAabb& aabb2 = static_cast<const cCollAabb&>(rhs);
+ 		if (aabb1.getHW() == aabb2.getHW() &&
+ 				aabb1.getHH() == aabb2.getHH())
+ 			return true;
+ 	}
++	if (shape1 == eShapeType::LINE) {
++		const cCollLine& line1 = static_cast<const cCollLine&>(lhs);
++		const cCollLine& line2 = static_cast<const cCollLine&>(rhs);
++		if (line1.getDir() == line2.getDir())
++			return true;
++	}
+ 	return false;
+ }
+diff --git a/libsrc/collShape.hpp b/libsrc/collShape.hpp
+index b191a61..db921ef 100644
+--- a/libsrc/collShape.hpp
++++ b/libsrc/collShape.hpp
+@@ -7,7 +7,8 @@
+ #include "mathVector.hpp"
+ 
+ enum class eShapeType {
+-	AABB
++	AABB,
++	LINE
+ };
+ 
+ class cCollShape {
+@@ -31,6 +32,22 @@ class cCollAabb : public cCollShape {
+ 			   hh_;
+ };
+ 
++class cCollLine : public cCollShape {
++	public:
++		//coll|no coll
++		//    |
++		//    |
++		//    |-> right normal
++		//    |
++		//    |
++		cCollLine (const cVector2& p1, const cVector2& p2);
++		cCollLine (const cVector2& dir);
++		cVector2 getDir (void) const;
++
++	private:
++		cVector2 dir_;
++};
++
+ bool operator== (const cCollShape& lhs, const cCollShape& rhs);
+ 
+ #endif
+diff --git a/libsrc/collTest.cpp b/libsrc/collTest.cpp
+index 882d260..b106f99 100644
+--- a/libsrc/collTest.cpp
++++ b/libsrc/collTest.cpp
+@@ -1,11 +1,15 @@
+ #include "collTest.hpp"
+ 
+-cCollTestHandler::cCollTestHandler (void): noColl_(1,1), contactColl_(0,0) {
++cCollTest::cCollTest (void): noColl_(1,1), contactColl_(0,0) {
+ 	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::AABB)] =
+-		&cCollTestHandler::collTestAabbAabb;
++		&cCollTest::collTestAabbAabb;
++	collTestMap_[collTestMapKey(eShapeType::AABB,eShapeType::LINE)] = 
++		&cCollTest::collTestAabbLine;
++	collTestMap_[collTestMapKey(eShapeType::LINE,eShapeType::AABB)] = 
++		&cCollTest::collTestLineAabb;
+ }
+ 
+-void cCollTestHandler::testPair (cCollPair& collPair) {
++void cCollTest::testPair (cCollPair& collPair) {
+ 	const cCollObj* obj1 = collPair.object1(),
+ 		  *obj2 = collPair.object2();
+ 	eShapeType shape1 = obj1->getCollShape()->getShapeType(),
+@@ -22,7 +26,7 @@ void cCollTestHandler::testPair (cCollPair& collPair) {
+ 	collPair.setObjOverlap(collVector);
+ }
+ 
+-cVector2 cCollTestHandler::collTestAabbAabb (const cCollObj& obj1,
++cVector2 cCollTest::collTestAabbAabb (const cCollObj& obj1,
+ 		const cCollObj& obj2) {
+ 	cVector2 dv(obj2.getObjPos()-obj1.getObjPos());
+ 	const cCollAabb* shapeAabb1 = static_cast<const cCollAabb*>(obj1.getCollShape());
+@@ -48,3 +52,37 @@ cVector2 cCollTestHandler::collTestAabbAabb (const cCollObj& obj1,
+ 	}
+ 	return noColl_;
+ }
++
++cVector2 cCollTest::collTestAabbLine (const cCollObj& aabb,
++		const cCollObj& line) {
++	//Determine the angle
++	cVector2 lineDir =
++		static_cast<const cCollLine*>(line.getCollShape())->getDir();
++	double trigVal = std::cos(vAngleRad(lineDir,cVector2(1,0)));
++//	double angleRad = vAngleRad(lineDir,cVector2(1,0));
++	//Determine the length of the rotated half width
++	const cCollAabb* shapeAabb =
++		static_cast<const cCollAabb*>(aabb.getCollShape());
++//	double trigVal = std::cos(angleRad
++	double rotHw = shapeAabb->getHW()*trigVal+shapeAabb->getHH()*trigVal;
++	
++	//Determine distance between points
++	cVector2 intrsctPt = intersctPt(aabb.getObjPos(),vNormal(lineDir),
++			line.getObjPos(),lineDir),
++			 dv = intrsctPt-aabb.getObjPos();
++	if (vMagnitude(dv) < rotHw)
++		return cVector2(dv-vUnitVector(dv)*rotHw);
++	else if (vMagnitude(dv) == rotHw)
++		return contactColl_;
++	return noColl_;
++}
++
++cVector2 cCollTest::collTestLineAabb (const cCollObj& line,
++		const cCollObj& aabb) {
++	return collTestAabbLine(aabb,line);
++}
++
++cVector2 cCollTest::collTestLineLine (const cCollObj& line1,
++		const cCollObj& line2) {
++	return noColl_;
++}
+diff --git a/libsrc/collTest.hpp b/libsrc/collTest.hpp
+index 017da36..af148aa 100644
+--- a/libsrc/collTest.hpp
++++ b/libsrc/collTest.hpp
+@@ -10,19 +10,30 @@
+ #include "collObject.hpp"
+ #include "collPair.hpp"
+ 
+-class cCollTestHandler {
++class cCollTest {
+ 	public:
+-		cCollTestHandler (void);
++		cCollTest (void);
+ 		void testPair (cCollPair& collPair);
+ 	private:
++		// These collision test should always return what object
++		// 1 has to do to get out of the collision
++
+ 		cVector2 collTestAabbAabb (const cCollObj& aabb1,
+ 				const cCollObj& aabb2);
+ 
++		// THESE NEED TO BE TESTED
++		cVector2 collTestAabbLine (const cCollObj& aabb,
++				const cCollObj& line);
++		cVector2 collTestLineAabb (const cCollObj& line,
++				const cCollObj& aabb);
++		cVector2 collTestLineLine (const cCollObj& line1, //Returns noColl_
++				const cCollObj& line2);					  //No need to test
++
+ 		cVector2 noColl_,
+ 				 contactColl_;
+ 
+ 		typedef std::pair<eShapeType,eShapeType> collTestMapKey;
+-		typedef cVector2 (cCollTestHandler::*collTestMapPtr)
++		typedef cVector2 (cCollTest::*collTestMapPtr)
+ 			(const cCollObj&,const cCollObj&);
+ 		std::map <collTestMapKey,collTestMapPtr> collTestMap_;
+ };
+diff --git a/libsrc/collWorld.cpp b/libsrc/collWorld.cpp
+index 1b5c7f8..3b76eb0 100644
+--- a/libsrc/collWorld.cpp
++++ b/libsrc/collWorld.cpp
+@@ -1,10 +1,12 @@
+ #include "collWorld.hpp"
+ 
+ cCollWorld::cCollWorld (const cCollBroadphase* broadphase):
+-	broadphase_(broadphase), testHandler_(new cCollTestHandler()),
++	broadphase_(broadphase), testHandler_(new cCollTest()),
+ 	debugDrawer_(nullptr) {}
+ 
+ cCollWorld::~cCollWorld (void) {
++	for (auto itr : collObjList_)
++		delete itr;
+ 	collObjList_.clear();
+ 	collPairList_.clear();
+ 	delete testHandler_;
+@@ -21,12 +23,17 @@ void cCollWorld::removeObject (void) {
+ 
+ }
+ */
+-void cCollWorld::checkColls (void) {
++std::deque<cCollPair>* cCollWorld::checkColls (void) {
++	collPairList_.empty();
+ 	// Run broadphase
+ 	broadphase_->genList(collPairList_,collObjList_);
+ 	// Run narrow phase
+ 	for (auto qItr : collPairList_)
+ 		testHandler_->testPair(qItr);
++	for (auto qItr : collPairList_)
++		if (qItr.getCollType() == eCollType::NO_COLLISION)
++			collPairList_.pop_front();
++	return &collPairList_;
+ }
+ 
+ void cCollWorld::setDebugDraw (cCollDebugDrawer* debugDrawer) {
+diff --git a/libsrc/collWorld.hpp b/libsrc/collWorld.hpp
+index 28c5e62..0ef44c8 100644
+--- a/libsrc/collWorld.hpp
++++ b/libsrc/collWorld.hpp
+@@ -21,7 +21,7 @@ class cCollWorld {
+ 		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
+ 				eObjType objType=eObjType::STATIC);
+ //		void removeObject (void);
+-		void checkColls (void);
++		std::deque<cCollPair>* checkColls (void);
+ 
+ 		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
+ 		void drawDebugWorld (SDL_Renderer* renderer);
+@@ -29,7 +29,7 @@ class cCollWorld {
+ 		std::vector<cCollObj*> collObjList_;
+ 		std::deque<cCollPair> collPairList_;
+ 		const cCollBroadphase* broadphase_;
+-		cCollTestHandler* testHandler_;
++		cCollTest* testHandler_;
+ 		cCollDebugDrawer* debugDrawer_;
+ };
+ 
+diff --git a/libsrc/engine.cpp b/libsrc/engine.cpp
+index 7b3cd94..3e2c59b 100644
+--- a/libsrc/engine.cpp
++++ b/libsrc/engine.cpp
+@@ -3,8 +3,6 @@
+ cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),MS_PER_UPDATE((1.f/120.f)*1000.f),
+ 	MS_PER_RENDER((1.f/250.f)*1000.f),MAX_UPDATE_COUNT(10),stateHandler_(nullptr) {}
+ 
+-cEngine::~cEngine (void) {}
+-
+ bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle, cStateHandler* stateHandler) {
+ 	return init (screenWidth,screenHeight,std::string(winTitle),stateHandler);
+ }
+diff --git a/libsrc/engine.hpp b/libsrc/engine.hpp
+index fff36fc..d0214f5 100644
+--- a/libsrc/engine.hpp
++++ b/libsrc/engine.hpp
+@@ -15,7 +15,6 @@
+ class cEngine {
+ 	public:
+ 		cEngine (void);
+-		~cEngine (void);
+ 
+ 		bool init (int screenWidth, int screenHeight, const char* winTitle,
+ 				cStateHandler* stateHandler);
+diff --git a/libsrc/mathVector.cpp b/libsrc/mathVector.cpp
+index d8876ba..ed72c46 100644
+--- a/libsrc/mathVector.cpp
++++ b/libsrc/mathVector.cpp
+@@ -132,3 +132,31 @@ cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis) {
+ 	cVector2 unitProjAxis = vUnitVector(projAxis);
+ 	return cVector2((vDotProd(projVec,unitProjAxis)*unitProjAxis));
+ }
++
++cVector2 intrsctPt (const cVector2& pt1, const cVector2& lineDir1,
++		const cVector2& pt2, const cVector2& lineDir2) {
++	double m1, m2;
++	lineDir1.getX() == 0 ?
++		m1 = 99999999999*lineDir1.getY() :
++		m1 = lineDir1.getY()/lineDir1.getX();
++	lineDir2.getX() == 0 ?
++		m2 = 99999999999*lineDir2.getY() :
++		m2 = lineDir2.getY()/lineDir2.getX();
++	// if m1 == m2, throw an error -> no intersection
++	// or assert
++	// same thing for infinite number of intersection points
++
++	// b1: intercept for line equation y = mx + b1
++	// b2: intercept for normal line equation y = nx + b2
++	double b1 = pt1.getY()-m1*pt1.getX(),
++		   b2 = pt2.getY()-m2*pt2.getX(),
++		   xInt = (b2-b1)/(m1-m2),
++		   yInt = m1*xInt+b1;
++	return cVector2(xInt,yInt);
++}
++
++double distPtToLine (const cVector2& pt, const cVector2& lineDir,
++		const cVector2& ptLine) {
++	cVector2 normDir = vNormal(lineDir);
++	return vMagnitude(intrsctPt(pt,normDir,ptLine,lineDir));
++}
+diff --git a/libsrc/mathVector.hpp b/libsrc/mathVector.hpp
+index ffca79a..30a7bbc 100644
+--- a/libsrc/mathVector.hpp
++++ b/libsrc/mathVector.hpp
+@@ -1,6 +1,7 @@
+ #ifndef MATHVECTOR_HPP
+ #define MATHVECTOR_HPP
+ 
++#include <cassert>
+ #include <cmath>
+ #include "mathMatrix.hpp"
+ 
+@@ -41,4 +42,9 @@ cVector2 vAbsolute (const cVector2& v1);
+ cVector2 vNormal (const cVector2& v1);
+ cVector2 vVecProj (const cVector2& projVec, const cVector2& projAxis);
+ 
++cVector2 intersctPt (const cVector2& pt1, const cVector2& lineDir1,
++		const cVector2& pt2, const cVector2& lineDir2);
++double distPtToLine (const cVector2& pt, const cVector2& lineDir,
++		const cVector2& ptLine);
++
+ #endif
+diff --git a/src/collTestHandlerUnitTest.cpp b/src/collTestHandlerUnitTest.cpp
+index bd53d1d..cd6d6bb 100644
+--- a/src/collTestHandlerUnitTest.cpp
++++ b/src/collTestHandlerUnitTest.cpp
+@@ -5,7 +5,7 @@ void collTestHandlerUnitTest (void) {
+ 	cCollAabb shape1(5,5), shape2(10,10);
+ 	cCollObj obj1(pos1,&shape1), obj2(pos2,&shape2);
+ 	cCollPair pair(&obj1,&obj2);
+-	cCollTestHandler testHandler;
++	cCollTest testHandler;
+ 	testHandler.testPair(pair);
+ 	obj1.translate(35,0);
+ 	testHandler.testPair(pair);
+diff --git a/src/commandTestState.hpp b/src/commandTestState.hpp
+index 4714b9a..bf02c8d 100644
+--- a/src/commandTestState.hpp
++++ b/src/commandTestState.hpp
+@@ -5,7 +5,7 @@
+ #include <SDL2/SDL.h>
+ 
+ #include "gameState.hpp"
+-#include "commandHandler.hpp"
++#include "cntrlKb.hpp"
+ #include "collWorld.hpp"
+ #include "collShape.hpp"
+ #include "collObject.hpp"
+@@ -33,7 +33,7 @@ class cCommandTestState: public cGameState {
+ 		};
+ 
+ 		std::vector<eKbAction> kbActions_;
+-		cKbCommandHandler<eKbAction> kbCommandHandler_;
++		cCntrlKb<eKbAction> kbCommandHandler_;
+ 		SDL_Rect rect;
+ };
+ 
+diff --git a/src/main.cpp b/src/main.cpp
+index 7f5ee2a..fa8eb9d 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -13,6 +13,7 @@
+ #include "collTestHandlerUnitTest.hpp"
+ #include "collWorldUnitTest.hpp"
+ #include "collDebugDrawerUnitTest.hpp"
++#include "commandHandlerUnitTest.hpp"
+ 
+ class handler: public cStateHandler {
+ 	public:
+@@ -60,7 +61,7 @@ int main (void) {
+ 	}
+ 	engine.mainLoop();
+ 	engine.quit();
+-*/	
++*/
+ 	std::cout << "Matrix unit test:\n";
+ 	mathMatrixTest();
+ 	std::cout << "Vector unit test:\n";
+@@ -75,5 +76,7 @@ int main (void) {
+ 	collWorldUnitTest();
+ 	std::cout << "Collision world debug drawer unit test:\n";
+ 	collDebugDrawerUnitTest();
++	std::cout << "Command handler unit test:\n";
++	commandHandlerUnitTest();
+ 	return 0;
+ }

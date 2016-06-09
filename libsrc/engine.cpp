@@ -1,13 +1,17 @@
 #include "engine.hpp"
 
-cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),stateHandler_(nullptr) {}
+cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),
+	stateHandler_(nullptr), debugInfoFont_(nullptr) {}
 
-bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle, cStateHandler* stateHandler) {
+bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle,
+		cStateHandler* stateHandler) {
 	return init (screenWidth,screenHeight,std::string(winTitle),stateHandler);
 }
 
 bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
 		cStateHandler* stateHandler) {
+	SCREEN_WIDTH = screenWidth;
+	SCREEN_HEIGHT = screenHeight;
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		std::cerr << "SDL could not be initialized, within cEngine::init()" <<
 			"\nSDL_Error: " << SDL_GetError() << std::endl;
@@ -19,14 +23,16 @@ bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
 		return false;
 	}
 	window_ = SDL_CreateWindow (winTitle.c_str(), SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT,
+			SDL_WINDOW_SHOWN);
 	if (window_ == nullptr) {
 		std::cerr << "window could not be created." <<
 			"\nSDL_Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
-	renderer_ = SDL_CreateRenderer (window_,-1,SDL_RENDERER_ACCELERATED |
-			SDL_RENDERER_PRESENTVSYNC);
+//	renderer_ = SDL_CreateRenderer (window_,-1,SDL_RENDERER_ACCELERATED |
+//			SDL_RENDERER_PRESENTVSYNC);
+	renderer_ = SDL_CreateRenderer (window_,-1,SDL_RENDERER_ACCELERATED);
 	if (renderer_ == nullptr) {
 		std::cerr << "renderer could not be created." << 
 			"\nSDL_Error: " << SDL_GetError() << std::endl;
@@ -40,6 +46,12 @@ bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
 	if (TTF_Init() == -1) {
 		std::cerr << "SDL_TTF could not be initialized." << 
 			"\nTTF_Error: " << TTF_GetError() << std::endl;
+		return false;
+	}
+	debugInfoFont_ = TTF_OpenFont("./assets/fonts/TerminusTTF.ttf",12);
+	if (debugInfoFont_ == nullptr) {
+		std::cerr << "debugInfoFont is null, within cEngine::init."
+				  << std::endl;
 		return false;
 	}
 	if (stateHandler == nullptr) {
@@ -72,68 +84,36 @@ void cEngine::quit (void) {
 }
 
 void cEngine::mainLoop (void) {
-	// SDL_GetTicks() returns the time since initialization in milliseconds
-	double prevTime = SDL_GetTicks(),
-		   curTime,
-		   dTime,
-		   updateTime = 0.0,
-		   renderTime = 0.0;
+	Uint32 nextTick = SDL_GetTicks();
+	int loops;
+	double interpolation;
 	double numUpdates = 0,
 		   numFrames = 0;
-	cTickCounter tickRateCounter(1000),
-				 fpsRateCounter(1000);
-	double tickRate = 0, fpsRate = 0;
+	cTickCounter rateCounter;
+
 	while (stateHandler_->getNumStates() > 0) {
 		//As long as there is a state on the list, don't end the game
-		curTime = SDL_GetTicks();
-		dTime = curTime-prevTime;
-		prevTime = curTime;
-		updateTime += dTime;
-		renderTime += dTime;
-
-		int updateCount = 0;
-		while (updateTime >= MS_PER_UPDATE && updateCount < MAX_UPDATE_COUNT &&
-				(stateHandler_->getNumStates() > 0)) {
-		tickRateCounter.startLoop();
+		rateCounter.startLoop();
+		loops = 0;
+		while (nextTick < SDL_GetTicks() && loops < MAX_UPDATE_COUNT) {
 			handleEvents();
 			updateState(TICK_RATE);
-			updateTime -= MS_PER_UPDATE;
-			++updateCount;
-			++numUpdates;
-		tickRateCounter.endLoop();
+			nextTick += MS_PER_UPDATE;
+			++loops;
 		}
+		numUpdates += loops;
 
-		int renderCount = 0;
-		if ((renderTime >= MS_PER_RENDER || updateCount > 0) && (stateHandler_->getNumStates() > 0)) {
-		fpsRateCounter.startLoop();
-			// Do interpolation calculations here, send to render
-			renderState(updateTime);	// change updateTime to the interpolation value once its calced.
-			++renderCount;
-			renderTime -= (MS_PER_RENDER == 0.0 ? renderTime : MS_PER_RENDER);
-			++numFrames;
-		fpsRateCounter.endLoop();
+		interpolation = double(SDL_GetTicks()+MS_PER_UPDATE-nextTick)/
+			MS_PER_UPDATE;
+		renderState(interpolation);
+		++numFrames;
+		if (rateCounter.getTicks() >= 200) {
+			double dt = rateCounter.getTicksAndClear();
+			CALCED_TICK_RATE = double(numUpdates)/(dt/1000.0);
+			CALCED_FRAME_RATE = double(numFrames)/(dt/1000.0);
+			numUpdates = numFrames = 0;
 		}
-
-		if (updateCount == 0 && renderCount == 0) {
-			double actualTime = updateTime+(SDL_GetTicks()-curTime);
-			double sleepTime = (MS_PER_UPDATE-actualTime);
-			if (sleepTime > 1) {
-				SDL_Delay (sleepTime-1);
-			}
-		}
-		/*
-		if (tickRateCounter.getTicks() >= 1000) {
-			std::cout << tickRateCounter.getRate() << "\t" << fpsRateCounter.getRate() << "\n";
-//			tickRate = numUpdates/tickRateCounter.getTicksAndClear();
-//			numUpdates = 0;
-//			std::cout << tickRate << "\t" << fpsRate << "\n";
-		}
-//		if (fpsRateCounter.getTicks() >= 1000) {
-//			fpsRate = numFrames/fpsRateCounter.getTicksAndClear();
-//			numFrames = 0;
-//			std::cout << tickRate << "\t" << fpsRate << "\n";
-//		}
-*/
+		rateCounter.endLoop();
 	}
 }
 
@@ -155,6 +135,13 @@ void cEngine::renderState (double timeLag) {
 	auto currentState = stateHandler_->getState();
 	if (currentState != nullptr) {
 		currentState->render(renderer_,timeLag);
+
+		// Add something to toggle this, ie. "Show fps..."
+		std::string debugText = "Tick Rate = " + std::to_string(CALCED_TICK_RATE)
+			+ "FPS = " + std::to_string(CALCED_FRAME_RATE);
+		drawStrC(renderer_,debugInfoFont_,cVector2(200,
+					200),debugText.c_str(),cVector4(255,255,255,255));
+
 		SDL_RenderPresent(renderer_);
 		SDL_SetRenderDrawColor(renderer_,0,0,0,255);
 		SDL_RenderClear(renderer_);

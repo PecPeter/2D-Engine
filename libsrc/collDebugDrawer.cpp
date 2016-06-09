@@ -1,15 +1,16 @@
 #include "collDebugDrawer.hpp"
 
-cCollDebugDrawer::cCollDebugDrawer (int alpha): alphaLevel_(alpha) {
-	colMap_[eObjType::STATIC] = cVector3(255,0,0);
-	colMap_[eObjType::DYNAMIC] = cVector3(0,255,0);
+cCollDebugDrawer::cCollDebugDrawer (int alpha) {
+	colMap_[eObjType::STATIC] = cVector4(alpha,255,0,0);
+	colMap_[eObjType::DYNAMIC] = cVector4(alpha,0,255,0);
 }
 
 void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj) {
 	drawObj(rend,obj,colMap_.at(obj.getObjType()));
 }
 
-void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
+void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj,
+		const cVector4& col) {
 	cVector2 objPos = obj.getObjPos();
 	eShapeType shapeType = obj.getCollShape()->getShapeType();
 	
@@ -32,95 +33,70 @@ void cCollDebugDrawer::drawObj (SDL_Renderer* rend, const cCollObj& obj, const c
 		drawCircle(rend,objPos,obj.getCollShape()->getData().at(0).getX(),col);
 	}
 	else if (shapeType == eShapeType::LINE) {
-//		drawLine(rend...);
+		cVector2 p1,
+				 p2,
+				 tmpPoint;
+		bool isP1Set = false,
+			 isP2Set = false;
+		cVector2 dir = obj.getCollShape()->getData().at(0);
+		dir = rotnTransform(obj.getRotation())*dir;
+		// Points for the asymptotes
+		cVector2 aP1(0.0,0.0),
+				 aP2(0.0,SCREEN_HEIGHT),
+				 aP3(SCREEN_WIDTH,0.0);
+		// Directions for the asymptotes
+		cVector2 dirX(1.0,0.0),
+				 dirY(0.0,1.0);
+		if(lineIntersection(objPos,dir,aP1,dirY,tmpPoint) == true) { 
+			if (isWithinRange(0.0,SCREEN_WIDTH,tmpPoint.getX()) == true &&
+					isWithinRange(0.0,SCREEN_HEIGHT,tmpPoint.getY()) == true) {
+				p1 = tmpPoint;
+				isP1Set = true;
+			}
+		}
+		if(lineIntersection(objPos,dir,aP1,dirX,tmpPoint) == true) { 
+			if (isWithinRange(0.0,SCREEN_WIDTH,tmpPoint.getX()) == true &&
+					isWithinRange(0.0,SCREEN_HEIGHT,tmpPoint.getY()) == true) {
+				if (isP1Set == false) {
+					p1 = tmpPoint;
+					isP1Set = true;
+				}
+				else if (p1 != tmpPoint) {
+					p2 = tmpPoint;
+					isP2Set = true;
+				}
+			}
+		}
+		if(lineIntersection(objPos,dir,aP2,dirX,tmpPoint) == true) { 
+			if (isWithinRange(0.0,SCREEN_WIDTH,tmpPoint.getX()) == true &&
+					isWithinRange(0.0,SCREEN_HEIGHT,tmpPoint.getY()) == true) {
+				if (isP1Set == false) {
+					p1 = tmpPoint;
+					isP1Set = true;
+				}
+				else if (isP2Set == false && p1 != tmpPoint) {
+					p2 = tmpPoint;
+					isP2Set = true;
+				}
+			}
+		}
+		if(lineIntersection(objPos,dir,aP3,dirY,tmpPoint) == true) { 
+			if (isWithinRange(0.0,SCREEN_WIDTH,tmpPoint.getX()) == true &&
+					isWithinRange(0.0,SCREEN_HEIGHT,tmpPoint.getY()) == true) {
+				if (isP1Set == false) {
+					p1 = tmpPoint;
+					isP1Set = true;
+				}
+				else if (isP2Set == false && p1 != tmpPoint) {
+					p2 = tmpPoint;
+					isP2Set = true;
+				}
+			}
+		}
+		drawLine(rend,p1,p2,col);
 	}
 	else if (shapeType == eShapeType::POINT) {
-//		drawPoint(rend,...);
+		drawPoint(rend,objPos,col);
 	}
 	drawCentrPoint(rend,objPos,col);
-}
-
-void cCollDebugDrawer::drawStrL (SDL_Renderer* rend, TTF_Font* font,
-		const cVector2& p, const char* text, const cVector3& col) {
-	SDL_Color textColor;
-	textColor.a = 255;
-	textColor.r = col.getX();
-	textColor.g = col.getY();
-	textColor.b = col.getZ();
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text,textColor);
-	if (textSurface != nullptr) {
-		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(rend,
-				textSurface);
-		SDL_FreeSurface(textSurface);
-		SDL_Rect renderRect;
-		renderRect.x = p.getX();
-		renderRect.y = p.getY();
-		SDL_QueryTexture(textTexture,NULL,NULL,&renderRect.w,&renderRect.h);
-		SDL_RenderCopy(rend,textTexture,NULL,&renderRect);
-		SDL_DestroyTexture(textTexture);
-	}
-}
-
-void cCollDebugDrawer::drawStrR (SDL_Renderer* rend, TTF_Font* font,
-		const cVector2& p, const char* text, const cVector3& col) {
-	SDL_Color textColor;
-	textColor.a = 255;
-	textColor.r = col.getX();
-	textColor.g = col.getY();
-	textColor.b = col.getZ();
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font,text,textColor);
-	if (textSurface != nullptr) {
-		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(rend,
-				textSurface);
-		SDL_FreeSurface(textSurface);
-		SDL_Rect renderRect;
-		SDL_QueryTexture(textTexture,NULL,NULL,&renderRect.w,&renderRect.h);
-		renderRect.x = p.getX()-renderRect.w;
-		renderRect.y = p.getY();
-		SDL_RenderCopy(rend,textTexture,NULL,&renderRect);
-		SDL_DestroyTexture(textTexture);
-	}
-}
-
-void cCollDebugDrawer::drawPoint (SDL_Renderer* rend, const cVector2& p,
-		const cVector3& col) {
-	pixelRGBA(rend,p.getX(),p.getY(),col.getX(),col.getY(),
-			col.getZ(),alphaLevel_);
-}
-
-void cCollDebugDrawer::drawLine (SDL_Renderer* rend, const cVector2& p1,
-		const cVector2& p2, const cVector3& col) {
-	lineRGBA(rend,p1.getX(),p1.getY(),p2.getX(),p2.getY(),
-			col.getX(),col.getY(),col.getZ(),alphaLevel_);
-}
-
-void cCollDebugDrawer::drawPoly (SDL_Renderer* rend,
-		const std::vector<cVector2>& pList, const cVector3& col) {
-	Sint16* vx = new Sint16[pList.size()];
-	Sint16* vy = new Sint16[pList.size()];
-	for (unsigned int i = 0; i < pList.size(); ++i) {
-		vx[i] = pList.at(i).getX();
-		vy[i] = pList.at(i).getY();
-	}
-	polygonRGBA(rend,vx,vy,pList.size(),col.getX(),col.getY(),
-			col.getZ(),alphaLevel_);
-	delete[] vx;
-	delete[] vy;
-}
-
-void cCollDebugDrawer::drawCircle (SDL_Renderer* rend, const cVector2& p,
-		const double& rad, const cVector3& col) {
-	circleRGBA(rend,p.getX(),p.getY(),rad, col.getX(),col.getY(),
-			col.getZ(),alphaLevel_);
-}
-
-void cCollDebugDrawer::drawCross (SDL_Renderer* rend, const cVector2& p,
-		const double& l, const cVector3& col) {
-	drawLine(rend,cVector2(p.getX()-l/2.0,p.getY()),cVector2(p.getX()+l/2.0,p.getY()),col);
-	drawLine(rend,cVector2(p.getX(),p.getY()-l/2.0),cVector2(p.getX(),p.getY()+l/2.0),col);
-}
-void cCollDebugDrawer::drawCentrPoint (SDL_Renderer* rend, const cVector2& p,
-		const cVector3& col) {
-	drawCross(rend,p,6,col);
-	drawCircle(rend,p,2,col);
 }

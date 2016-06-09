@@ -3,6 +3,7 @@
 #include "gameState.hpp"
 #include "stateHandler.hpp"
 #include "engine.hpp"
+#include "engineMetrics.hpp"
 #include "gameStateTypes.hpp"
 #include "commandTestState.hpp"
 
@@ -48,21 +49,21 @@ class handler: public cStateHandler {
 };
 
 int main (void) {
-/*
+
 	cEngine engine;
-	const int SCREEN_WIDTH = 640,
-		  SCREEN_HEIGHT = 480;
+	setSettings(60,200,10);
+
 	char title[] = "Space Game";
 	handler* sH = new handler;
 
-	if (engine.init (SCREEN_WIDTH,SCREEN_HEIGHT,title,sH) == false) {
+	if (engine.init (640,480,title,sH) == false) {
 		std::cerr << "Could not initialize engine properly. Now exiting." << std::endl;
 		return 1;
 	}
-	engine.mainLoop();
+//	engine.mainLoop();
 	engine.quit();
 
-*/	std::cout << "Matrix unit test:\n";
+/*	std::cout << "Matrix unit test:\n";
 	mathMatrixTest();
 	std::cout << "Vector unit test:\n";
 	mathVectorUnitTest();
@@ -74,9 +75,9 @@ int main (void) {
 	collTestHandlerUnitTest();
 	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-	std::cout << "Collision world debug drawer unit test:\n";
+*/	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
-	std::cout << "Command handler unit test:\n";
-	commandHandlerUnitTest();
+//	std::cout << "Command handler unit test:\n";
+//	commandHandlerUnitTest();
 	return 0;
 }

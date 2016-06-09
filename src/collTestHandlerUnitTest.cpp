@@ -9,9 +9,9 @@ void collTestHandlerUnitTest (void) {
 	SDL_Renderer* renderer = SDL_CreateRenderer(window,-1,
 			SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	cVector3 red(255,0,0),
-			 green(0,255,0),
-			 blue(0,0,255);
+	cVector4 red(255,255,0,0),
+			 green(255,0,255,0),
+			 blue(255,0,0,255);
 
 	cVector2 pos1(150,200), pos2(200,200);
 	cCollAabb shape1(5,20), shape2(50,5);

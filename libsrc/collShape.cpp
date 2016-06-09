@@ -21,6 +21,11 @@ const std::vector<cVector2> cCollShape::getData (void) const {
 	return data_;
 }
 
+cCollPoint::cCollPoint (void) : cCollShape(eShapeType::POINT,0) {}
+
+cCollLine::cCollLine (double px1, double py1, double px2, double py2) :
+	cCollLine(cVector2(px2-px1,py2-py1)) {}
+
 cCollLine::cCollLine (const cVector2& p1, const cVector2& p2):
 	cCollLine(cVector2(p2-p1)) {}
 
