@@ -1,8 +1,9 @@
 #include "collObject.hpp"
 
 cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
-		eObjType objType, void* usrPtr): pos_(pos),rotnRad_(0.0),shape_(shape),
-		objType_(objType), objMask_(DEFAULT_OBJMASK), collCallback_(nullptr), usrPtr_(usrPtr) {}
+		eObjType objType, void* usrPtr): pos_(pos), rotnRad_(0.0),
+		objType_(objType), objMask_(DEFAULT_OBJMASK),
+		collCallback_(nullptr), usrPtr_(usrPtr) {}
 
 cCollObj::~cCollObj (void) {}
 
@@ -35,8 +36,8 @@ const double cCollObj::getRotation (void) const {
 	return rotnRad_;
 }
 
-const cCollShape* cCollObj::getCollShape (void) const {
-	return shape_;
+const collShapeNodeCont cCollObj::getCollShape (void) const {
+	return shapeNodeList_;
 }
 
 eObjType cCollObj::getObjType (void) const {
