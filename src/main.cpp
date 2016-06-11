@@ -60,7 +60,7 @@ int main (void) {
 		std::cerr << "Could not initialize engine properly. Now exiting." << std::endl;
 		return 1;
 	}
-//	engine.mainLoop();
+	engine.mainLoop();
 	engine.quit();
 
 /*	std::cout << "Matrix unit test:\n";

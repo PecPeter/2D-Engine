@@ -84,13 +84,19 @@ void cEngine::quit (void) {
 }
 
 void cEngine::mainLoop (void) {
-	Uint32 nextTick = SDL_GetTicks();
 	int loops;
 	double interpolation;
 	double numUpdates = 0,
 		   numFrames = 0;
 	cTickCounter rateCounter;
 
+	TICK_RATE = 60;
+	MS_PER_UPDATE = 1000.0/TICK_RATE;
+	MAX_UPDATE_COUNT = 10;
+	FRAME_RATE = 200;
+	MS_PER_RENDER = 1000.0/FRAME_RATE;
+	Uint32 nextTick = SDL_GetTicks();
+	Uint32 lastRender = SDL_GetTicks();
 	while (stateHandler_->getNumStates() > 0) {
 		//As long as there is a state on the list, don't end the game
 		rateCounter.startLoop();
@@ -100,13 +106,19 @@ void cEngine::mainLoop (void) {
 			updateState(TICK_RATE);
 			nextTick += MS_PER_UPDATE;
 			++loops;
+			++numUpdates;
 		}
-		numUpdates += loops;
 
-		interpolation = double(SDL_GetTicks()+MS_PER_UPDATE-nextTick)/
-			MS_PER_UPDATE;
+		interpolation = double(SDL_GetTicks()+MS_PER_UPDATE-nextTick)
+			/MS_PER_UPDATE;
 		renderState(interpolation);
 		++numFrames;
+
+		while (SDL_GetTicks() < lastRender+MS_PER_RENDER) {
+			SDL_Delay((lastRender+MS_PER_RENDER)-SDL_GetTicks());
+		}
+		lastRender = SDL_GetTicks();
+
 		if (rateCounter.getTicks() >= 200) {
 			double dt = rateCounter.getTicksAndClear();
 			CALCED_TICK_RATE = double(numUpdates)/(dt/1000.0);
