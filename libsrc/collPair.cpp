@@ -1,7 +1,7 @@
 #include "collPair.hpp"
 
-cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
-		object1_(nullptr), object2_(nullptr), collType_(eCollType::NO_COLLISION) {
+cCollPair::cCollPair (std::shared_ptr<cCollObj> object1,
+		std::shared_ptr<cCollObj> object2) : collType_(eCollType::NO_COLLISION) {
 	eObjType obj1Type = object1->getObjType(),
 			 obj2Type = object2->getObjType();
 	if (obj1Type == eObjType::STATIC && obj2Type == eObjType::DYNAMIC) {
@@ -22,11 +22,11 @@ cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 
 cCollPair::~cCollPair (void) {}
 
-cCollObj* cCollPair::obj1 (void) const {
+std::weak_ptr<cCollObj> cCollPair::obj1 (void) const {
 	return object1_;
 }
 
-cCollObj* cCollPair::obj2 (void) const {
+std::weak_ptr<cCollObj> cCollPair::obj2 (void) const {
 	return object2_;
 }
 

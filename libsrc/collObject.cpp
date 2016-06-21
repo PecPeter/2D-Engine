@@ -1,9 +1,11 @@
 #include "collObject.hpp"
 
-cCollObj::cCollObj (const cVector2& pos, const cCollShape* shape,
-		eObjType objType, void* usrPtr): pos_(pos), rotnRad_(0.0),
-		objType_(objType), objMask_(DEFAULT_OBJMASK),
-		collCallback_(nullptr), usrPtr_(usrPtr) {}
+cCollObj::cCollObj (const cVector2& pos,
+		const std::shared_ptr<const cCollShape>& genShape, eObjType objType,
+		const std::shared_ptr<const sCollShapeNode>& accShape, void* usrPtr) :
+		pos_(pos), rotnRad_(0.0), genCollShape_(genShape), 
+		accCollShape_(accShape), objType_(objType),
+		objMask_(DEFAULT_OBJMASK), collCallback_(nullptr), usrPtr_(usrPtr) {}
 
 cCollObj::~cCollObj (void) {}
 
@@ -36,8 +38,13 @@ const double cCollObj::getRotation (void) const {
 	return rotnRad_;
 }
 
-const collShapeNodeCont cCollObj::getCollShape (void) const {
-	return shapeNodeList_;
+const std::weak_ptr<const cCollShape>& cCollObj::getGenCollShape (void) const {
+	return genCollShape_;
+}
+
+const std::weak_ptr<const sCollShapeNode>&
+		cCollObj::getAccCollShape (void) const {
+	return accCollShape_;
 }
 
 eObjType cCollObj::getObjType (void) const {

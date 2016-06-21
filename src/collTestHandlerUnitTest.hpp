@@ -12,9 +12,10 @@
 #include "collObject.hpp"
 #include "collPair.hpp"
 #include "collTest.hpp"
+#include "renderFunctions.hpp"
 
 void collTestHandlerUnitTest (void);
-void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col);
-void drawCircle (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col);
+//void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col);
+//void drawCircle (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col);
 
 #endif 

@@ -1,6 +1,8 @@
 #ifndef COLLPAIRUNITTEST_HPP
 #define	COLLPAIRUNITTEST_HPP 
 
+#include <memory>
+
 #include "mathVector.hpp"
 #include "collShape.hpp"
 #include "collObject.hpp"

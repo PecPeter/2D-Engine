@@ -2,6 +2,7 @@
 #define	COLLOBJECTUNITTEST_HPP 
 
 #include <iostream>
+#include <memory>
 #include "mathVector.hpp"
 #include "collShape.hpp"
 #include "collObject.hpp"

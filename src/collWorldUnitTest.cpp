@@ -2,19 +2,19 @@
 
 void collWorldUnitTest (void) {
 	std::cout << "Testing collWorld constructor:\n";
-	cGenBroadphase broadphase;
-	cCollWorld world(&broadphase);
-	cCollDebugDrawer drawer;
-	world.setDebugDraw(&drawer);
+	std::shared_ptr<cGenBroadphase> broadphase;
+	cCollWorld world(broadphase);
+	std::shared_ptr<cCollDebugDrawer> drawer;
+	world.setDebugDraw(drawer);
 	std::cout << "Testing createObject (cVector2, cCollShape&):\n";
-	cCollAabb shape(2,10),
-			  shape2(10,2);
+	std::shared_ptr<cCollAabb> shape(std::make_shared<cCollAabb>(2,10)),
+			  shape2(std::make_shared<cCollAabb>(10,2));
 	cVector2 pos1(20,20),
 			 pos2(20,25),
 			 pos3(0,0);
-	cCollObj* obj1 = world.createObject(pos1,shape),
-		*obj2 = world.createObject(pos2,shape2),
-		*obj3 = world.createObject(pos3,shape);
+	std::shared_ptr<cCollObj> obj1 = world.createObject(pos1,shape),
+							  obj2 = world.createObject(pos2,shape2),
+							  obj3 = world.createObject(pos3,shape);
 	world.checkColls();
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Window* window = SDL_CreateWindow("TEST",SDL_WINDOWPOS_UNDEFINED,

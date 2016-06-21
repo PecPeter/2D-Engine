@@ -14,13 +14,16 @@ void collTestHandlerUnitTest (void) {
 			 blue(255,0,0,255);
 
 	cVector2 pos1(150,200), pos2(200,200);
-	cCollAabb shape1(5,20), shape2(50,5);
-	cCollCircle shape3(5), shape4(50);
+	std::shared_ptr<cCollAabb> shape1 = std::make_shared<cCollAabb>(5,20),
+		shape2 = std::make_shared<cCollAabb>(50,5);
+	std::shared_ptr<cCollCircle> shape3 = std::make_shared<cCollCircle>(5),
+		shape4 = std::make_shared<cCollCircle>(50);
 	std::vector<cVector2> polyPtList = {cVector2(0,50),cVector2(-25,25),cVector2(-15,-25),cVector2(15,-25),
 		cVector2(25,25),cVector2(0,50)};
-	cCollPoly shape5(polyPtList);
-	cCollObj obj1(pos1,&shape1), obj2(pos2,&shape2);
-	cCollPair pair(&obj1,&obj2);
+	std::shared_ptr<cCollPoly> shape5 = std::make_shared<cCollPoly>(polyPtList);
+	std::shared_ptr<cCollObj> obj1 = std::make_shared<cCollObj>(pos1,shape1),
+		obj2 = std::make_shared<cCollObj>(pos2,shape2);
+	cCollPair pair(obj1,obj2);
 	cCollTest testHandler;
 
 	bool runLoop = true;
@@ -33,10 +36,10 @@ void collTestHandlerUnitTest (void) {
 		std::cin >> dx;
 		std::cout << "dy: ";
 		std::cin >> dy;
-		obj1.translate(dx,dy);
+		obj1->translate(dx,dy);
 //		obj2.rotate(0.005);
-		std::cout << "Obj1 Pos:\n" << obj1.getObjPos() <<
-			"\nObj2 Pos:\n" << obj2.getObjPos();
+		std::cout << "Obj1 Pos:\n" << obj1->getObjPos() <<
+			"\nObj2 Pos:\n" << obj2->getObjPos();
 		testHandler.testPair(pair);
 		if (pair.getCollType() == eCollType::COLLISION) {
 			std::cout << "\nCollision Overlap:\n" << pair.getObjOverlap() << "\n";
@@ -45,14 +48,14 @@ void collTestHandlerUnitTest (void) {
 			runLoop = false;
 
 		// Render shapes
-		drawer.drawObj(renderer,obj1,red);
-		drawer.drawObj(renderer,obj2,green);
+		drawer.drawObj(renderer,*obj1,red);
+		drawer.drawObj(renderer,*obj2,green);
 		SDL_RenderPresent(renderer);
 	}
 }
-
+/*
 void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
-	std::vector<cVector2> ptList = obj.getCollShape()->getData();
+	std::vector<cVector2> ptList = obj.getGenCollShape().lock()->getData();
 	ptList.push_back(*ptList.begin());
 	Sint16* vx = new Sint16[ptList.size()],
 		*vy = new Sint16[ptList.size()];
@@ -66,5 +69,6 @@ void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
 
 void drawCircle (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
 	filledCircleRGBA(rend,obj.getObjPos().getX(),obj.getObjPos().getY(),
-			obj.getCollShape()->getData().at(0).getX(),col.getX(),col.getY(),col.getZ(),255);
+			obj.getGenCollShape().lock()->getData().at(0).getX(),col.getX(),col.getY(),col.getZ(),255);
 }
+*/

@@ -1,16 +1,17 @@
 #ifndef COLLBROADPHASE_HPP
 #define COLLBROADPHASE_HPP
 
-#include <map>
-#include <vector>
 #include <forward_list>
+#include <map>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "collObject.hpp"
 #include "collPair.hpp"
 
 typedef std::forward_list<cCollPair> pairCont;
-typedef std::vector<cCollObj*> objCont;
+typedef std::vector<std::shared_ptr<cCollObj>> objCont;
 
 //maybe make these templated so that the queue doesnt have to be hardcoded,
 //same with the vector (it may change in the future);
@@ -21,7 +22,8 @@ class cCollBroadphase {
 
 		//maybe make one that takes 2 lists, 1 dynamic and the other static.
 		//This should make pairing easier
-		virtual void genList (pairCont& pairList, const objCont& objList) const = 0;
+		virtual void genList (pairCont& pairList,
+				const objCont& objList) const = 0;
 		virtual void genList (pairCont& pairList, const objCont& objListDyn,
 				const objCont& objListStatic) const = 0;
 		void addCollMask (int objMask, int collMask);

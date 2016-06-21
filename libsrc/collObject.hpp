@@ -13,7 +13,6 @@
 class cCollObj;
 typedef void (*collCallbackFunc) (cCollObj* obj1, cCollObj* obj2,
 		cVector2 collVector);
-typedef std::vector<std::shared_ptr<sCollShapeNode>> collShapeNodeCont;
 const int DEFAULT_OBJMASK = 1;
 
 enum class eObjType {
@@ -27,63 +26,52 @@ enum class eObjState {
 };
 
 class cCollObj {
-	public:
-		cCollObj (const cVector2& pos, const cCollShape* shape,
-				eObjType objType=eObjType::STATIC, void* usrPtr = nullptr);
+	public: 
+		// Constructors and Destructors
+		cCollObj (const cVector2& pos,
+				const std::shared_ptr<const cCollShape>& genShape,
+				eObjType objType = eObjType::STATIC,
+				const std::shared_ptr<const sCollShapeNode>& accShape = nullptr,
+				void* usrPtr = nullptr);
 		~cCollObj (void);
+
+		// Object Position
 		void translate (double dx, double dy);
 		void translate (const cVector2& dv);
 		const cVector2& getObjPos (void) const; 
+
+		// Object Rotation
 		void rotate (double rotnRad);
 		void setRotation (double rotnRad);
 		const double getRotation (void) const;
-		const collShapeNodeCont getCollShape (void) const;
+
+		// Object Collision Shape
+		const std::weak_ptr<const cCollShape>& getGenCollShape (void) const;
+		const std::weak_ptr<const sCollShapeNode>& getAccCollShape (void) const;
+
+		// Object Type
 		eObjType getObjType (void) const;
+
+		// Object Collision Mask
 		void setObjMask (int objMask);
 		int getObjMask (void) const;
+
+		// Collision Callback Information
 		void setCollCallback (collCallbackFunc collCallback);
 		void collCallback (cCollObj* obj1, cCollObj* obj2, cVector2 collVector);
+
+		// Additional Object Information
 		void setUsrPtr (void* objPtr);
 		void* getUsrPtr (void) const;
 	private:
 		cVector2 pos_;
 		double rotnRad_;
-		// Maybe add another general shape to be used for faster collision tests
-		collShapeNodeCont shapeNodeList_;
-//		const cCollShape* shape_;
+		std::weak_ptr<const cCollShape> genCollShape_;
+		std::weak_ptr<const sCollShapeNode> accCollShape_;
 		eObjType objType_;
 		int objMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;
 };
-/*
-class cCollObj {
-	public:
-		cCollObj (const cVector2& pos, const cCollShape* shape,
-				eObjType objType=eObjType::STATIC, void* usrPtr = nullptr);
-		~cCollObj (void);
-		void translate (double dx, double dy);
-		void translate (const cVector2& dv);
-		const cVector2& getObjPos (void) const; 
-		void rotate (double rotnRad);
-		void setRotation (double rotnRad);
-		const double getRotation (void) const;
-		const cCollShape* getCollShape (void) const;
-		eObjType getObjType (void) const;
-		void setObjMask (int objMask);
-		int getObjMask (void) const;
-		void setCollCallback (collCallbackFunc collCallback);
-		void collCallback (cCollObj* obj1, cCollObj* obj2, cVector2 collVector);
-		void setUsrPtr (void* objPtr);
-		void* getUsrPtr (void) const;
-	private:
-		cVector2 pos_;
-		double rotnRad_;
-		const cCollShape* shape_;
-		eObjType objType_;
-		int objMask_;
-		collCallbackFunc collCallback_;
-		void* usrPtr_;
-};
-*/
+
 #endif

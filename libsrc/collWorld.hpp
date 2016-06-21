@@ -1,6 +1,7 @@
 #ifndef COLLWORLD_HPP
 #define COLLWORLD_HPP
 
+#include <memory>
 #include <vector>
 #include <forward_list>
 
@@ -16,23 +17,26 @@
 
 class cCollWorld {
 	public:
-		cCollWorld (cCollBroadphase* broadphase);
+		cCollWorld (const std::shared_ptr<cCollBroadphase>& broadphase);
 		~cCollWorld (void);
-		cCollObj* createObject (const cVector2& pos, const cCollShape& shape,
-				eObjType objType=eObjType::STATIC);
+		std::shared_ptr<cCollObj> createObject (const cVector2& pos,
+				const std::shared_ptr<const cCollShape>& genShape,
+				eObjType objType = eObjType::STATIC,
+				const std::shared_ptr<const sCollShapeNode>& accShape = nullptr,
+				void* usrPtr = nullptr);
 //		void removeObject (void);
 		std::forward_list<cCollPair>* checkColls (void);
 
-		void setDebugDraw (cCollDebugDrawer* debugDrawer); 
+		void setDebugDraw (const std::shared_ptr<cCollDebugDrawer>& debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
 		void addCollMask (int objMask, int collMask);
 	private:
-		std::vector<cCollObj*> collObjListStatic_,
-			collObjListDyn_;
+		std::vector<std::shared_ptr<cCollObj>> collObjListStatic_,
+											   collObjListDyn_;
 		std::forward_list<cCollPair> collPairList_;
-		cCollBroadphase* broadphase_;
-		cCollTest* testHandler_;
-		cCollDebugDrawer* debugDrawer_;
+		std::weak_ptr<cCollBroadphase> broadphase_;
+		cCollTest testHandler_;
+		std::weak_ptr<cCollDebugDrawer> debugDrawer_;
 };
 
 #endif
