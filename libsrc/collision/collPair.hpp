@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "mathVector.hpp"
+#include "../math/mathVector.hpp"
 #include "collObject.hpp"
 
 enum class eCollType {

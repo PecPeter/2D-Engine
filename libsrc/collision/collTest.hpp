@@ -7,8 +7,8 @@
 #include <map>
 #include <memory>
 
-#include "mathVector.hpp"
-#include "mathLinAlgebra.hpp"
+#include "../math/mathVector.hpp"
+#include "../math/mathLinAlgebra.hpp"
 #include "collShape.hpp"
 #include "collShapeNode.hpp"
 #include "collObject.hpp"

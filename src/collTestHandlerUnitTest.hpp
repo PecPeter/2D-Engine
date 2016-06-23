@@ -7,11 +7,11 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "./2D-Engine/collDebugDrawer.hpp"
-#include "./2D-Engine/mathVector.hpp"
-#include "./2D-Engine/collObject.hpp"
-#include "./2D-Engine/collPair.hpp"
-#include "./2D-Engine/collTest.hpp"
+#include "./2D-Engine/collision/collDebugDrawer.hpp"
+#include "./2D-Engine/math/mathVector.hpp"
+#include "./2D-Engine/collision/collObject.hpp"
+#include "./2D-Engine/collision/collPair.hpp"
+#include "./2D-Engine/collision/collTest.hpp"
 #include "./2D-Engine/renderFunctions.hpp"
 
 void collTestHandlerUnitTest (void);

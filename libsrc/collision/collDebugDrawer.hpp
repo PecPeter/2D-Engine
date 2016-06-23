@@ -13,9 +13,9 @@
 #include "collObject.hpp"
 #include "collShape.hpp"
 #include "collShapeNode.hpp"
-#include "mathVector.hpp"
-#include "mathLinAlgebra.hpp"
-#include "renderFunctions.hpp"
+#include "../math/mathVector.hpp"
+#include "../math/mathLinAlgebra.hpp"
+#include "../renderFunctions.hpp"
 
 class cCollDebugDrawer {
 	public:

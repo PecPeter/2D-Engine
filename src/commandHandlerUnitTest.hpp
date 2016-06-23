@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "./2D-Engine/cntrlKb.hpp"
+#include "./2D-Engine/controllers/cntrlKb.hpp"
 
 enum stateActions {
 	NONETEST,

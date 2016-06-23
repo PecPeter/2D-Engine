@@ -13,7 +13,7 @@
 #include "collTest.hpp"
 #include "collBroadphase.hpp"
 #include "collDebugDrawer.hpp"
-#include "mathVector.hpp"
+#include "../math/mathVector.hpp"
 
 class cCollWorld {
 	public:

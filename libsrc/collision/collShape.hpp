@@ -4,8 +4,8 @@
 #include <array>
 #include <vector>
 
-#include "mathMatrix.hpp"
-#include "mathVector.hpp"
+#include "../math/mathMatrix.hpp"
+#include "../math/mathVector.hpp"
 
 enum class eShapeType {
 	POINT,

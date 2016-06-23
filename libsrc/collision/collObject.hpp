@@ -5,10 +5,10 @@
 
 #include "collShape.hpp"
 #include "collShapeNode.hpp"
-#include "mathMatrix.hpp"
-#include "mathVector.hpp"
-#include "mathConstants.hpp"
-#include "mathLinAlgebra.hpp"
+#include "../math/mathMatrix.hpp"
+#include "../math/mathVector.hpp"
+#include "../math/mathConstants.hpp"
+#include "../math/mathLinAlgebra.hpp"
 
 class cCollObj;
 typedef void (*collCallbackFunc) (cCollObj* obj1, cCollObj* obj2,

@@ -5,9 +5,9 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#include "mathMatrix.hpp"
-#include "mathVector.hpp"
-#include "mathLinAlgebra.hpp"
+#include "./math/mathMatrix.hpp"
+#include "./math/mathVector.hpp"
+#include "./math/mathLinAlgebra.hpp"
 
 void drawStrC (SDL_Renderer* rend, TTF_Font* font,
 		 const cVector2& p, const char* text, const cVector4& col);

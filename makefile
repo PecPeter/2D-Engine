@@ -25,26 +25,25 @@ vpath %.hpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.cpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.o ${OBJ_DIR} ${LIB_OBJ_DIR}
 
-test:
-	echo $(DEBUG_LIB_OBJ)
-
 all: debug
 
-libs: lib_debug lib_release
+libs: dlib rlib
 
-debug: lib_debug src_debug
+debug: clean dlib dsrc
 
-release: lib_release src_release
+release: clean rlib rsrc
 
-lib_debug: ${DEBUG_LIB_OBJ}
+dlib: ${DEBUG_LIB_OBJ}
 	ar crv lib2D-Engine_debug.a $(shell find ${LIB_OBJ_DIR} -name *.o)
 	mv lib2D-Engine_debug.a ./lib/
+	rm -r -f ./include/*
 	cp --parents $(shell find $(LIB_SRC_DIR) -name *.hpp) ./include
 	mv ./include/$(LIB_SRC_DIR) ./include/2D-Engine
 
-lib_release: ${REL_LIB_OBJ}
+rlib: ${REL_LIB_OBJ}
 	ar crv lib2D-Engine_release.a $(shell find ${LIB_OBJ_DIR} -name *.o)
 	mv lib2D-Engine_release.a ./lib/
+	rm -r -f ./include/*
 	cp --parents $(shell find $(LIB_SRC_DIR) -name *.hpp) ./include
 	mv ./include/$(LIB_SRC_DIR) ./include/2D-Engine
 
@@ -60,10 +59,10 @@ lib_release: ${REL_LIB_OBJ}
 %_lib.o: %.cpp
 	${CC} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
 
-src_debug: ${DEBUG_OBJ}
+dsrc: ${DEBUG_OBJ}
 	${CC} $(addprefix ${OBJ_DIR},${DEBUG_OBJ}) -o debug ${DEBUG_LIB_FLAGS}
 
-src_release: ${REL_OBJ}
+rsrc: ${REL_OBJ}
 	${CC} $(addprefix ${OBJ_DIR},${REL_OBJ}) -o release ${RELEASE_LIB_FLAGS}
 
 %_d_src.o: %.cpp %.hpp
