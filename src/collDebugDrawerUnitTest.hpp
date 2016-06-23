@@ -8,11 +8,11 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "collDebugDrawer.hpp"
-#include "collObject.hpp"
-#include "collShape.hpp"
-#include "collWorld.hpp"
-#include "collBroadphase.hpp"
+#include "./2D-Engine/collDebugDrawer.hpp"
+#include "./2D-Engine/collObject.hpp"
+#include "./2D-Engine/collShape.hpp"
+#include "./2D-Engine/collWorld.hpp"
+#include "./2D-Engine/collBroadphase.hpp"
 
 void collDebugDrawerUnitTest (void);
 

@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "gameState.hpp"
-#include "stateHandler.hpp"
-#include "engine.hpp"
-#include "engineMetrics.hpp"
+#include "./2D-Engine/gameState.hpp"
+#include "./2D-Engine/stateHandler.hpp"
+#include "./2D-Engine/engine.hpp"
+#include "./2D-Engine/engineMetrics.hpp"
 #include "gameStateTypes.hpp"
 #include "commandTestState.hpp"
 

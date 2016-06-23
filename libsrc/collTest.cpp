@@ -13,12 +13,11 @@ cCollTest::cCollTest (void) {
 
 void cCollTest::testPair (cCollPair& collPair) {
 	cVector2 collVector(noColl_);
-	const cCollObj* obj1 = collPair.obj1(),
-				   *obj2 = collPair.obj2();
+	std::shared_ptr<const cCollObj> obj1 = collPair.obj1().lock(),
+									obj2 = collPair.obj2().lock();
 	std::shared_ptr<const cCollShape> genShape1,
 									  genShape2;
-	if (obj1->getGenCollShape().expired() == false && 
-				obj2->getGenCollShape().expired() == false) {
+	if (obj1 != nullptr && obj2 != nullptr) {
 			genShape1 = obj1->getGenCollShape().lock();
 			genShape2 = obj2->getGenCollShape().lock();
 		sCollShapeInfo shapeInfo1 = {obj1->getRotation(),

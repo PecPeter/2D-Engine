@@ -3,10 +3,10 @@
 
 #include <memory>
 
-#include "mathVector.hpp"
-#include "collShape.hpp"
-#include "collObject.hpp"
-#include "collPair.hpp"
+#include "./2D-Engine/mathVector.hpp"
+#include "./2D-Engine/collShape.hpp"
+#include "./2D-Engine/collObject.hpp"
+#include "./2D-Engine/collPair.hpp"
 
 void collPairUnitTest (void);
 

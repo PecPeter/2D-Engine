@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <memory>
-#include "mathVector.hpp"
-#include "collShape.hpp"
-#include "collObject.hpp"
+#include "./2D-Engine/mathVector.hpp"
+#include "./2D-Engine/collShape.hpp"
+#include "./2D-Engine/collObject.hpp"
 
 void collObjectUnitTest (void);
 

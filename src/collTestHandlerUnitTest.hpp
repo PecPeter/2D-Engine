@@ -7,12 +7,12 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "collDebugDrawer.hpp"
-#include "mathVector.hpp"
-#include "collObject.hpp"
-#include "collPair.hpp"
-#include "collTest.hpp"
-#include "renderFunctions.hpp"
+#include "./2D-Engine/collDebugDrawer.hpp"
+#include "./2D-Engine/mathVector.hpp"
+#include "./2D-Engine/collObject.hpp"
+#include "./2D-Engine/collPair.hpp"
+#include "./2D-Engine/collTest.hpp"
+#include "./2D-Engine/renderFunctions.hpp"
 
 void collTestHandlerUnitTest (void);
 //void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col);
