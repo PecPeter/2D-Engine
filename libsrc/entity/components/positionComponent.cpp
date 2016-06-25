@@ -6,6 +6,11 @@ cPosComp::cPosComp (double x, double y, double rotn) :
 cPosComp::cPosComp (const cVector2& pos, const double& rotn) :
 		compPos_(pos), compRotn_(rotn) {}
 
+cPosComp::cPosComp (const cPosComp& posComp) {
+	compPos_ = posComp.getPos();
+	compRotn_ = posComp.getRotn();
+}
+
 void cPosComp::addPos (const double& dx, const double& dy) {
 	compPos_ += cVector2(dx,dy);
 }
@@ -34,6 +39,6 @@ void cPosComp::setRotn (const double& rotn) {
 	compRotn_ = rotn;
 }
 
-const double& cPosComp::getRotn (void) const {
+double cPosComp::getRotn (void) const {
 	return compRotn_;
 }
