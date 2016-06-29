@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "entityStructure.hpp"
+#include "entityNode.hpp"
 #include "./components/positionComponent.hpp"
 #include "./components/collisionComponent.hpp"
 
@@ -28,7 +28,7 @@ const int DEFAULT_ENTITYMASK = 1;
 class cEntity {
 	public:
 		cEntity (const eEntityType& type, const cPosComp& pos,
-				const cEntityStructure& entityStructure,
+				const cEntityNode& entityNode,
 				void* usrPtr = nullptr);
 		~cEntity (void);
 
@@ -52,14 +52,14 @@ class cEntity {
 		void setPosRotn (const cVector2& v, double rotnRad);
 		void setPosRotn (const cPosComp& posComp);
 
-		// Add something to deal with entity structure
+		// Add something to deal with entity node 
 
 		// Entity Type
 		eEntityType getType (void) const;
 
-		// Object Collision Mask
-		void setObjMask (int entityMask);
-		int getObjMask (void) const;
+		// Entity Collision Mask
+		void setEntMask (int entityMask);
+		int getEntMask (void) const;
 
 		// Collision Callback Information
 		void setCollCallback (collCallbackFunc collCallback);
@@ -74,7 +74,7 @@ class cEntity {
 		eEntityState state_;
 		eEntityType type_;
 		cPosComp entityPos_;
-		cEntityStructure entityStructure_;
+		cEntityNode entityNode_;
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;

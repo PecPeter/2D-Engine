@@ -8,6 +8,7 @@ class cCollShape;
 
 struct sCollShapeNode {
 	public:
+		int nodeId_;
 		cVector2 posOffset_;	// The position offset from the centroid
 								// position of the parent node shape.
 		double rotnOffset_;

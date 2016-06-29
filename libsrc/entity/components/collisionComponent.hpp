@@ -4,8 +4,6 @@
 #include <memory>
 
 #include "../../collision/collShape.hpp"
-//#include "../../collision/collShapeNode.hpp" TODO: REMOVE THIS FILE WHEN THIS
-// IS DONE!!!!!
 #include "../../math/mathMatrix.hpp"
 #include "../../math/mathVector.hpp"
 #include "../../math/mathConstants.hpp"
@@ -13,10 +11,11 @@
 
 class cCollComp {
 	public:
-		cCollComp (void);
-		~cCollComp (void);
+		cCollComp (std::shared_ptr<cCollShape> collShape);
+
+		const std::weak_ptr<cCollShape>& getCollShape (void) const;
 	private:
-//		std::weak_ptr<cColl
+		std::weak_ptr<cCollShape> collShape_;
 };
 
 #endif
