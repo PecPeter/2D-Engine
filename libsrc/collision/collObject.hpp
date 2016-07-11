@@ -9,7 +9,7 @@
 #include "../math/mathVector.hpp"
 #include "../math/mathConstants.hpp"
 #include "../math/mathLinAlgebra.hpp"
-
+/*
 class cCollObj;
 typedef void (*collCallbackFunc) (cCollObj* obj1, cCollObj* obj2,
 		cVector2 collVector);
@@ -73,5 +73,5 @@ class cCollObj {
 		collCallbackFunc collCallback_;
 		void* usrPtr_;
 };
-
+*/
 #endif

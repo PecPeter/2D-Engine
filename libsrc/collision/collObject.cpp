@@ -1,5 +1,5 @@
 #include "collObject.hpp"
-
+/*
 cCollObj::cCollObj (const cVector2& pos,
 		const std::shared_ptr<const cCollShape>& genShape, eObjType objType,
 		const std::shared_ptr<const sCollShapeNode>& accShape, void* usrPtr) :
@@ -75,3 +75,4 @@ void cCollObj::setUsrPtr (void* usrPtr) {
 void* cCollObj::getUsrPtr (void) const {
 	return usrPtr_;
 }
+*/

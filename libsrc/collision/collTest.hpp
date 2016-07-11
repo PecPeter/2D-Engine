@@ -1,26 +1,29 @@
-#ifndef COLLTEST2D_HPP
-#define COLLTEST2D_HPP
+#ifndef COLLTEST_HPP
+#define COLLTEST_HPP
 
 #include <cmath>
 #include <limits>
 #include <utility>
 #include <map>
 #include <memory>
+#include <vector>
 
+#include "collShape.hpp"
+#include "collPair.hpp"
+#include "../entity/entity.hpp"
+#include "../entity/entityNode.hpp"
+#include "../entity/components/positionComponent.hpp"
+#include "../entity/components/collisionComponent.hpp"
 #include "../math/mathVector.hpp"
 #include "../math/mathLinAlgebra.hpp"
-#include "collShape.hpp"
-#include "collShapeNode.hpp"
-#include "collObject.hpp"
-#include "collPair.hpp"
 
 const cVector2 noColl_ (std::nan(""),std::nan(""));
 const cVector2 contactColl_ (0,0);
 
 struct sCollShapeInfo {
-	double shapeRotn_;
-	cVector2 shapePos_;
-	std::shared_ptr<const cCollShape> shape_;
+	const cPosComp parentPosComp_,
+		  		   shapePosComp_;
+	const cCollComp collComp_;
 };
 
 class cCollTest {
@@ -31,14 +34,6 @@ class cCollTest {
 		// These collision test should always return what object
 		// 1 has to do to get out of the collision (ie. obj1: dynamic,
 		// obj2: static (even if it isnt))
-
-		// Collision test management functions
-		cVector2 collTestComplexComplex (const cCollObj& objComplex1,
-				const cCollObj& objComplex2, const cVector2& collVector);
-		cVector2 collTestSimpleComplex (const cCollObj& objComplex1,
-				const cCollObj& objComplex2, const cVector2& collVector);
-		cVector2 collTestComplexSimple (const cCollObj& objComplex1,
-				const cCollObj& objComplex2, const cVector2& collVector);
 
 		// Functions for the colTestMap_
 		cVector2 collTestPolyPoly (const sCollShapeInfo& objPoly1,

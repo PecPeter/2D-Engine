@@ -1,10 +1,11 @@
 #ifndef COLLPAIR_HPP
 #define COLLPAIR_HPP
 
+#include <list>
 #include <memory>
 
+#include "../entity/entity.hpp"
 #include "../math/mathVector.hpp"
-#include "collObject.hpp"
 
 enum class eCollType {
 	NO_COLLISION,
@@ -12,24 +13,39 @@ enum class eCollType {
 	COLLISION
 };
 
+struct sCollPairInfo {
+	sCollPairInfo (int entNodeId1, int entNodeId2, const cVector2& overlap,
+			const eCollType& collType);
+	int entNodeId1_,
+		entNodeId2_;
+	cVector2 overlap_;
+	eCollType collType_;
+};
+
 class cCollPair {
 	public:
-		cCollPair (std::shared_ptr<cCollObj> object1,
-				std::shared_ptr<cCollObj> object2);
+		cCollPair (std::shared_ptr<cEntity> entity1,
+				std::shared_ptr<cEntity> entity2);
 		~cCollPair (void);
 
-		std::weak_ptr<cCollObj> obj1 (void) const;
-		std::weak_ptr<cCollObj> obj2 (void) const;
-		void setObjOverlap (const cVector2& overlap);
-		const cVector2& getObjOverlap (void) const;
+		std::shared_ptr<cEntity> ent1 (void) const;
+		std::shared_ptr<cEntity> ent2 (void) const;
+		void setEntOverlap (const cVector2& overlap);
+		const cVector2& getEntOverlap (void) const;
 		void setCollType (const eCollType& collType);
 		eCollType getCollType (void) const;
+
+		void addCollision (const sCollPairInfo& collInfo);
 	private:
-		std::weak_ptr<cCollObj> object1_,
-								object2_;
-		cVector2 overlap_; // Overlap if wrt what obj1 has to do
+		std::weak_ptr<cEntity> entity1_,
+							   entity2_;
+		cVector2 overlap_; // Overlap is wrt what obj1 has to do
 						   // to get out of collision
+		// TODO: Add the ids of the entity nodes that are colliding
+		// also add a vector or something that logs all of the shapes that can
+		// collide (multiple nodes may collide with each other)
 		eCollType collType_;
+		std::list<sCollPairInfo> collisionList_;
 };
 
 #endif

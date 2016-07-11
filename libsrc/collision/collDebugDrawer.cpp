@@ -1,30 +1,28 @@
 #include "collDebugDrawer.hpp"
 
 cCollDebugDrawer::cCollDebugDrawer (int alpha) {
-	colMap_[eObjType::STATIC] = cVector4(alpha,255,0,0);
-	colMap_[eObjType::DYNAMIC] = cVector4(alpha,0,255,0);
+	colMap_[eEntityState::STATIC] = cVector4(alpha,255,0,0);
+	colMap_[eEntityState::DYNAMIC] = cVector4(alpha,0,255,0);
 }
 
-void cCollDebugDrawer::drawObj (const SDL_Renderer* rend, const cCollObj& obj) {
-	drawObj(rend,obj,colMap_.at(obj.getObjType()));
+void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent) {
+	drawEnt(rend,ent,colMap_.at(ent.getState()));
 }
 
-void cCollDebugDrawer::drawObj (const SDL_Renderer* rend, const cCollObj& obj,
+void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 		const cVector4& col) {
-	cVector2 objPos = obj.getObjPos();
-	double objRotn = obj.getRotation();
-
-	if (auto genCollShape = obj.getGenCollShape().lock()) {
-		drawShape(rend,*genCollShape,objPos,objRotn,col);
-	}
-
-	if (auto accCollShape = obj.getAccCollShape().lock()) {
-		drawComplexShape(rend,*accCollShape,obj.getObjPos(),
-				obj.getRotation(),col);
+	const cPosComp entPos = ent.getPosComp();
+	// Iterate through the cEntityNode vector of the cEntity class
+	// and draw each shape
+	for (const auto& itr : ent.getNodes()) {
+		const cPosComp shapePos = itr.getSensor()->getPosComp()+entPos;
+		const cCollShape collShape = *(itr.getSensor()->getCollComp().
+				getCollShape());
+		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
 	}
 }
 
-void cCollDebugDrawer::drawComplexShape (const SDL_Renderer* rend,
+/*void cCollDebugDrawer::drawComplexShape (const SDL_Renderer* rend,
 		const sCollShapeNode& shapeNode, const cVector2& posOffset,
 		const double& rotnOffset, const cVector4& col) {
 	cVector2 shapePos = posOffset+shapeNode.posOffset_;
@@ -34,7 +32,7 @@ void cCollDebugDrawer::drawComplexShape (const SDL_Renderer* rend,
 		drawComplexShape(rend,*(listItr.lock()),shapePos,shapeRotn,col);
 	}
 }
-
+*/
 void cCollDebugDrawer::drawShape (const SDL_Renderer* rend,
 		const cCollShape& shape, const cVector2& shapePos,
 		const double& shapeRotn, const cVector4& col) {
@@ -58,6 +56,7 @@ void cCollDebugDrawer::drawShape (const SDL_Renderer* rend,
 				shape.getData().at(0).getX(),col);
 	}
 	else if (shapeType == eShapeType::LINE) {
+		// TODO: Make this a function to shorten the length of this func
 		cVector2 p1,
 				 p2,
 				 tmpPoint;

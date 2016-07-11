@@ -5,6 +5,7 @@
 
 class cPosComp {
 	public:
+		cPosComp (void);
 		cPosComp (double x, double y, double rotn);
 		cPosComp (const cVector2& pos, const double& rotn);
 		cPosComp (const cPosComp& posComp);
@@ -25,5 +26,8 @@ class cPosComp {
 		cVector2 compPos_;
 		double compRotn_;
 };
+
+cPosComp operator+ (const cPosComp& lhs, const cPosComp& rhs);
+cPosComp operator- (const cPosComp& lhs, const cPosComp& rhs);
 
 #endif

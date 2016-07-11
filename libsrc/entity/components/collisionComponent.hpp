@@ -13,7 +13,7 @@ class cCollComp {
 	public:
 		cCollComp (std::shared_ptr<cCollShape> collShape);
 
-		const std::weak_ptr<cCollShape>& getCollShape (void) const;
+		std::shared_ptr<cCollShape> getCollShape (void) const;
 	private:
 		std::weak_ptr<cCollShape> collShape_;
 };

@@ -1,8 +1,8 @@
 #include "entity.hpp"
 
-cEntity::cEntity (const eEntityType& type, const cPosComp& pos,
-		const cEntityNode& entityNode, void* usrPtr) : type_(type),
-		entityPos_(pos), entityNode_(entityNode), usrPtr_(usrPtr) {
+cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
+		const std::vector<cEntityNode>& entityNodeList, void* usrPtr) : id_(id), type_(type),
+		entityPos_(pos), entityNodeList_(entityNodeList), usrPtr_(usrPtr) {
 	switch (type_) {
 		case eEntityType::ACTOR: state_ = eEntityState::DYNAMIC; break;
 		case eEntityType::PAWN: state_ = eEntityState::KINEMATIC; break;
@@ -11,6 +11,10 @@ cEntity::cEntity (const eEntityType& type, const cPosComp& pos,
 }
 
 cEntity::~cEntity (void) {}
+
+int cEntity::getId (void) const {
+	return id_;
+}
 
 // Entity Position
 void cEntity::translate (double dx, double dy) {
@@ -46,6 +50,11 @@ double cEntity::getRotn (void) const {
 	return entityPos_.getRotn();
 }
 
+// Entity Position Component
+const cPosComp& cEntity::getPosComp (void) const {
+	return entityPos_;
+}
+
 // Entity Transforms
 void cEntity::translateRotate (double dx, double dy, double rotnRad) {
 	translate(dx,dy);
@@ -77,19 +86,26 @@ void cEntity::setPosRotn (const cPosComp& posComp) {
 	setRotn(posComp.getRotn());
 }
 
-// Add something to deal with entity Node
+// Entity Node
+const std::vector<cEntityNode>& cEntity::getNodes (void) const {
+	return entityNodeList_;
+}
 
 // Entity Type
 eEntityType cEntity::getType (void) const {
 	return type_;
 }
 
+eEntityState cEntity::getState (void) const {
+	return state_;
+}
+
 // Entity Collision Mask
-void cEntity::setEntMask (int entityMask) {
+void cEntity::setMask (int entityMask) {
 	entityMask_ = entityMask;
 }
 
-int cEntity::getEntMask (void) const {
+int cEntity::getMask (void) const {
 	return entityMask_;
 }
 

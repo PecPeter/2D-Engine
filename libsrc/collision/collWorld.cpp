@@ -1,44 +1,69 @@
 #include "collWorld.hpp"
 
 cCollWorld::cCollWorld (const std::shared_ptr<cCollBroadphase>& broadphase) :
-		broadphase_(broadphase) {
+		broadphase_(broadphase), numEntities_(0) {
 	assert((broadphase != nullptr || broadphase != NULL) && "Broadphase is not set.");
 }
 
 cCollWorld::~cCollWorld (void) {
-/*	for (auto itr : collObjListStatic_)
+/*	for (auto itr : collEntListStatic_)
 		delete itr;
-	for (auto itr : collObjListDyn_)
+	for (auto itr : collEntListDyn_)
 		delete itr;
-	collObjListStatic_.clear();
-	collObjListDyn_.clear();
+	collEntListStatic_.clear();
+	collEntListDyn_.clear();
 	collPairList_.clear();
 	delete testHandler_;
 */
 }
 
-std::shared_ptr<cCollObj> cCollWorld::createObject (const cVector2& pos,
-		const std::shared_ptr<const cCollShape>& genShape, eObjType objType,
-		const std::shared_ptr<const sCollShapeNode>& accShape, void* usrPtr) {
-	std::shared_ptr<cCollObj> collObj = 
-		std::make_shared<cCollObj>(pos,genShape,objType,accShape,usrPtr);
-	if (objType == eObjType::STATIC)
-		collObjListStatic_.push_back(collObj);
-	else if (objType == eObjType::DYNAMIC)
-		collObjListDyn_.push_back(collObj);
-	return collObj;
+std::shared_ptr<cEntity> cCollWorld::createEntity (const eEntityType& type,
+		const cPosComp& pos, const std::vector<cEntityNode>& entityNodeList,
+		void* userPtr) {
+	std::shared_ptr<cEntity> entity = 
+		std::make_shared<cEntity>(numEntities_,type,pos,entityNodeList,userPtr);
+	++numEntities_;
+	switch(entity->getState()) {
+		case eEntityState::STATIC: 
+			collEntListStatic_.push_back(entity);
+			break;
+		case eEntityState::DYNAMIC:
+		case eEntityState::KINEMATIC:
+			collEntListDyn_.push_back(entity);
+			break;
+		default:
+			break;
+	}
+	return entity;
 }
-/*
-void cCollWorld::removeObject (void) {
 
+void cCollWorld::removeEntity (int entityId) {
+	for (entListCont::iterator itr = collEntListStatic_.begin();
+			itr != collEntListStatic_.end(); ++itr) {
+		if ((*itr)->getId() == entityId) {
+			std::iter_swap(itr,collEntListStatic_.end());
+			collEntListStatic_.pop_back();
+			return;
+		}
+	}
+	for (entListCont::iterator itr = collEntListDyn_.begin();
+			itr != collEntListDyn_.end(); ++itr) {
+		if ((*itr)->getId() == entityId) {
+			std::iter_swap(itr,collEntListDyn_.end());
+			collEntListDyn_.pop_back();
+			return;
+		}
+	}
 }
-*/
+
+void cCollWorld::removeShape (int shapeId) {}
+
 std::forward_list<cCollPair>* cCollWorld::checkColls (void) {
 	collPairList_.empty();
 	// Run broadphase
 	if (broadphase_.expired() == false) {
 		broadphase_.lock()->genList(collPairList_,
-				collObjListDyn_,collObjListStatic_);
+				collEntListDyn_,collEntListStatic_);
 	}
 	else {
 		// Throw an error saying the broadphase has been deleted
@@ -59,11 +84,11 @@ void cCollWorld::setDebugDraw (const std::shared_ptr<cCollDebugDrawer>&
 
 void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 	if (debugDrawer_.expired() == false) {
-		for (auto& itr : collObjListStatic_) {
-			debugDrawer_.lock()->drawObj(renderer,*itr);
+		for (auto& itr : collEntListStatic_) {
+			debugDrawer_.lock()->drawEnt(renderer,*itr);
 		}
-		for (auto& itr : collObjListDyn_) {
-			debugDrawer_.lock()->drawObj(renderer,*itr);
+		for (auto& itr : collEntListDyn_) {
+			debugDrawer_.lock()->drawEnt(renderer,*itr);
 		}
 	}
 }

@@ -27,10 +27,12 @@ const int DEFAULT_ENTITYMASK = 1;
 
 class cEntity {
 	public:
-		cEntity (const eEntityType& type, const cPosComp& pos,
-				const cEntityNode& entityNode,
+		cEntity (int id, const eEntityType& type, const cPosComp& pos,
+				const std::vector<cEntityNode>& entityNodeList,
 				void* usrPtr = nullptr);
 		~cEntity (void);
+
+		int getId (void) const;
 
 		// Entity Position
 		void translate (double dx, double dy);
@@ -44,6 +46,9 @@ class cEntity {
 		void setRotn (double rotnRad);
 		double getRotn (void) const;
 
+		// Entity Position Component
+		const cPosComp& getPosComp (void) const;
+
 		// Entity Transforms
 		void translateRotate (double dx, double dy, double rotnRad);
 		void translateRotate (const cVector2& dv, double rotnRad);
@@ -52,14 +57,18 @@ class cEntity {
 		void setPosRotn (const cVector2& v, double rotnRad);
 		void setPosRotn (const cPosComp& posComp);
 
-		// Add something to deal with entity node 
+		// Entity Node
+		const std::vector<cEntityNode>& getNodes (void) const;
 
 		// Entity Type
 		eEntityType getType (void) const;
 
+		// Entity State
+		eEntityState getState (void) const;
+
 		// Entity Collision Mask
-		void setEntMask (int entityMask);
-		int getEntMask (void) const;
+		void setMask (int entityMask);
+		int getMask (void) const;
 
 		// Collision Callback Information
 		void setCollCallback (collCallbackFunc collCallback);
@@ -71,10 +80,11 @@ class cEntity {
 		void* getUsrPtr (void) const;
 
 	private:
+		int id_;
 		eEntityState state_;
 		eEntityType type_;
 		cPosComp entityPos_;
-		cEntityNode entityNode_;
+		std::vector<cEntityNode> entityNodeList_;
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;

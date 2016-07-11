@@ -10,7 +10,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#include "collObject.hpp"
+//#include "collObject.hpp"
+#include "../entity/entity.hpp"
+#include "../entity/entityNode.hpp"
+#include "../entity/components/positionComponent.hpp"
 #include "collShape.hpp"
 #include "collShapeNode.hpp"
 #include "../math/mathVector.hpp"
@@ -21,8 +24,8 @@ class cCollDebugDrawer {
 	public:
 		cCollDebugDrawer (int alpha = 255);
 
-		void drawObj (const SDL_Renderer* rend, const cCollObj& obj);
-		void drawObj (const SDL_Renderer* rend, const cCollObj& obj,
+		void drawEnt (const SDL_Renderer* rend, const cEntity& ent);
+		void drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 				const cVector4& col);
 
 	private:
@@ -34,7 +37,7 @@ class cCollDebugDrawer {
 				const cVector4& col);
 //		typedef std::pair<eObjectType,eObjectState> colIndex;
 //		std::map<colIndex,cVector3> colMap;
-		std::map<eObjType,cVector4> colMap_;
+		std::map<eEntityState,cVector4> colMap_;
 };
 
 #endif

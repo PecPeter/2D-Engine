@@ -1,5 +1,7 @@
 #include "positionComponent.hpp"
 
+cPosComp::cPosComp (void): cPosComp(0,0,0) {}
+
 cPosComp::cPosComp (double x, double y, double rotn) :
 		cPosComp(cVector2(x,y),rotn) {}
 
@@ -41,4 +43,12 @@ void cPosComp::setRotn (const double& rotn) {
 
 double cPosComp::getRotn (void) const {
 	return compRotn_;
+}
+
+cPosComp operator+ (const cPosComp& lhs, const cPosComp& rhs) {
+	return cPosComp(lhs.getPos() + rhs.getPos(), lhs.getRotn() + rhs.getRotn());
+}
+
+cPosComp operator- (const cPosComp& lhs, const cPosComp& rhs) {
+	return cPosComp(lhs.getPos() - rhs.getPos(), lhs.getRotn() - rhs.getRotn());
 }

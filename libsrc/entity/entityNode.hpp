@@ -7,35 +7,60 @@
 #include "./components/positionComponent.hpp"
 #include "./components/collisionComponent.hpp"
 
+enum class eNodeType {
+	SENSOR,
+	STRUCT
+};
+
 class cEntitySensor {
 	public:
-		cEntitySensor (const cPosComp& posOffset, const cCollComp& collComp,
-					   int id, bool activity = true);
-		~cEntitySensor (void);
+		cEntitySensor (const cPosComp& posOffset, const cCollComp& collComp);
 
 		const cPosComp& getPosComp (void) const;
 
 		const cCollComp& getCollComp (void) const;
 
-		const int& getId (void) const;
-
-		bool getActivity (void);
-		void setActivity (bool activity);
-
 	protected:
 		cPosComp posComp_;	// Offset for this structure from the 'parent'
 		cCollComp collComp_;	// TODO change this to a smart pointer or something
-		int id_;
-		bool isActive_;
 };
 
 class cEntityStruct : public cEntitySensor {
 	public:
-		cEntityStruct (const cPosComp& posOffset, const cCollComp& collComp,
-					   int id, bool activity = true);
+		cEntityStruct (const cPosComp& posOffset, const cCollComp& collComp);
 	private:
 //		cRendComp rendComp_;
 };
+
+class cEntityNode {
+	public:
+		// Add someway to toggle whether the node is active or not
+		cEntityNode (eNodeType nodeType,
+				const std::shared_ptr<cEntitySensor>& nodeInfo);
+
+		int getId (void) const;
+		int getParentId (void) const;
+
+		eNodeType getNodeType (void) const;
+
+		std::shared_ptr<cEntitySensor> getSensor (void) const;
+		std::shared_ptr<cEntityStruct> getStruct (void) const;
+	private:
+		int nodeId_; // Use the id to link the different levels and children together.
+		int parentNodeId_;
+		bool nodeActivity_;
+		eNodeType nodeType_;
+		std::weak_ptr<cEntitySensor> nodeInfo_;
+};
+/*
+struct sEntityNode {
+	public:
+		enum class eNodeType {
+			SENSOR,
+			STRUCT
+		} nodeType;
+		std::weak_ptr<cEntitySensor> nodeInfo_;
+		std::weak_ptr<sEntityNode
 
 typedef std::vector<std::weak_ptr<cEntitySensor>> SensorListCont;
 typedef std::vector<std::weak_ptr<cEntityStruct>> StructListCont;
@@ -59,5 +84,5 @@ class cEntityNode {
 		StructListCont structList_;
 		SensorListCont sensorList_;
 };
-
+*/
 #endif
