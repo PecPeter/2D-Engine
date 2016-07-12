@@ -13,25 +13,24 @@ class cCntrlKb {
 	public:
 		~cCntrlKb (void);
 
-		void addCommand (T action, SDL_Keycode keyCode, bool repeatCommand=true, SDL_Keymod modCode=KMOD_NONE);
-		void addCommand (T action, std::vector<SDL_Keycode>& keyCodes, bool repeatCommand=true, SDL_Keymod modCode=KMOD_NONE);
+		void addCommand (T action, SDL_Keycode keyCode, bool repeatCommand=true, int modCode=KMOD_NONE);
+		void addCommand (T action, std::vector<SDL_Keycode>& keyCodes,
+				bool repeatCommand=true, int modCode=KMOD_NONE);
 		void checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCommands);
 		void removeRepeatCommands (std::vector<T>* commands);
-		void toggleIgnoredModKeys (int modCode);
 	private:
 		void updateWatchKey (SDL_KeyboardEvent& key);
 
 		struct sCommandInfo {
 			T linkedAction_;
 			std::forward_list<bool*> keyStates_;
-			SDL_Keymod modcode_;
+			int modcode_;
 		};
 
 		std::vector<T> prevCommands_;
 		std::vector<sCommandInfo*> commandList_;
 		std::map<SDL_Keycode,bool> kbWatchKeys_;
 		std::map<T,bool> nonRepeatCommands_;
-		int ignoredModKeys_ = KMOD_NONE;
 };
 
 template <class T>
@@ -45,13 +44,13 @@ cCntrlKb<T>::~cCntrlKb (void) {
 }
 
 template <class T>
-void cCntrlKb<T>::addCommand (T action, SDL_Keycode keyCode, bool repeatCommand, SDL_Keymod modCode) {
+void cCntrlKb<T>::addCommand (T action, SDL_Keycode keyCode, bool repeatCommand, int modCode) {
 	std::vector<SDL_Keycode> commandVec(1,keyCode);
 	addCommand(action,commandVec,repeatCommand,modCode);
 }
 	
 template <class T>
-void cCntrlKb<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, bool repeatCommand, SDL_Keymod modCode) {
+void cCntrlKb<T>::addCommand (T action, std::vector<SDL_Keycode>& keyCodes, bool repeatCommand, int modCode) {
 	sCommandInfo* commandInfo = new sCommandInfo;
 	commandInfo->linkedAction_ = action;
 	for (auto& itr : keyCodes) {
@@ -72,8 +71,8 @@ void cCntrlKb<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCo
 	returnCommands->clear();
 
 	for (const auto& commandItr : commandList_) {
-		int comparedKeymod = key.keysym.mod & ignoredModKeys_;
-		if ((commandItr->modcode_^(key.keysym.mod^comparedKeyMod)) == 0) {
+		int comparedKeymod = key.keysym.mod&commandItr->modcode_;
+		if (commandItr->modcode_ == comparedKeyMod) {
 			bool isValidCommand = true;
 			for (const auto& keyStateItr : commandItr->keyStates_) {
 				isValidCommand = isValidCommand && (*keyStateItr);
@@ -118,11 +117,6 @@ void cCntrlKb<T>::removeRepeatCommands (std::vector<T>* commands) {
 		commands->push_back(commandItr);
 	prevCommands_.clear();
 	prevCommands_ = tempCommandsList;
-}
-
-template <class T>
-void cCntrlKb<T>::toggleIdnoredModKeys (int modCode) {
-	ignoredModKeys_ = ignoredModKeys_^modCode;
 }
 
 template <class T>
