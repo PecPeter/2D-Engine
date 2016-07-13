@@ -16,8 +16,8 @@ void cCollTest::testPair (cCollPair& collPair) {
 	const cEntity* ent1 = collPair.ent1().get(),
 				 * ent2 = collPair.ent2().get();
 	if (ent1 != nullptr && ent2 != nullptr) {
-		const std::vector<cEntityNode> nodesList1 = ent1->getNodes(),
-									   nodesList2 = ent2->getNodes();
+		const std::vector<const cEntityNode*> nodesList1 = ent1->getNodes(),
+											  nodesList2 = ent2->getNodes();
 
 		// Calculate the node offsets for collision testing
 		std::map<int, cPosComp> nodeOffset1, nodeOffset2;
@@ -25,16 +25,16 @@ void cCollTest::testPair (cCollPair& collPair) {
 //			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
-			if (itr.getParentId() != 0)
-				parentOffset = nodeOffset1.at(itr.getParentId());
+			if (itr->getParentId() != 0)
+				parentOffset = nodeOffset1.at(itr->getParentId());
 //			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
+				nodeOffset1[itr->getId()] = cPosComp(0,0,0);
 				cVector2 posOffset = parentOffset.getPos()
-								   + itr.getSensor()->getPosComp().getPos();
+								   + itr->getSensor()->getPosComp().getPos();
 				double rotnOffset = parentOffset.getRotn()
-								  + itr.getSensor()->getPosComp().getRotn();
-					nodeOffset1[itr.getId()].setPos(posOffset);
-					nodeOffset1[itr.getId()].setRotn(rotnOffset);
+								  + itr->getSensor()->getPosComp().getRotn();
+					nodeOffset1[itr->getId()].setPos(posOffset);
+					nodeOffset1[itr->getId()].setRotn(rotnOffset);
 /*			}
 			if (itr.getNodeType() == eNodeType::STRUCT) {
 				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
@@ -50,16 +50,16 @@ void cCollTest::testPair (cCollPair& collPair) {
 //			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
-			if (itr.getParentId() != 0)
-				parentOffset = nodeOffset2.at(itr.getParentId());
+			if (itr->getParentId() != 0)
+				parentOffset = nodeOffset2.at(itr->getParentId());
 //			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
+				nodeOffset2[itr->getId()] = cPosComp(0,0,0);
 				cVector2 posOffset = parentOffset.getPos()
-								   + itr.getSensor()->getPosComp().getPos();
+								   + itr->getSensor()->getPosComp().getPos();
 				double rotnOffset = parentOffset.getRotn()
-								  + itr.getSensor()->getPosComp().getRotn();
-					nodeOffset2[itr.getId()].setPos(posOffset);
-					nodeOffset2[itr.getId()].setRotn(rotnOffset);
+								  + itr->getSensor()->getPosComp().getRotn();
+					nodeOffset2[itr->getId()].setPos(posOffset);
+					nodeOffset2[itr->getId()].setRotn(rotnOffset);
 /*			}
 			if (itr.getNodeType() == eNodeType::STRUCT) {
 				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
@@ -77,12 +77,12 @@ void cCollTest::testPair (cCollPair& collPair) {
 			for (const auto& itr2 : nodesList2) {
 				// Check if there was a collision
 				// TODO: Once implemented, check if the node is active or not...
-				sCollShapeInfo shapeInfo1 = {nodeOffset1.at(itr1.getId()),
-											 itr1.getSensor()->getPosComp(),
-											 itr1.getSensor()->getCollComp()},
-							   shapeInfo2 = {nodeOffset2.at(itr2.getId()),
-								   			 itr2.getSensor()->getPosComp(),
-											 itr2.getSensor()->getCollComp()};
+				sCollShapeInfo shapeInfo1 = {nodeOffset1.at(itr1->getId()),
+											 itr1->getSensor()->getPosComp(),
+											 itr1->getSensor()->getCollComp()},
+							   shapeInfo2 = {nodeOffset2.at(itr2->getId()),
+								   			 itr2->getSensor()->getPosComp(),
+											 itr2->getSensor()->getCollComp()};
 				eShapeType shapeType1 =
 						shapeInfo1.collComp_.getCollShape()->getShapeType(),
 						   shapeType2 = 
@@ -99,7 +99,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 					else
 						collType = eCollType::COLLISION;
 					collPair.addCollision(
-							sCollPairInfo(itr1.getId(),itr2.getId(),collVector,
+							sCollPairInfo(itr1->getId(),itr2->getId(),collVector,
 								collType));
 				}
 			}

@@ -37,7 +37,7 @@ class cCollDebugDrawer {
 				const cVector4& col);
 //		typedef std::pair<eObjectType,eObjectState> colIndex;
 //		std::map<colIndex,cVector3> colMap;
-		std::map<eEntityState,cVector4> colMap_;
+		std::map<eEntityType,cVector4> colMap_;
 };
 
 #endif

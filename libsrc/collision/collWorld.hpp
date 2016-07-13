@@ -16,27 +16,39 @@
 #include "../entity/entity.hpp"
 #include "../math/mathVector.hpp"
 
-typedef std::vector<std::shared_ptr<cEntity>> entListCont;
+typedef std::vector<std::shared_ptr<cEntity>> entityListCont;
+typedef std::vector<std::shared_ptr<cEntityNode>> entityNodeListCont;
+typedef std::vector<std::shared_ptr<cCollShape>> collShapeListCont;
 
 class cCollWorld {
 	public:
 		cCollWorld (const std::shared_ptr<cCollBroadphase>& broadphase);
 		~cCollWorld (void);
-		std::shared_ptr<cEntity> createEntity (const eEntityType& type,
-				const cPosComp& pos, const std::vector<cEntityNode>& entityNode,
+		const cEntity* createEntity (const eEntityType& type,
+				const cPosComp& pos,
+				const std::vector<const cEntityNode*>& entityNode,
 				void* userPtr = nullptr);
 		void removeEntity (int entityId);
-		void removeShape (int shapeId);
-		std::forward_list<cCollPair>* checkColls (void);
+
+/*		const cEntityNode* createEntityNode (void);
+		void removeEntityNode (int entityNodeId);
+
+		const cCollShape* createCollShape (void);
+		void removeCollShape (int shapeId);
+
+*/		std::forward_list<cCollPair>* checkColls (void);
 
 		void setDebugDraw (const std::shared_ptr<cCollDebugDrawer>& debugDrawer); 
 		void drawDebugWorld (SDL_Renderer* renderer);
 		void addCollMask (int objMask, int collMask);
 	private:
-		// Move the ownership of the shapes to the collWorld object as well
-		// Make a list for kinematic stuff too, or keep it with dyn
-		entListCont collEntListStatic_,
-					collEntListDyn_;
+		// Storage list containers for the different parts needed
+		// to create entities
+		entityListCont entityListStatic_,
+					   entityListDyn_;
+//		entityNodeListCont entityNodeList_;
+//		collShapeListCont collShapeList_;
+
 		std::forward_list<cCollPair> collPairList_;
 		std::weak_ptr<cCollBroadphase> broadphase_;
 		cCollTest testHandler_;

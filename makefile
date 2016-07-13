@@ -1,7 +1,7 @@
 CC = g++
 DEBUG_FLAGS = -g -O0
-COMP_FLAGS = -Wall -c -std=c++11 -I ./include
-LINK_FLAGS = -Wall -std=c++11 -I ./include
+COMP_FLAGS = -Wall -c -std=c++14 -I ./include
+LINK_FLAGS = -Wall -std=c++14 -I ./include
 
 SRC_DIR = ./src/
 OBJ_DIR = ./obj/

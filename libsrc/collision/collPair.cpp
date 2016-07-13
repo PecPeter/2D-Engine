@@ -7,11 +7,11 @@ sCollPairInfo::sCollPairInfo (int entNodeId1, int entNodeId2,
 
 cCollPair::cCollPair (std::shared_ptr<cEntity> entity1,
 		std::shared_ptr<cEntity> entity2) : collType_(eCollType::NO_COLLISION) {
-	eEntityState ent1State = entity1->getState(),
-				 ent2State = entity2->getState();
-	if (ent1State == eEntityState::STATIC 
-			&& (ent2State == eEntityState::DYNAMIC
-				|| ent2State == eEntityState::KINEMATIC)) {
+	eEntityType ent1Type = entity1->getType(),
+				 ent2Type = entity2->getType();
+	if (ent1Type == eEntityType::STATIC 
+			&& (ent2Type == eEntityType::DYNAMIC
+				|| ent2Type == eEntityType::KINEMATIC)) {
 		entity1_ = entity2;
 		entity2_ = entity1;
 	}

@@ -8,16 +8,10 @@
 #include "./components/positionComponent.hpp"
 #include "./components/collisionComponent.hpp"
 
-enum class eEntityState {
+enum class eEntityType {
 	STATIC,
 	DYNAMIC,
 	KINEMATIC
-};
-
-enum class eEntityType {
-	ACTOR,
-	PAWN,
-	OBJECT
 };
 
 class cEntity;
@@ -28,7 +22,7 @@ const int DEFAULT_ENTITYMASK = 1;
 class cEntity {
 	public:
 		cEntity (int id, const eEntityType& type, const cPosComp& pos,
-				const std::vector<cEntityNode>& entityNodeList,
+				const std::vector<const cEntityNode*>& entityNodeList,
 				void* usrPtr = nullptr);
 		~cEntity (void);
 
@@ -58,13 +52,10 @@ class cEntity {
 		void setPosRotn (const cPosComp& posComp);
 
 		// Entity Node
-		const std::vector<cEntityNode>& getNodes (void) const;
+		const std::vector<const cEntityNode*>& getNodes (void) const;
 
 		// Entity Type
 		eEntityType getType (void) const;
-
-		// Entity State
-		eEntityState getState (void) const;
 
 		// Entity Collision Mask
 		void setMask (int entityMask);
@@ -81,10 +72,9 @@ class cEntity {
 
 	private:
 		int id_;
-		eEntityState state_;
 		eEntityType type_;
 		cPosComp entityPos_;
-		std::vector<cEntityNode> entityNodeList_;
+		std::vector<const cEntityNode*> entityNodeList_;
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;

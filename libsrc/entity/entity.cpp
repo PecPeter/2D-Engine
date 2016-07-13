@@ -1,14 +1,9 @@
 #include "entity.hpp"
 
 cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
-		const std::vector<cEntityNode>& entityNodeList, void* usrPtr) : id_(id), type_(type),
-		entityPos_(pos), entityNodeList_(entityNodeList), usrPtr_(usrPtr) {
-	switch (type_) {
-		case eEntityType::ACTOR: state_ = eEntityState::DYNAMIC; break;
-		case eEntityType::PAWN: state_ = eEntityState::KINEMATIC; break;
-		case eEntityType::OBJECT: state_ = eEntityState::STATIC; break;
-	}
-}
+		const std::vector<const cEntityNode*>& entityNodeList, void* usrPtr) :
+		id_(id), type_(type), entityPos_(pos),
+		entityNodeList_(entityNodeList), usrPtr_(usrPtr) {}
 
 cEntity::~cEntity (void) {}
 
@@ -87,17 +82,13 @@ void cEntity::setPosRotn (const cPosComp& posComp) {
 }
 
 // Entity Node
-const std::vector<cEntityNode>& cEntity::getNodes (void) const {
+const std::vector<const cEntityNode*>& cEntity::getNodes (void) const {
 	return entityNodeList_;
 }
 
 // Entity Type
 eEntityType cEntity::getType (void) const {
 	return type_;
-}
-
-eEntityState cEntity::getState (void) const {
-	return state_;
 }
 
 // Entity Collision Mask

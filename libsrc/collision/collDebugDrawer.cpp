@@ -1,12 +1,12 @@
 #include "collDebugDrawer.hpp"
 
 cCollDebugDrawer::cCollDebugDrawer (int alpha) {
-	colMap_[eEntityState::STATIC] = cVector4(alpha,255,0,0);
-	colMap_[eEntityState::DYNAMIC] = cVector4(alpha,0,255,0);
+	colMap_[eEntityType::STATIC] = cVector4(alpha,255,0,0);
+	colMap_[eEntityType::DYNAMIC] = cVector4(alpha,0,255,0);
 }
 
 void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent) {
-	drawEnt(rend,ent,colMap_.at(ent.getState()));
+	drawEnt(rend,ent,colMap_.at(ent.getType()));
 }
 
 void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
@@ -15,9 +15,9 @@ void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 	// Iterate through the cEntityNode vector of the cEntity class
 	// and draw each shape
 	for (const auto& itr : ent.getNodes()) {
-		const cPosComp shapePos = itr.getSensor()->getPosComp()+entPos;
-		const cCollShape collShape = *(itr.getSensor()->getCollComp().
-				getCollShape());
+		const cPosComp shapePos = itr->getSensor()->getPosComp()+entPos;
+		const cCollShape collShape =
+			*(itr->getSensor()->getCollComp().getCollShape());
 		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
 	}
 }

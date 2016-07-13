@@ -16,10 +16,19 @@ cEntityStruct::cEntityStruct (const cPosComp& posOffset,
 		const cCollComp& collComp) :
 		cEntitySensor(posOffset,collComp) {}
 
+cEntityNode::cEntityNode (int nodeId, const cPosComp& posOffset,
+		const cCollComp& collComp, int parentNodeId) :
+		nodeId_(nodeId), parentNodeId_(parentNodeId),
+		nodeType_(eNodeType::SENSOR) {
+	nodeInfo_ = std::make_unique<cEntitySensor>(posOffset,collComp);
+}
 
-cEntityNode::cEntityNode (eNodeType nodeType,
-		const std::shared_ptr<cEntitySensor>& nodeInfo) :
-		nodeId_(0), parentNodeId_(0), nodeType_(nodeType), nodeInfo_(nodeInfo) {}
+cEntityNode::cEntityNode (int nodeId, const cPosComp& posOffset,
+		const cCollComp& collComp, int dummyVar, int parentNodeId) :
+		nodeId_(nodeId), parentNodeId_(parentNodeId),
+		nodeType_(eNodeType::STRUCT) {
+	nodeInfo_ = std::make_unique<cEntityStruct>(posOffset,collComp);
+}
 
 int cEntityNode::getId (void) const {
 	return nodeId_;
@@ -33,14 +42,14 @@ eNodeType cEntityNode::getNodeType (void) const {
 	return nodeType_;
 }
 
-std::shared_ptr<cEntitySensor>  cEntityNode::getSensor (void) const {
+const cEntitySensor*  cEntityNode::getSensor (void) const {
 	if (nodeType_ == eNodeType::SENSOR)
-		return nodeInfo_.lock();
+		return nodeInfo_.get();
 	return nullptr;
 }
 
-std::shared_ptr<cEntityStruct> cEntityNode::getStruct (void) const {
+const cEntityStruct* cEntityNode::getStruct (void) const {
 	if (nodeType_ == eNodeType::STRUCT)
-		return std::static_pointer_cast<cEntityStruct>(nodeInfo_.lock());
+		return static_cast<const cEntityStruct*>(nodeInfo_.get());
 	return nullptr;
 }
