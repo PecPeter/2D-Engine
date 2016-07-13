@@ -1,6 +1,7 @@
 #ifndef COLLPAIR_HPP
 #define COLLPAIR_HPP
 
+#include <algorithm>
 #include <list>
 #include <memory>
 
@@ -24,12 +25,11 @@ struct sCollPairInfo {
 
 class cCollPair {
 	public:
-		cCollPair (std::shared_ptr<cEntity> entity1,
-				std::shared_ptr<cEntity> entity2);
+		cCollPair (const cEntity& entity1,const cEntity& entity2);
 		~cCollPair (void);
 
-		std::shared_ptr<cEntity> ent1 (void) const;
-		std::shared_ptr<cEntity> ent2 (void) const;
+		const cEntity& ent1 (void) const;
+		const cEntity& ent2 (void) const;
 		void setEntOverlap (const cVector2& overlap);
 		const cVector2& getEntOverlap (void) const;
 		void setCollType (const eCollType& collType);
@@ -37,8 +37,8 @@ class cCollPair {
 
 		void addCollision (const sCollPairInfo& collInfo);
 	private:
-		std::weak_ptr<cEntity> entity1_,
-							   entity2_;
+		const cEntity* entity1_,
+					 * entity2_;
 		cVector2 overlap_; // Overlap is wrt what obj1 has to do
 						   // to get out of collision
 		// TODO: Add the ids of the entity nodes that are colliding

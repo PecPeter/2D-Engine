@@ -1,7 +1,11 @@
 #include "entity.hpp"
 
 cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
-		const std::vector<const cEntityNode*>& entityNodeList, void* usrPtr) :
+		const cEntityNode& entityNode, void* usrPtr) :
+		cEntity(id,type,pos,std::vector<cEntityNode>(1,entityNode),usrPtr) {}
+
+cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
+		const std::vector<cEntityNode>& entityNodeList, void* usrPtr) :
 		id_(id), type_(type), entityPos_(pos),
 		entityNodeList_(entityNodeList), usrPtr_(usrPtr) {}
 
@@ -82,7 +86,7 @@ void cEntity::setPosRotn (const cPosComp& posComp) {
 }
 
 // Entity Node
-const std::vector<const cEntityNode*>& cEntity::getNodes (void) const {
+const std::vector<cEntityNode>& cEntity::getNodes (void) const {
 	return entityNodeList_;
 }
 

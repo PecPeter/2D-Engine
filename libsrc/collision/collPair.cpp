@@ -5,19 +5,14 @@ sCollPairInfo::sCollPairInfo (int entNodeId1, int entNodeId2,
 	entNodeId1_(entNodeId1), entNodeId2_(entNodeId2), overlap_(overlap),
 	collType_(collType) {}
 
-cCollPair::cCollPair (std::shared_ptr<cEntity> entity1,
-		std::shared_ptr<cEntity> entity2) : collType_(eCollType::NO_COLLISION) {
-	eEntityType ent1Type = entity1->getType(),
-				 ent2Type = entity2->getType();
+cCollPair::cCollPair (const cEntity& entity1, const cEntity& entity2) :
+		 entity1_(&entity1), entity2_(&entity2), collType_(eCollType::NO_COLLISION) {
+	eEntityType ent1Type = entity1.getType(),
+				 ent2Type = entity2.getType();
 	if (ent1Type == eEntityType::STATIC 
 			&& (ent2Type == eEntityType::DYNAMIC
 				|| ent2Type == eEntityType::KINEMATIC)) {
-		entity1_ = entity2;
-		entity2_ = entity1;
-	}
-	else {
-		entity1_ = entity1;
-		entity2_ = entity2;
+		std::swap(entity1_,entity2_);
 	}
 }
 
@@ -29,12 +24,12 @@ cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 
 cCollPair::~cCollPair (void) {}
 
-std::shared_ptr<cEntity> cCollPair::ent1 (void) const {
-	return entity1_.lock();
+const cEntity& cCollPair::ent1 (void) const {
+	return *entity1_;
 }
 
-std::shared_ptr<cEntity> cCollPair::ent2 (void) const {
-	return entity2_.lock();
+const cEntity& cCollPair::ent2 (void) const {
+	return *entity2_;
 }
 
 void cCollPair::setEntOverlap (const cVector2& overlap) {

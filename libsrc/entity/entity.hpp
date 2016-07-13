@@ -22,7 +22,9 @@ const int DEFAULT_ENTITYMASK = 1;
 class cEntity {
 	public:
 		cEntity (int id, const eEntityType& type, const cPosComp& pos,
-				const std::vector<const cEntityNode*>& entityNodeList,
+				const cEntityNode& entityNode, void* usrPtr = nullptr);
+		cEntity (int id, const eEntityType& type, const cPosComp& pos,
+				const std::vector<cEntityNode>& entityNodeList,
 				void* usrPtr = nullptr);
 		~cEntity (void);
 
@@ -52,7 +54,7 @@ class cEntity {
 		void setPosRotn (const cPosComp& posComp);
 
 		// Entity Node
-		const std::vector<const cEntityNode*>& getNodes (void) const;
+		const std::vector<cEntityNode>& getNodes (void) const;
 
 		// Entity Type
 		eEntityType getType (void) const;
@@ -74,7 +76,7 @@ class cEntity {
 		int id_;
 		eEntityType type_;
 		cPosComp entityPos_;
-		std::vector<const cEntityNode*> entityNodeList_;
+		std::vector<cEntityNode> entityNodeList_;
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;

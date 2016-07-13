@@ -33,7 +33,7 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const 
 		for (; cItr2 != objList.end(); ++cItr2) {
 			if (compareCollMask((*cItr1)->getMask(),
 						(*cItr2)->getMask()) == true)
-				pairList.push_front(cCollPair(*cItr1,*cItr2));
+				pairList.push_front(cCollPair(*((*cItr1).get()),*((*cItr2).get())));
 		}
 	}
 }
@@ -46,12 +46,12 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objListDyn,
 		++cItr2;
 		for (; cItr2 != objListDyn.end(); ++cItr2) {
 			if (compareCollMask((*cItr1)->getMask(),(*cItr2)->getMask()) == true)
-				pairList.push_front(cCollPair(*cItr1,*cItr2));
+				pairList.push_front(cCollPair(*((*cItr1).get()),*((*cItr2).get())));
 		}
 		for (objCont::const_iterator cItr3 = objListStatic.begin();
 				cItr3 != objListStatic.end(); ++cItr3) {
 			if (compareCollMask((*cItr1)->getMask(),(*cItr3)->getMask()) == true)
-				pairList.push_front(cCollPair(*cItr1,*cItr3));
+				pairList.push_front(cCollPair(*((*cItr1).get()),*((*cItr3).get())));
 		}
 	}
 }

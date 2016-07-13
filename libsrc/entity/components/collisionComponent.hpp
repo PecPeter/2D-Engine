@@ -1,21 +1,18 @@
 #ifndef COLLISIONCOMPONENT_HPP
 #define COLLISIONCOMPONENT_HPP
 
-#include <memory>
-
 #include "../../collision/collShape.hpp"
-#include "../../math/mathMatrix.hpp"
-#include "../../math/mathVector.hpp"
-#include "../../math/mathConstants.hpp"
-#include "../../math/mathLinAlgebra.hpp"
+
+// This component may be unnecessary. If it is, move the collShape to the node
+// itself
 
 class cCollComp {
 	public:
-		cCollComp (std::shared_ptr<cCollShape> collShape);
+		cCollComp (const cCollShape& collShape);
 
-		std::shared_ptr<cCollShape> getCollShape (void) const;
+		const cCollShape& getCollShape (void) const;
 	private:
-		std::weak_ptr<cCollShape> collShape_;
+		cCollShape collShape_;
 };
 
 #endif

@@ -13,11 +13,11 @@ cCollTest::cCollTest (void) {
 
 void cCollTest::testPair (cCollPair& collPair) {
 	cVector2 collVector(noColl_);
-	const cEntity* ent1 = collPair.ent1().get(),
-				 * ent2 = collPair.ent2().get();
+	const cEntity* ent1 = &collPair.ent1(),
+				 * ent2 = &collPair.ent2();
 	if (ent1 != nullptr && ent2 != nullptr) {
-		const std::vector<const cEntityNode*> nodesList1 = ent1->getNodes(),
-											  nodesList2 = ent2->getNodes();
+		const std::vector<cEntityNode>& nodesList1 = ent1->getNodes(),
+									  & nodesList2 = ent2->getNodes();
 
 		// Calculate the node offsets for collision testing
 		std::map<int, cPosComp> nodeOffset1, nodeOffset2;
@@ -25,16 +25,14 @@ void cCollTest::testPair (cCollPair& collPair) {
 //			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
-			if (itr->getParentId() != 0)
-				parentOffset = nodeOffset1.at(itr->getParentId());
+			if (itr.getParentId() != 0)
+				parentOffset = nodeOffset1.at(itr.getParentId());
 //			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset1[itr->getId()] = cPosComp(0,0,0);
-				cVector2 posOffset = parentOffset.getPos()
-								   + itr->getSensor()->getPosComp().getPos();
-				double rotnOffset = parentOffset.getRotn()
-								  + itr->getSensor()->getPosComp().getRotn();
-					nodeOffset1[itr->getId()].setPos(posOffset);
-					nodeOffset1[itr->getId()].setRotn(rotnOffset);
+				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
+				cVector2 posOffset = parentOffset.getPos() + itr.getPosComp().getPos();
+				double rotnOffset = parentOffset.getRotn() + itr.getPosComp().getRotn();
+					nodeOffset1[itr.getId()].setPos(posOffset);
+					nodeOffset1[itr.getId()].setRotn(rotnOffset);
 /*			}
 			if (itr.getNodeType() == eNodeType::STRUCT) {
 				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
@@ -50,16 +48,16 @@ void cCollTest::testPair (cCollPair& collPair) {
 //			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
-			if (itr->getParentId() != 0)
-				parentOffset = nodeOffset2.at(itr->getParentId());
+			if (itr.getParentId() != 0)
+				parentOffset = nodeOffset2.at(itr.getParentId());
 //			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset2[itr->getId()] = cPosComp(0,0,0);
+				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
 				cVector2 posOffset = parentOffset.getPos()
-								   + itr->getSensor()->getPosComp().getPos();
+								   + itr.getPosComp().getPos();
 				double rotnOffset = parentOffset.getRotn()
-								  + itr->getSensor()->getPosComp().getRotn();
-					nodeOffset2[itr->getId()].setPos(posOffset);
-					nodeOffset2[itr->getId()].setRotn(rotnOffset);
+								  + itr.getPosComp().getRotn();
+					nodeOffset2[itr.getId()].setPos(posOffset);
+					nodeOffset2[itr.getId()].setRotn(rotnOffset);
 /*			}
 			if (itr.getNodeType() == eNodeType::STRUCT) {
 				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
@@ -77,16 +75,16 @@ void cCollTest::testPair (cCollPair& collPair) {
 			for (const auto& itr2 : nodesList2) {
 				// Check if there was a collision
 				// TODO: Once implemented, check if the node is active or not...
-				sCollShapeInfo shapeInfo1 = {nodeOffset1.at(itr1->getId()),
-											 itr1->getSensor()->getPosComp(),
-											 itr1->getSensor()->getCollComp()},
-							   shapeInfo2 = {nodeOffset2.at(itr2->getId()),
-								   			 itr2->getSensor()->getPosComp(),
-											 itr2->getSensor()->getCollComp()};
+				sCollShapeInfo shapeInfo1 = {nodeOffset1.at(itr1.getId()),
+											 itr1.getPosComp(),
+											 itr1.getCollComp()},
+							   shapeInfo2 = {nodeOffset2.at(itr2.getId()),
+								   			 itr2.getPosComp(),
+											 itr2.getCollComp()};
 				eShapeType shapeType1 =
-						shapeInfo1.collComp_.getCollShape()->getShapeType(),
+						shapeInfo1.collComp_.getCollShape().getShapeType(),
 						   shapeType2 = 
-						shapeInfo2.collComp_.getCollShape()->getShapeType();
+						shapeInfo2.collComp_.getCollShape().getShapeType();
 				auto& collFunc = collTestMap_.at(collTestMapKey(shapeType1,
 							shapeType2));
 				collVector = ((this->*collFunc)(shapeInfo1,shapeInfo2));
@@ -99,7 +97,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 					else
 						collType = eCollType::COLLISION;
 					collPair.addCollision(
-							sCollPairInfo(itr1->getId(),itr2->getId(),collVector,
+							sCollPairInfo(itr1.getId(),itr2.getId(),collVector,
 								collType));
 				}
 			}
@@ -154,13 +152,13 @@ void cCollTest::testPair (cCollPair& collPair) {
 cVector2 cCollTest::collTestPolyPoly (const sCollShapeInfo& objPoly1,
 		const sCollShapeInfo& objPoly2) {
 	std::vector<cVector2> normList;
-	const cCollShape* shape1 = objPoly1.collComp_.getCollShape().get(),
-			   		* shape2 = objPoly2.collComp_.getCollShape().get();
-	genNormList(shape1->getNormList(),shape2->getNormList(),&normList);
+	const cCollShape& shape1 = objPoly1.collComp_.getCollShape(),
+			   		& shape2 = objPoly2.collComp_.getCollShape();
+	genNormList(shape1.getNormList(),shape2.getNormList(),&normList);
 
 	//Update shape data to account for obj position and rotation
-	std::vector<cVector2> ptList1 = shape1->getData(),
-						  ptList2 = shape2->getData();
+	std::vector<cVector2> ptList1 = shape1.getData(),
+						  ptList2 = shape2.getData();
 	cPosComp objPos1 = objPoly1.parentPosComp_ + objPoly1.shapePosComp_,
 			 objPos2 = objPoly2.parentPosComp_ + objPoly2.shapePosComp_;
 	if (objPos1.getRotn() != 0) {
@@ -221,15 +219,15 @@ cVector2 cCollTest::collTestPolyPoly (const sCollShapeInfo& objPoly1,
 
 cVector2 cCollTest::collTestPolyCircle (const sCollShapeInfo& objPoly,
 		const sCollShapeInfo& objCircle) {
-	const cCollShape* poly = objPoly.collComp_.getCollShape().get(),
-			   		* circle = objCircle.collComp_.getCollShape().get();
+	const cCollShape& poly = objPoly.collComp_.getCollShape(),
+			   		& circle = objCircle.collComp_.getCollShape();
 	// Create norm list
 	// Find the closest poly vertex to the centroid of a circle,
 	// add the centroid->vertex as an axis to test for collision
-	std::vector<cVector2> normList = poly->getNormList();
+	std::vector<cVector2> normList = poly.getNormList();
 
 	//Update shape data to account for obj position and rotation
-	std::vector<cVector2> polyPtList = poly->getData();
+	std::vector<cVector2> polyPtList = poly.getData();
 	cPosComp polyPos = objPoly.parentPosComp_ + objPoly.shapePosComp_;
 	if (polyPos.getRotn() != 0) {
 		cMatrix rotnMatrix = rotnTransform(polyPos.getRotn());
@@ -267,7 +265,7 @@ cVector2 cCollTest::collTestPolyCircle (const sCollShapeInfo& objPoly,
 			if (projValue > polyMax)
 				polyMax = projValue;
 		}
-		double radius = circle->getData().at(0).getX();
+		double radius = circle.getData().at(0).getX();
 		double pos = vScalProj(circlePos.getPos(),normListItr);
 		circleMin = pos-radius;
 		circleMax = pos+radius;
@@ -301,13 +299,13 @@ cVector2 cCollTest::collTestCirclePoly (const sCollShapeInfo& objCircle,
 
 cVector2 cCollTest::collTestCircleCircle (const sCollShapeInfo& objCircle1,
 		const sCollShapeInfo& objCircle2) {
-	const cCollShape* circle1 = objCircle1.collComp_.getCollShape().get(),
-			   		* circle2 = objCircle2.collComp_.getCollShape().get();
+	const cCollShape& circle1 = objCircle1.collComp_.getCollShape(),
+			   		& circle2 = objCircle2.collComp_.getCollShape();
 
 	cPosComp obj1Pos = objCircle1.parentPosComp_ + objCircle1.shapePosComp_,
 			 obj2Pos = objCircle2.parentPosComp_ + objCircle2.shapePosComp_;
-	double obj1Rad = circle1->getData().at(0).getX(),
-		   obj2Rad = circle2->getData().at(0).getX();
+	double obj1Rad = circle1.getData().at(0).getX(),
+		   obj2Rad = circle2.getData().at(0).getX();
 	cVector2 satAxis = vUnitVector((obj2Pos-obj1Pos).getPos());
 	double obj1Min = vScalProj(obj1Pos.getPos(),satAxis)-obj1Rad,
 		   obj1Max = vScalProj(obj1Pos.getPos(),satAxis)+obj1Rad,

@@ -15,9 +15,8 @@ void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 	// Iterate through the cEntityNode vector of the cEntity class
 	// and draw each shape
 	for (const auto& itr : ent.getNodes()) {
-		const cPosComp shapePos = itr->getSensor()->getPosComp()+entPos;
-		const cCollShape collShape =
-			*(itr->getSensor()->getCollComp().getCollShape());
+		const cPosComp shapePos = itr.getPosComp()+entPos;
+		const cCollShape collShape = itr.getCollComp().getCollShape();
 		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
 	}
 }

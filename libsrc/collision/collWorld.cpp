@@ -17,9 +17,9 @@ cCollWorld::~cCollWorld (void) {
 */
 }
 
-const cEntity* cCollWorld::createEntity (const eEntityType& type,
-		const cPosComp& pos,
-		const std::vector<const cEntityNode*>& entityNodeList, void* userPtr) {
+const cEntity& cCollWorld::createEntity (const eEntityType& type,
+		const cPosComp& pos, const std::vector<cEntityNode>& entityNode,
+		void* userPtr) {
 	entityListCont* entityList = nullptr;
 	switch (type) {
 		case eEntityType::STATIC: entityList = &entityListStatic_; break;
@@ -28,9 +28,9 @@ const cEntity* cCollWorld::createEntity (const eEntityType& type,
 		default: break;
 	}
 	entityList->push_back(
-		std::make_shared<cEntity>(numEntities_,type,pos,entityNodeList,userPtr));
+		std::make_unique<cEntity>(numEntities_,type,pos,entityNode,userPtr));
 	++numEntities_;
-	return (*(entityList->end())).get();
+	return *((*(entityList->end())).get());
 }
 
 void cCollWorld::removeEntity (int entityId) {

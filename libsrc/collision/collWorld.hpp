@@ -16,7 +16,7 @@
 #include "../entity/entity.hpp"
 #include "../math/mathVector.hpp"
 
-typedef std::vector<std::shared_ptr<cEntity>> entityListCont;
+typedef std::vector<std::unique_ptr<cEntity>> entityListCont;
 typedef std::vector<std::shared_ptr<cEntityNode>> entityNodeListCont;
 typedef std::vector<std::shared_ptr<cCollShape>> collShapeListCont;
 
@@ -24,9 +24,9 @@ class cCollWorld {
 	public:
 		cCollWorld (const std::shared_ptr<cCollBroadphase>& broadphase);
 		~cCollWorld (void);
-		const cEntity* createEntity (const eEntityType& type,
-				const cPosComp& pos,
-				const std::vector<const cEntityNode*>& entityNode,
+
+		const cEntity& createEntity (const eEntityType& type, const cPosComp& pos,
+				const std::vector<cEntityNode>& entityNode,
 				void* userPtr = nullptr);
 		void removeEntity (int entityId);
 

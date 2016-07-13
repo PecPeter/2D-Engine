@@ -12,7 +12,7 @@
 #include "collPair.hpp"
 
 typedef std::forward_list<cCollPair> pairCont;
-typedef std::vector<std::shared_ptr<cEntity>> objCont;
+typedef std::vector<std::unique_ptr<cEntity>> objCont;
 
 //maybe make these templated so that the queue doesnt have to be hardcoded,
 //same with the vector (it may change in the future);
