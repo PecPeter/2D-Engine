@@ -7,14 +7,21 @@ void collWorldUnitTest (void) {
 	std::shared_ptr<cCollDebugDrawer> drawer;
 	world.setDebugDraw(drawer);
 	std::cout << "Testing createObject (cVector2, cCollShape&):\n";
-	std::shared_ptr<cCollAabb> shape(std::make_shared<cCollAabb>(2,10)),
-			  shape2(std::make_shared<cCollAabb>(10,2));
+	cCollAabb shape(2,10),
+			  shape2(10,2);
 	cVector2 pos1(20,20),
 			 pos2(20,25),
 			 pos3(0,0);
-	std::shared_ptr<cCollObj> obj1 = world.createObject(pos1,shape),
-							  obj2 = world.createObject(pos2,shape2),
-							  obj3 = world.createObject(pos3,shape);
+	cCollComp coll1(shape);
+	cEntityNode node1(0,cPosComp(0,0,0),coll1);
+	std::vector<cEntityNode> nodeList;
+	nodeList.push_back(node1);
+	nodeList.push_back(cEntityNode(1,cPosComp(1,2,3),cCollComp(shape2)));
+	cEntity ent1 = world.createEntity(eEntityType::STATIC,cPosComp(pos1,0),node1),
+			ent2 = world.createEntity(eEntityType::DYNAMIC,cPosComp(pos2,0),
+					nodeList),
+			ent3 = world.createEntity(eEntityType::KINEMATIC,cPosComp(pos3,0),
+					nodeList);
 	world.checkColls();
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Window* window = SDL_CreateWindow("TEST",SDL_WINDOWPOS_UNDEFINED,

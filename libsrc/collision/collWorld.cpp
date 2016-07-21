@@ -18,6 +18,11 @@ cCollWorld::~cCollWorld (void) {
 }
 
 const cEntity& cCollWorld::createEntity (const eEntityType& type,
+		const cPosComp& pos, const cEntityNode& entityNode, void* userPtr) {
+	return createEntity(type,pos,std::vector<cEntityNode>(1,entityNode),userPtr);
+}
+
+const cEntity& cCollWorld::createEntity (const eEntityType& type,
 		const cPosComp& pos, const std::vector<cEntityNode>& entityNode,
 		void* userPtr) {
 	entityListCont* entityList = nullptr;

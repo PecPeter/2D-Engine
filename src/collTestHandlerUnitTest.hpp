@@ -9,7 +9,7 @@
 
 #include "./2D-Engine/collision/collDebugDrawer.hpp"
 #include "./2D-Engine/math/mathVector.hpp"
-#include "./2D-Engine/collision/collObject.hpp"
+#include "./2D-Engine/entity/entity.hpp"
 #include "./2D-Engine/collision/collPair.hpp"
 #include "./2D-Engine/collision/collTest.hpp"
 #include "./2D-Engine/renderFunctions.hpp"

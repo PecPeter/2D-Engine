@@ -49,7 +49,7 @@ class handler: public cStateHandler {
 };
 
 int main (void) {
-
+/*
 	cEngine engine;
 	setSettings(60,200,10);
 
@@ -62,8 +62,8 @@ int main (void) {
 	}
 	engine.mainLoop();
 	engine.quit();
-
-/*	std::cout << "Matrix unit test:\n";
+*/
+	std::cout << "Matrix unit test:\n";
 	mathMatrixTest();
 	std::cout << "Vector unit test:\n";
 	mathVectorUnitTest();
@@ -75,9 +75,9 @@ int main (void) {
 	collTestHandlerUnitTest();
 	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-*/	std::cout << "Collision world debug drawer unit test:\n";
+	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
-//	std::cout << "Command handler unit test:\n";
-//	commandHandlerUnitTest();
+	std::cout << "Command handler unit test:\n";
+	commandHandlerUnitTest();
 	return 0;
 }

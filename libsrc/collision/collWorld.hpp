@@ -26,6 +26,8 @@ class cCollWorld {
 		~cCollWorld (void);
 
 		const cEntity& createEntity (const eEntityType& type, const cPosComp& pos,
+				const cEntityNode& entityNode, void* userPtr = nullptr);
+		const cEntity& createEntity (const eEntityType& type, const cPosComp& pos,
 				const std::vector<cEntityNode>& entityNode,
 				void* userPtr = nullptr);
 		void removeEntity (int entityId);

@@ -71,7 +71,7 @@ void cCntrlKb<T>::checkCommand (SDL_KeyboardEvent& key, std::vector<T>* returnCo
 	returnCommands->clear();
 
 	for (const auto& commandItr : commandList_) {
-		int comparedKeymod = key.keysym.mod&commandItr->modcode_;
+		int comparedKeyMod = key.keysym.mod&commandItr->modcode_;
 		if (commandItr->modcode_ == comparedKeyMod) {
 			bool isValidCommand = true;
 			for (const auto& keyStateItr : commandItr->keyStates_) {

@@ -32,11 +32,11 @@ const cEntity& cCollPair::ent2 (void) const {
 	return *entity2_;
 }
 
-void cCollPair::setEntOverlap (const cVector2& overlap) {
+void cCollPair::setOverlap (const cVector2& overlap) {
 	overlap_ = overlap;
 }
 
-const cVector2& cCollPair::getEntOverlap (void) const {
+const cVector2& cCollPair::getOverlap (void) const {
 	return overlap_;
 }
 

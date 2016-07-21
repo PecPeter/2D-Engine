@@ -30,8 +30,8 @@ class cCollPair {
 
 		const cEntity& ent1 (void) const;
 		const cEntity& ent2 (void) const;
-		void setEntOverlap (const cVector2& overlap);
-		const cVector2& getEntOverlap (void) const;
+		void setOverlap (const cVector2& overlap);
+		const cVector2& getOverlap (void) const;
 		void setCollType (const eCollType& collType);
 		eCollType getCollType (void) const;
 

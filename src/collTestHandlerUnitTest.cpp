@@ -14,16 +14,20 @@ void collTestHandlerUnitTest (void) {
 			 blue(255,0,0,255);
 
 	cVector2 pos1(150,200), pos2(200,200);
-	std::shared_ptr<cCollAabb> shape1 = std::make_shared<cCollAabb>(5,20),
-		shape2 = std::make_shared<cCollAabb>(50,5);
-	std::shared_ptr<cCollCircle> shape3 = std::make_shared<cCollCircle>(5),
-		shape4 = std::make_shared<cCollCircle>(50);
-	std::vector<cVector2> polyPtList = {cVector2(0,50),cVector2(-25,25),cVector2(-15,-25),cVector2(15,-25),
-		cVector2(25,25),cVector2(0,50)};
-	std::shared_ptr<cCollPoly> shape5 = std::make_shared<cCollPoly>(polyPtList);
-	std::shared_ptr<cCollObj> obj1 = std::make_shared<cCollObj>(pos1,shape1),
-		obj2 = std::make_shared<cCollObj>(pos2,shape2);
-	cCollPair pair(obj1,obj2);
+	cCollAabb shape1(5,20),
+			  shape2(50,5);
+	cCollCircle shape3(5),
+				shape4(50);
+	std::vector<cVector2> polyPtList = 
+		{cVector2(0,50),cVector2(-25,25),cVector2(-15,-25),cVector2(15,-25),
+		 cVector2(25,25),cVector2(0,50)};
+	cCollPoly shape5(polyPtList);
+
+	cEntityNode node1(0,cPosComp(0,0,0),cCollComp(shape1)),
+				node2(0,cPosComp(0,0,0),cCollComp(shape4));
+	cEntity ent1(0,eEntityType::STATIC,cPosComp(pos1,0),node1),
+			ent2(1,eEntityType::DYNAMIC,cPosComp(pos2,0),node2);
+	cCollPair pair(ent1,ent2);
 	cCollTest testHandler;
 
 	bool runLoop = true;
@@ -32,24 +36,25 @@ void collTestHandlerUnitTest (void) {
 		SDL_RenderClear(renderer);
 
 		double dx = 2, dy = 0;
+		std::cout << "To exit, enter '-0.1' for dx and dy...\n";
 		std::cout << "dx: ";
 		std::cin >> dx;
 		std::cout << "dy: ";
 		std::cin >> dy;
-		obj1->translate(dx,dy);
+		ent1.translate(dx,dy);
 //		obj2.rotate(0.005);
-		std::cout << "Obj1 Pos:\n" << obj1->getObjPos() <<
-			"\nObj2 Pos:\n" << obj2->getObjPos();
+		std::cout << "Ent1 Pos:\n" << ent1.getPos() <<
+			"\nEnt2 Pos:\n" << ent2.getPos();
 		testHandler.testPair(pair);
 		if (pair.getCollType() == eCollType::COLLISION) {
-			std::cout << "\nCollision Overlap:\n" << pair.getObjOverlap() << "\n";
+			std::cout << "\nCollision Overlap:\n" << pair.getOverlap() << "\n";
 		}
 		if (dx == -0.1 && dy == -0.1)
 			runLoop = false;
 
 		// Render shapes
-		drawer.drawObj(renderer,*obj1,red);
-		drawer.drawObj(renderer,*obj2,green);
+		drawer.drawEnt(renderer,ent1,red);
+		drawer.drawEnt(renderer,ent2,green);
 		SDL_RenderPresent(renderer);
 	}
 }
