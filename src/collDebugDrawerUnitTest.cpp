@@ -39,9 +39,9 @@ void collDebugDrawerUnitTest (void) {
 	std::vector<cEntityNode> nodeList1;
 	nodeList1.push_back(node1);
 	nodeList1.push_back(cEntityNode(1,cPosComp(50,10,0),coll4,0));
-	cEntity ent1 = world.createEntity(eEntityType::STATIC,pos1,nodeList1),
-			ent2 = world.createEntity(eEntityType::DYNAMIC,pos2,node1),
-			ent3 = world.createEntity(eEntityType::DYNAMIC,pos3,node2);
+	const cEntity& ent1 = world.createEntity(eEntityType::STATIC,pos1,nodeList1),
+			&ent2 = world.createEntity(eEntityType::DYNAMIC,pos2,node1),
+			&ent3 = world.createEntity(eEntityType::DYNAMIC,pos3,node2);
 //			ent4 = world.createEntity(eEntityType::DYNAMIC,pos4,),
 //			ent5 = world.createEntity(eEntityType::DYNAMIC,pos5,),
 //			ent6 = world.createEntity(eEntityType::KINEMATIC,pos6,);

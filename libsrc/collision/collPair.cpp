@@ -6,7 +6,7 @@ sCollPairInfo::sCollPairInfo (int entNodeId1, int entNodeId2,
 	collType_(collType) {}
 
 cCollPair::cCollPair (const cEntity& entity1, const cEntity& entity2) :
-		 entity1_(&entity1), entity2_(&entity2), collType_(eCollType::NO_COLLISION) {
+		 entity1_(&entity1), entity2_(&entity2) {
 	eEntityType ent1Type = entity1.getType(),
 				 ent2Type = entity2.getType();
 	if (ent1Type == eEntityType::STATIC 
@@ -32,22 +32,20 @@ const cEntity& cCollPair::ent2 (void) const {
 	return *entity2_;
 }
 
-void cCollPair::setOverlap (const cVector2& overlap) {
-	overlap_ = overlap;
-}
-
-const cVector2& cCollPair::getOverlap (void) const {
-	return overlap_;
-}
-
-void cCollPair::setCollType (const eCollType& collType) {
-	collType_ = collType;
-}
-
-eCollType cCollPair::getCollType (void) const {
-	return collType_;
-}
-
 void cCollPair::addCollision (const sCollPairInfo& collInfo) {
 	collisionList_.push_back(collInfo);
+}
+
+void cCollPair::addCollision (int entNodeId1, int entNodeId2,
+		const cVector2& overlap, const eCollType& collType) {
+	sCollPairInfo info(entNodeId1, entNodeId2, overlap, collType);
+	collisionList_.push_back(info);
+}
+
+const std::list<sCollPairInfo>& cCollPair::getCollisions (void) const {
+	return collisionList_;
+}
+
+void cCollPair::resetCollisions (void) {
+	collisionList_.clear();
 }

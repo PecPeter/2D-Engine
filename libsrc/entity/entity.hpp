@@ -22,10 +22,11 @@ const int DEFAULT_ENTITYMASK = 1;
 class cEntity {
 	public:
 		cEntity (int id, const eEntityType& type, const cPosComp& pos,
-				const cEntityNode& entityNode, void* usrPtr = nullptr);
+				const cEntityNode& entityNode,
+				int entityMask = DEFAULT_ENTITYMASK, void* usrPtr = nullptr);
 		cEntity (int id, const eEntityType& type, const cPosComp& pos,
 				const std::vector<cEntityNode>& entityNodeList,
-				void* usrPtr = nullptr);
+				int entityMask = DEFAULT_ENTITYMASK, void* usrPtr = nullptr);
 		~cEntity (void);
 
 		int getId (void) const;

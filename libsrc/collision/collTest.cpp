@@ -1,5 +1,10 @@
 #include "collTest.hpp"
 
+sCollShapeInfo::sCollShapeInfo (const cPosComp& parentPosComp,
+		const cPosComp& shapePosComp, const cCollComp& collComp):
+		parentPosComp_(parentPosComp), shapePosComp_(shapePosComp),
+		collComp_(collComp) {}
+
 cCollTest::cCollTest (void) {
 	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::POLY)] =
 		&cCollTest::collTestPolyPoly;
@@ -12,6 +17,9 @@ cCollTest::cCollTest (void) {
 }
 
 void cCollTest::testPair (cCollPair& collPair) {
+	// Clear the previous collisions
+	collPair.resetCollisions();
+
 	cVector2 collVector(noColl_);
 	const cEntity* ent1 = &collPair.ent1(),
 				 * ent2 = &collPair.ent2();
@@ -22,65 +30,45 @@ void cCollTest::testPair (cCollPair& collPair) {
 		// Calculate the node offsets for collision testing
 		std::map<int, cPosComp> nodeOffset1, nodeOffset2;
 		for (const auto& itr : nodesList1) {
-//			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
 			if (itr.getParentId() != 0)
 				parentOffset = nodeOffset1.at(itr.getParentId());
-//			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
-				cVector2 posOffset = parentOffset.getPos() + itr.getPosComp().getPos();
-				double rotnOffset = parentOffset.getRotn() + itr.getPosComp().getRotn();
-					nodeOffset1[itr.getId()].setPos(posOffset);
-					nodeOffset1[itr.getId()].setRotn(rotnOffset);
-/*			}
-			if (itr.getNodeType() == eNodeType::STRUCT) {
-				nodeOffset1[itr.getId()] = cPosComp(0,0,0);
-				cVector2 posOffset = parentOffset.getPos()
-								   + itr.getStruct()->getPosComp().getPos();
-				double rotnOffset = parentOffset.getRotn()
-								  + itr.getSensor()->getPosComp().getRotn();
-					nodeOffset1[itr.getId()].setPos(posOffset);
-					nodeOffset1[itr.getId()].setRotn(rotnOffset);
-			}
-*/		}
+			nodeOffset1[itr.getId()] = cPosComp(0,0,0);
+			cVector2 posOffset = parentOffset.getPos()
+							   + itr.getPosComp().getPos();
+			double rotnOffset = parentOffset.getRotn()
+							  + itr.getPosComp().getRotn();
+			nodeOffset1[itr.getId()].setPos(posOffset);
+			nodeOffset1[itr.getId()].setRotn(rotnOffset);
+		}
 		for (const auto& itr : nodesList2) {
-//			std::shared_ptr<cEntityNode> node = itr.lock();
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
 			if (itr.getParentId() != 0)
 				parentOffset = nodeOffset2.at(itr.getParentId());
-//			if (itr.getNodeType() == eNodeType::SENSOR) {
-				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
-				cVector2 posOffset = parentOffset.getPos()
-								   + itr.getPosComp().getPos();
-				double rotnOffset = parentOffset.getRotn()
-								  + itr.getPosComp().getRotn();
-					nodeOffset2[itr.getId()].setPos(posOffset);
-					nodeOffset2[itr.getId()].setRotn(rotnOffset);
-/*			}
-			if (itr.getNodeType() == eNodeType::STRUCT) {
-				nodeOffset2[itr.getId()] = cPosComp(0,0,0);
-				cVector2 posOffset = parentOffset.getPos()
-								   + itr.getStruct()->getPosComp().getPos();
-				double rotnOffset = parentOffset.getRotn()
-								  + itr.getSensor()->getPosComp().getRotn();
-					nodeOffset2[itr.getId()].setPos(posOffset);
-					nodeOffset2[itr.getId()].setRotn(rotnOffset);
-			}
-*/		}
+			nodeOffset2[itr.getId()] = cPosComp(0,0,0);
+			cVector2 posOffset = parentOffset.getPos()
+							   + itr.getPosComp().getPos();
+			double rotnOffset = parentOffset.getRotn()
+							  + itr.getPosComp().getRotn();
+			nodeOffset2[itr.getId()].setPos(posOffset);
+			nodeOffset2[itr.getId()].setRotn(rotnOffset);
+		}
 
 		// Iterate through the lists and test each node
 		for (const auto& itr1 : nodesList1) {
 			for (const auto& itr2 : nodesList2) {
 				// Check if there was a collision
 				// TODO: Once implemented, check if the node is active or not...
-				sCollShapeInfo shapeInfo1 = {nodeOffset1.at(itr1.getId()),
-											 itr1.getPosComp(),
-											 itr1.getCollComp()},
-							   shapeInfo2 = {nodeOffset2.at(itr2.getId()),
-								   			 itr2.getPosComp(),
-											 itr2.getCollComp()};
+				sCollShapeInfo shapeInfo1(ent1->getPosComp(),
+										  itr1.getPosComp()+
+										  nodeOffset1.at(itr1.getId()),
+										  itr1.getCollComp()),
+							   shapeInfo2(ent2->getPosComp(),
+										  itr2.getPosComp()+
+										  nodeOffset2.at(itr2.getId()),
+				 						  itr2.getCollComp());
 				eShapeType shapeType1 =
 						shapeInfo1.collComp_.getCollShape().getShapeType(),
 						   shapeType2 = 
@@ -96,58 +84,13 @@ void cCollTest::testPair (cCollPair& collPair) {
 						collType = eCollType::CONTACT;
 					else
 						collType = eCollType::COLLISION;
-					collPair.addCollision(
-							sCollPairInfo(itr1.getId(),itr2.getId(),collVector,
-								collType));
+					collPair.addCollision(itr1.getId(),itr2.getId(),collVector,
+							collType);
 				}
 			}
 		}
 	}
 }
-/*
-		std::shared_ptr<const cCollShape> shape1,
-										  shape2;
-			genShape1 = obj1->getGenCollShape().lock();
-			genShape2 = obj2->getGenCollShape().lock();
-		sCollShapeInfo shapeInfo1 = {ent1->getRotn(),
-									 ent1->getPos(),
-									 genShape1},
-					   shapeInfo2 = {ent2->getRotn(),
-									 ent2->getPos(),
-									 genShape2};
-		eShapeType shape1 = genShape1->getShapeType(),
-				   shape2 = genShape2->getShapeType();
-		auto& function = collTestMap_.at(collTestMapKey(shape1,shape2));
-		collVector = ((this->*function)(shapeInfo1,shapeInfo2));
-	}
-	if (collVector != noColl_) {
-		std::shared_ptr<const sCollShapeNode> accShape1,
-											  accShape2;
-		if (obj1->getAccCollShape().expired() == false &&
-				obj2->getAccCollShape().expired() == false) {
-			accShape1 = obj1->getAccCollShape().lock();
-			accShape2 = obj2->getAccCollShape().lock();
-			if (accShape1 != nullptr) {
-				if (accShape2 != nullptr)
-					collVector = collTestComplexComplex(*obj1,*obj2,collVector);
-				else
-					collVector = collTestComplexSimple(*obj1,*obj2,collVector);
-			}
-			else {
-				if (accShape2 != nullptr)
-					collVector = collTestSimpleComplex(*obj1,*obj2,collVector);
-			}
-		}
-	}
-	if (collVector == noColl_)
-		collPair.setCollType(eCollType::NO_COLLISION);
-	else if (collVector == contactColl_)
-		collPair.setCollType(eCollType::CONTACT);
-	else
-		collPair.setCollType(eCollType::COLLISION);
-	collPair.setObjOverlap(collVector);
-}
-*/
 
 cVector2 cCollTest::collTestPolyPoly (const sCollShapeInfo& objPoly1,
 		const sCollShapeInfo& objPoly2) {

@@ -12,8 +12,9 @@ void collPairUnitTest (void) {
 	const cEntity& ent1Ref = collPair.ent1(),
 		  		 & ent2Ref = collPair.ent2();
 
-	collPair.setOverlap(cVector2(2,-0.4444));
+/*	collPair.setOverlap(cVector2(2,-0.4444));
 	std::cout << "\nOverlap:\n" << collPair.getOverlap();
 	collPair.setCollType(eCollType::CONTACT);
 	collPair.getCollType();
+*/
 }

@@ -23,9 +23,9 @@ void collTestHandlerUnitTest (void) {
 		 cVector2(25,25),cVector2(0,50)};
 	cCollPoly shape5(polyPtList);
 
-	cEntityNode node1(0,cPosComp(0,0,0),cCollComp(shape1)),
+	cEntityNode node1(0,cPosComp(0,0,0),cCollComp(shape3)),
 				node2(0,cPosComp(0,0,0),cCollComp(shape4));
-	cEntity ent1(0,eEntityType::STATIC,cPosComp(pos1,0),node1),
+	cEntity ent1(0,eEntityType::DYNAMIC,cPosComp(pos1,0),node1),
 			ent2(1,eEntityType::DYNAMIC,cPosComp(pos2,0),node2);
 	cCollPair pair(ent1,ent2);
 	cCollTest testHandler;
@@ -46,34 +46,20 @@ void collTestHandlerUnitTest (void) {
 		std::cout << "Ent1 Pos:\n" << ent1.getPos() <<
 			"\nEnt2 Pos:\n" << ent2.getPos();
 		testHandler.testPair(pair);
-		if (pair.getCollType() == eCollType::COLLISION) {
-			std::cout << "\nCollision Overlap:\n" << pair.getOverlap() << "\n";
-		}
+
 		if (dx == -0.1 && dy == -0.1)
 			runLoop = false;
-
+		else {
+			for (const auto& listItr : pair.getCollisions()) {
+				if (listItr.collType_ == eCollType::COLLISION) {
+					std::cout << "\nCollision Overlap:\n" << 
+						listItr.overlap_ << "\n";
+				}
+			}
+		}
 		// Render shapes
 		drawer.drawEnt(renderer,ent1,red);
 		drawer.drawEnt(renderer,ent2,green);
 		SDL_RenderPresent(renderer);
 	}
 }
-/*
-void drawPoly (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
-	std::vector<cVector2> ptList = obj.getGenCollShape().lock()->getData();
-	ptList.push_back(*ptList.begin());
-	Sint16* vx = new Sint16[ptList.size()],
-		*vy = new Sint16[ptList.size()];
-	cVector2 objPos = obj.getObjPos();
-	for (std::size_t i = 0; i < ptList.size(); ++i) {
-		vx[i] = ptList.at(i).getX()+objPos.getX();
-		vy[i] = ptList.at(i).getY()+objPos.getY();
-	}
-	filledPolygonRGBA(rend,vx,vy,ptList.size(),col.getX(),col.getY(),col.getZ(),255);
-}
-
-void drawCircle (SDL_Renderer* rend, const cCollObj& obj, const cVector3& col) {
-	filledCircleRGBA(rend,obj.getObjPos().getX(),obj.getObjPos().getY(),
-			obj.getGenCollShape().lock()->getData().at(0).getX(),col.getX(),col.getY(),col.getZ(),255);
-}
-*/

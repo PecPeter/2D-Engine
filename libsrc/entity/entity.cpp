@@ -1,13 +1,16 @@
 #include "entity.hpp"
 
 cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
-		const cEntityNode& entityNode, void* usrPtr) :
-		cEntity(id,type,pos,std::vector<cEntityNode>(1,entityNode),usrPtr) {}
+		const cEntityNode& entityNode, int entityMask, void* usrPtr) :
+		cEntity(id,type,pos,std::vector<cEntityNode>(1,entityNode),
+				entityMask,usrPtr) {}
 
 cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
-		const std::vector<cEntityNode>& entityNodeList, void* usrPtr) :
+		const std::vector<cEntityNode>& entityNodeList, int entityMask,
+		void* usrPtr) :
 		id_(id), type_(type), entityPos_(pos),
-		entityNodeList_(entityNodeList), usrPtr_(usrPtr) {}
+		entityNodeList_(entityNodeList), entityMask_(entityMask),
+		usrPtr_(usrPtr) {}
 
 cEntity::~cEntity (void) {}
 

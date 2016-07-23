@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include "collShape.hpp"
 #include "collPair.hpp"
@@ -21,6 +22,8 @@ const cVector2 noColl_ (std::nan(""),std::nan(""));
 const cVector2 contactColl_ (0,0);
 
 struct sCollShapeInfo {
+	sCollShapeInfo (const cPosComp& parentPosComp, const cPosComp& shapePosComp,
+			const cCollComp& collComp);
 	const cPosComp parentPosComp_,
 		  		   shapePosComp_;
 	const cCollComp collComp_;

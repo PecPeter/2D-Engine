@@ -18,13 +18,15 @@ cCollWorld::~cCollWorld (void) {
 }
 
 const cEntity& cCollWorld::createEntity (const eEntityType& type,
-		const cPosComp& pos, const cEntityNode& entityNode, void* userPtr) {
-	return createEntity(type,pos,std::vector<cEntityNode>(1,entityNode),userPtr);
+		const cPosComp& pos, const cEntityNode& entityNode,
+		int entityMask, void* userPtr) {
+	return createEntity(type,pos,std::vector<cEntityNode>(1,entityNode),
+			entityMask,userPtr);
 }
 
 const cEntity& cCollWorld::createEntity (const eEntityType& type,
 		const cPosComp& pos, const std::vector<cEntityNode>& entityNode,
-		void* userPtr) {
+		int entityMask, void* userPtr) {
 	entityListCont* entityList = nullptr;
 	switch (type) {
 		case eEntityType::STATIC: entityList = &entityListStatic_; break;
@@ -32,16 +34,16 @@ const cEntity& cCollWorld::createEntity (const eEntityType& type,
 		case eEntityType::KINEMATIC: entityList = &entityListDyn_; break;
 		default: break;
 	}
-	entityList->push_back(
-		std::make_unique<cEntity>(numEntities_,type,pos,entityNode,userPtr));
+	entityList->push_back(cEntity(numEntities_,type,pos,entityNode,
+				entityMask,userPtr));
 	++numEntities_;
-	return *((*(entityList->end())).get());
+	return *(entityList->end());
 }
 
 void cCollWorld::removeEntity (int entityId) {
 	for (entityListCont::iterator itr = entityListStatic_.begin();
 			itr != entityListStatic_.end(); ++itr) {
-		if ((*itr)->getId() == entityId) {
+		if ((*itr).getId() == entityId) {
 			std::iter_swap(itr,entityListStatic_.end());
 			entityListStatic_.pop_back();
 			return;
@@ -49,7 +51,7 @@ void cCollWorld::removeEntity (int entityId) {
 	}
 	for (entityListCont::iterator itr = entityListDyn_.begin();
 			itr != entityListDyn_.end(); ++itr) {
-		if ((*itr)->getId() == entityId) {
+		if ((*itr).getId() == entityId) {
 			std::iter_swap(itr,entityListDyn_.end());
 			entityListDyn_.pop_back();
 			return;
@@ -86,9 +88,11 @@ std::forward_list<cCollPair>* cCollWorld::checkColls (void) {
 	// Run narrow phase
 	for (auto& qItr : collPairList_)
 		testHandler_.testPair(qItr);
-	collPairList_.remove_if([](const cCollPair& pair) {
-			return pair.getCollType() == eCollType::NO_COLLISION ? true : false;
-			});
+	// The following removes any pairs that have no_collision, but the functions
+	// have been set up to prevent this from happening in the first place
+//	collPairList_.remove_if([](const cCollPair& pair) {
+//			return pair.getCollType() == eCollType::NO_COLLISION ? true : false;
+//			});
 	return &collPairList_;
 }
 
@@ -100,10 +104,10 @@ void cCollWorld::setDebugDraw (const std::shared_ptr<cCollDebugDrawer>&
 void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 	if (debugDrawer_.expired() == false) {
 		for (auto& itr : entityListStatic_) {
-			debugDrawer_.lock()->drawEnt(renderer,*itr);
+			debugDrawer_.lock()->drawEnt(renderer,itr);
 		}
 		for (auto& itr : entityListDyn_) {
-			debugDrawer_.lock()->drawEnt(renderer,*itr);
+			debugDrawer_.lock()->drawEnt(renderer,itr);
 		}
 	}
 }
