@@ -14,6 +14,9 @@ void clampMin (const double& min, double& value);
 void clampRange (const double& min, const double& max, double& value);
 bool isWithinRange (const double& min, const double& max, const double& value);
 
+// When the rotation matrix is multiplied by a column vector (ie.
+// rotnMatrix*column), the points in the column vector will be rotated
+// around the origin.
 cMatrix rotnTransform (const double rotnRad);
 
 // Determines whether 2 lines intersect or not. If they do, it will

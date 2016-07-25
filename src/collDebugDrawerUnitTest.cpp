@@ -22,7 +22,7 @@ void collDebugDrawerUnitTest (void) {
 	cCollAabb aabb(10,5);
 	//Add a poly shape
 	cCollCircle circle(10);
-	cPosComp pos1(10,10,0),
+	cPosComp pos1(100,300,0),
 			 pos2(20,20,0),
 			 pos3(30,30,0),
 			 pos4(40,40,0),
@@ -34,18 +34,26 @@ void collDebugDrawerUnitTest (void) {
 			  coll4(aabb),
 //			  coll5(poly),
 			  coll6(circle);
-	cEntityNode node1(0,cPosComp(0,0,0),coll1),
+	cEntityNode node1(0,cPosComp(0,0,0),coll4),
 				node2(0,cPosComp(100,0,0),coll3);
 	std::vector<cEntityNode> nodeList1;
 	nodeList1.push_back(node1);
-	nodeList1.push_back(cEntityNode(1,cPosComp(50,10,0),coll4,0));
-	const cEntity& ent1 = world.createEntity(eEntityType::STATIC,pos1,nodeList1),
-			&ent2 = world.createEntity(eEntityType::DYNAMIC,pos2,node1),
-			&ent3 = world.createEntity(eEntityType::DYNAMIC,pos3,node2);
+	nodeList1.push_back(cEntityNode(1,cPosComp(50,0,0),coll4,0));
+	cEntity* ent1 = world.createEntity(eEntityType::STATIC,pos1,nodeList1),
+		   * ent2 = world.createEntity(eEntityType::DYNAMIC,pos2,node1),
+		   * ent3 = world.createEntity(eEntityType::DYNAMIC,pos3,node2);
 //			ent4 = world.createEntity(eEntityType::DYNAMIC,pos4,),
 //			ent5 = world.createEntity(eEntityType::DYNAMIC,pos5,),
 //			ent6 = world.createEntity(eEntityType::KINEMATIC,pos6,);
-	world.setDebugDraw(draw);
-	world.drawDebugWorld(renderer);
-	SDL_RenderPresent(renderer);
+	for (int i = 0; i < 1000; ++i) {
+		ent1->rotate(0.007);
+		ent2->translate(1,1);
+		ent3->translate(2,2);
+
+		SDL_SetRenderDrawColor(renderer,0,0,0,255);
+		SDL_RenderClear(renderer);
+		world.setDebugDraw(draw);
+		world.drawDebugWorld(renderer);
+		SDL_RenderPresent(renderer);
+	}
 }

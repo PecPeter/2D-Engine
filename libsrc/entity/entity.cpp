@@ -126,3 +126,22 @@ void cEntity::setUsrPtr (void* usrPtr) {
 void* cEntity::getUsrPtr (void) const {
 	return usrPtr_;
 }
+
+std::map<int,cPosComp> getNodeOffset (const std::vector<cEntityNode>& nodeList) {
+	std::map<int,cPosComp> nodeOffsetMap;
+
+	for (const auto& itr : nodeList) {
+		cPosComp parentOffset(0,0,0),
+				 nodeOffset(0,0,0);
+		if (itr.getParentId() != 0)
+			parentOffset = nodeOffsetMap.at(itr.getParentId());
+		nodeOffsetMap[itr.getId()] = cPosComp(0,0,0);
+		cVector2 posOffset = parentOffset.getPos()
+						   + itr.getPosComp().getPos();
+		double rotnOffset = parentOffset.getRotn()
+						  + itr.getPosComp().getRotn();
+		nodeOffsetMap[itr.getId()].setPos(posOffset);
+		nodeOffsetMap[itr.getId()].setRotn(rotnOffset);
+	}
+	return nodeOffsetMap;
+}

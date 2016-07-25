@@ -35,10 +35,13 @@ const cVector2& cPosComp::getPos (void) const {
 
 void cPosComp::addRotn (const double& dr) {
 	compRotn_ += dr;
+	int numRotn = compRotn_ / PI_2;
+	compRotn_ -= static_cast<double>(numRotn)*PI_2;
 }
 
 void cPosComp::setRotn (const double& rotn) {
-	compRotn_ = rotn;
+	int numRotn = rotn / PI_2;
+	compRotn_ = rotn - static_cast<double>(numRotn)*PI_2;
 }
 
 double cPosComp::getRotn (void) const {

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <map>
 
 #include "entityNode.hpp"
 #include "./components/positionComponent.hpp"
@@ -82,5 +83,7 @@ class cEntity {
 		collCallbackFunc collCallback_;
 		void* usrPtr_;
 };
+
+std::map<int,cPosComp> getNodeOffset (const std::vector<cEntityNode>& nodeList);
 
 #endif

@@ -17,11 +17,14 @@ void collWorldUnitTest (void) {
 	std::vector<cEntityNode> nodeList;
 	nodeList.push_back(node1);
 	nodeList.push_back(cEntityNode(1,cPosComp(1,2,3),cCollComp(shape2)));
-	const cEntity& ent2 = world.createEntity(eEntityType::DYNAMIC,cPosComp(pos2,0),
+	cEntity* ent2 = world.createEntity(eEntityType::DYNAMIC,cPosComp(pos2,0),
 					nodeList),
-		&	ent3 = world.createEntity(eEntityType::KINEMATIC,cPosComp(pos3,0),
+		   * ent3 = world.createEntity(eEntityType::KINEMATIC,cPosComp(pos3,0),
 					nodeList);
-	const cEntity& ent1 = world.createEntity(eEntityType::STATIC,cPosComp(pos1,0),node1);
+	cEntity* ent1 = world.createEntity(eEntityType::STATIC,cPosComp(pos1,0),node1);
+	ent1->translate(1,0);
+	ent2->translate(1,0);
+	ent3->translate(1,0);
 	world.checkColls();
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Window* window = SDL_CreateWindow("TEST",SDL_WINDOWPOS_UNDEFINED,

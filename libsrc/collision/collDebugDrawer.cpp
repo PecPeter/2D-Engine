@@ -12,26 +12,24 @@ void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent) {
 void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 		const cVector4& col) {
 	const cPosComp entPos = ent.getPosComp();
+	cMatrix rotnMatrix = rotnTransform(ent.getRotn());
+	const std::vector<cEntityNode> nodeList = ent.getNodes();
+	std::map<int,cPosComp> nodeOffset = getNodeOffset(nodeList);
 	// Iterate through the cEntityNode vector of the cEntity class
 	// and draw each shape
-	for (const auto& itr : ent.getNodes()) {
-		const cPosComp shapePos = itr.getPosComp()+entPos;
+	for (const auto& itr : nodeList) {
+		// Calculate the positions at which the different shapes will be at,
+		// rotating them by the amount that the entity is rotated by
+		cPosComp shapePos = itr.getPosComp()+nodeOffset.at(itr.getId());
+		shapePos.setPos(rotnMatrix*shapePos.getPos()+entPos.getPos());
+		shapePos.setRotn(shapePos.getRotn()+entPos.getRotn());
+
+//		const cPosComp shapePos = itr.getPosComp()+entPos;
 		const cCollShape collShape = itr.getCollComp().getCollShape();
 		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
 	}
 }
 
-/*void cCollDebugDrawer::drawComplexShape (const SDL_Renderer* rend,
-		const sCollShapeNode& shapeNode, const cVector2& posOffset,
-		const double& rotnOffset, const cVector4& col) {
-	cVector2 shapePos = posOffset+shapeNode.posOffset_;
-	double shapeRotn = rotnOffset+shapeNode.rotnOffset_;
-	drawShape(rend,*(shapeNode.collShape_.lock()),shapePos,shapeRotn,col);
-	for (auto const &listItr : shapeNode.childrenNodeList_) {
-		drawComplexShape(rend,*(listItr.lock()),shapePos,shapeRotn,col);
-	}
-}
-*/
 void cCollDebugDrawer::drawShape (const SDL_Renderer* rend,
 		const cCollShape& shape, const cVector2& shapePos,
 		const double& shapeRotn, const cVector4& col) {

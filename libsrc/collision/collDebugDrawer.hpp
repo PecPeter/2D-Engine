@@ -29,9 +29,6 @@ class cCollDebugDrawer {
 				const cVector4& col);
 
 	private:
-		void drawComplexShape (const SDL_Renderer* rend,
-				const sCollShapeNode& shapeNode, const cVector2& posOffset,
-				const double& rotnOffset, const cVector4& col);
 		void drawShape (const SDL_Renderer* rend, const cCollShape& shape,
 				const cVector2& shapePos, const double& shapeRotn,
 				const cVector4& col);

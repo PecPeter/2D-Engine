@@ -17,14 +17,14 @@ cCollWorld::~cCollWorld (void) {
 */
 }
 
-const cEntity& cCollWorld::createEntity (const eEntityType& type,
+cEntity* cCollWorld::createEntity (const eEntityType& type,
 		const cPosComp& pos, const cEntityNode& entityNode,
 		int entityMask, void* userPtr) {
 	return createEntity(type,pos,std::vector<cEntityNode>(1,entityNode),
 			entityMask,userPtr);
 }
 
-const cEntity& cCollWorld::createEntity (const eEntityType& type,
+cEntity* cCollWorld::createEntity (const eEntityType& type,
 		const cPosComp& pos, const std::vector<cEntityNode>& entityNode,
 		int entityMask, void* userPtr) {
 	entityListCont* entityList = nullptr;
@@ -34,16 +34,17 @@ const cEntity& cCollWorld::createEntity (const eEntityType& type,
 		case eEntityType::KINEMATIC: entityList = &entityListDyn_; break;
 		default: break;
 	}
-	entityList->push_back(cEntity(numEntities_,type,pos,entityNode,
-				entityMask,userPtr));
+	std::shared_ptr<cEntity> entityPtr = std::make_shared<cEntity>(
+			numEntities_,type,pos,entityNode,entityMask,userPtr);
+	entityList->push_back(entityPtr);
 	++numEntities_;
-	return *(entityList->end());
+	return entityPtr.get();
 }
 
 void cCollWorld::removeEntity (int entityId) {
 	for (entityListCont::iterator itr = entityListStatic_.begin();
 			itr != entityListStatic_.end(); ++itr) {
-		if ((*itr).getId() == entityId) {
+		if ((*itr)->getId() == entityId) {
 			std::iter_swap(itr,entityListStatic_.end());
 			entityListStatic_.pop_back();
 			return;
@@ -51,30 +52,14 @@ void cCollWorld::removeEntity (int entityId) {
 	}
 	for (entityListCont::iterator itr = entityListDyn_.begin();
 			itr != entityListDyn_.end(); ++itr) {
-		if ((*itr).getId() == entityId) {
+		if ((*itr)->getId() == entityId) {
 			std::iter_swap(itr,entityListDyn_.end());
 			entityListDyn_.pop_back();
 			return;
 		}
 	}
 }
-/*
-const cEntityNode* cCollWorld::createEntityNode (void) {
-	return nullptr;
-}
 
-void cCollWorld::removeEntityNode (int entityNodeId) {
-
-}
-
-const cCollShape* cCollWorld::createCollShape (void) {
-	return nullptr;
-}
-
-void cCollWorld::removeCollShape (int shapeId) {
-
-}
-*/
 std::forward_list<cCollPair>* cCollWorld::checkColls (void) {
 	collPairList_.empty();
 	// Run broadphase
@@ -104,10 +89,10 @@ void cCollWorld::setDebugDraw (const std::shared_ptr<cCollDebugDrawer>&
 void cCollWorld::drawDebugWorld (SDL_Renderer* renderer) {
 	if (debugDrawer_.expired() == false) {
 		for (auto& itr : entityListStatic_) {
-			debugDrawer_.lock()->drawEnt(renderer,itr);
+			debugDrawer_.lock()->drawEnt(renderer,*itr);
 		}
 		for (auto& itr : entityListDyn_) {
-			debugDrawer_.lock()->drawEnt(renderer,itr);
+			debugDrawer_.lock()->drawEnt(renderer,*itr);
 		}
 	}
 }

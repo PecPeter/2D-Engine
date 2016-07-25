@@ -28,8 +28,9 @@ void cCollTest::testPair (cCollPair& collPair) {
 									  & nodesList2 = ent2->getNodes();
 
 		// Calculate the node offsets for collision testing
-		std::map<int, cPosComp> nodeOffset1, nodeOffset2;
-		for (const auto& itr : nodesList1) {
+		std::map<int, cPosComp> nodeOffset1 = getNodeOffset(nodesList1),
+								nodeOffset2 = getNodeOffset(nodesList2);
+/*		for (const auto& itr : nodesList1) {
 			cPosComp parentOffset(0,0,0),
 					 nodeOffset(0,0,0);
 			if (itr.getParentId() != 0)
@@ -55,7 +56,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 			nodeOffset2[itr.getId()].setPos(posOffset);
 			nodeOffset2[itr.getId()].setRotn(rotnOffset);
 		}
-
+*/
 		// Iterate through the lists and test each node
 		for (const auto& itr1 : nodesList1) {
 			for (const auto& itr2 : nodesList2) {

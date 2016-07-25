@@ -53,7 +53,7 @@ int main (void) {
 	cEngine engine;
 	setSettings(60,200,10);
 
-	char title[] = "Space Game";
+	char title[] = "Test Environment";
 	handler* sH = new handler;
 
 	if (engine.init (640,480,title,sH) == false) {
@@ -73,11 +73,11 @@ int main (void) {
 	collPairUnitTest();
 	std::cout << "Collision test handler unit test:\n";
 	collTestHandlerUnitTest();
-*/	std::cout << "Collision world unit test:\n";
+	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-	std::cout << "Collision world debug drawer unit test:\n";
+*/	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
-	std::cout << "Command handler unit test:\n";
+/*	std::cout << "Command handler unit test:\n";
 	commandHandlerUnitTest();
-	return 0;
+*/	return 0;
 }
