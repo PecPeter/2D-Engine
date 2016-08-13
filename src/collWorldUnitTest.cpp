@@ -2,9 +2,8 @@
 
 void collWorldUnitTest (void) {
 	std::cout << "Testing collWorld constructor:\n";
-	std::shared_ptr<cGenBroadphase> broadphase = std::make_shared<cGenBroadphase>();
-	cCollWorld world(broadphase);
-	std::shared_ptr<cCollDebugDrawer> drawer;
+	cCollWorld world(eBroadphaseType::GENERAL);
+	cCollDebugDrawer drawer;
 	world.setDebugDraw(drawer);
 	std::cout << "Testing createObject (cVector2, cCollShape&):\n";
 	cCollAabb shape(2,10),
@@ -17,11 +16,11 @@ void collWorldUnitTest (void) {
 	std::vector<cEntityNode> nodeList;
 	nodeList.push_back(node1);
 	nodeList.push_back(cEntityNode(1,cPosComp(1,2,3),cCollComp(shape2)));
-	cEntity* ent2 = world.createEntity(eEntityType::DYNAMIC,cPosComp(pos2,0),
-					nodeList),
-		   * ent3 = world.createEntity(eEntityType::KINEMATIC,cPosComp(pos3,0),
-					nodeList);
-	cEntity* ent1 = world.createEntity(eEntityType::STATIC,cPosComp(pos1,0),node1);
+	cEntity* ent2 = world.createEntity(0,cPosComp(pos2,0),
+					nodeList,eEntityType::DYNAMIC),
+		   * ent3 = world.createEntity(1,cPosComp(pos3,0),
+					nodeList,eEntityType::KINEMATIC);
+	cEntity* ent1 = world.createEntity(2,cPosComp(pos1,0),node1);
 	ent1->translate(1,0);
 	ent2->translate(1,0);
 	ent3->translate(1,0);

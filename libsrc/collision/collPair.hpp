@@ -25,13 +25,11 @@ struct sCollPairInfo {
 
 class cCollPair {
 	public:
-		cCollPair (const cEntity& entity1, const cEntity& entity2);
+		cCollPair (cEntity& entity1, cEntity& entity2);
 		~cCollPair (void);
 
-		const cEntity& ent1 (void) const;
-		const cEntity& ent2 (void) const;
-		void setCollType (const eCollType& collType);
-		eCollType getCollType (void) const;
+		cEntity& ent1 (void) const;
+		cEntity& ent2 (void) const;
 
 		void addCollision (const sCollPairInfo& collInfo);
 		void addCollision (int entNodeId1, int entNodeId2,
@@ -39,8 +37,8 @@ class cCollPair {
 		const std::list<sCollPairInfo>& getCollisions (void) const;
 		void resetCollisions (void);
 	private:
-		const cEntity* entity1_,
-					 * entity2_;
+		cEntity* entity1_,
+			   * entity2_;
 //		cVector2 overlap_; // Overlap is wrt what obj1 has to do
 						   // to get out of collision
 		// TODO: Add the ids of the entity nodes that are colliding

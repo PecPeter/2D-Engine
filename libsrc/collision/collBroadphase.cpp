@@ -25,10 +25,10 @@ cGenBroadphase::cGenBroadphase (void) {}
 
 cGenBroadphase::~cGenBroadphase (void) {}
 
-void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const {
-	for (objCont::const_iterator cItr1 = objList.begin();
+void cGenBroadphase::genList (pairCont& pairList, objCont& objList) const {
+	for (objCont::iterator cItr1 = objList.begin();
 			cItr1 != objList.end(); ++cItr1) {
-		objCont::const_iterator cItr2 = cItr1;
+		objCont::iterator cItr2 = cItr1;
 		++cItr2;
 		for (; cItr2 != objList.end(); ++cItr2) {
 			if (compareCollMask((*cItr1)->getMask(), (*cItr2)->getMask()) == true)
@@ -37,8 +37,8 @@ void cGenBroadphase::genList (pairCont& pairList, const objCont& objList) const 
 	}
 }
 
-void cGenBroadphase::genList (pairCont& pairList, const objCont& objListDyn,
-		const objCont& objListStatic) const {
+void cGenBroadphase::genList (pairCont& pairList, objCont& objListDyn,
+		objCont& objListStatic) const {
 	for (objCont::const_iterator cItr1 = objListDyn.begin();
 			cItr1 != objListDyn.end(); ++cItr1) {
 		objCont::const_iterator cItr2 = cItr1;

@@ -1,8 +1,14 @@
 #include "collDebugDrawer.hpp"
 
 cCollDebugDrawer::cCollDebugDrawer (int alpha) {
-	colMap_[eEntityType::STATIC] = cVector4(alpha,255,0,0);
-	colMap_[eEntityType::DYNAMIC] = cVector4(alpha,0,255,0);
+	int alphaLevel = alpha;
+	if (alpha > 255)
+		alphaLevel = 255;
+	else if (alpha < 0)
+		alphaLevel = 0;
+	colMap_[eEntityType::STATIC] = cVector4(alphaLevel,255,0,0);
+	colMap_[eEntityType::DYNAMIC] = cVector4(alphaLevel,0,255,0);
+	colMap_[eEntityType::KINEMATIC] = cVector4(alphaLevel,0,0,255);
 }
 
 void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent) {
@@ -20,11 +26,10 @@ void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,
 	for (const auto& itr : nodeList) {
 		// Calculate the positions at which the different shapes will be at,
 		// rotating them by the amount that the entity is rotated by
-		cPosComp shapePos = itr.getPosComp()+nodeOffset.at(itr.getId());
+		cPosComp shapePos = nodeOffset.at(itr.getId());
 		shapePos.setPos(rotnMatrix*shapePos.getPos()+entPos.getPos());
 		shapePos.setRotn(shapePos.getRotn()+entPos.getRotn());
 
-//		const cPosComp shapePos = itr.getPosComp()+entPos;
 		const cCollShape collShape = itr.getCollComp().getCollShape();
 		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
 	}

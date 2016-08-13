@@ -16,13 +16,14 @@ cCollTest::cCollTest (void) {
 		&cCollTest::collTestCircleCircle;
 }
 
-void cCollTest::testPair (cCollPair& collPair) {
+bool cCollTest::testPair (cCollPair& collPair) {
 	// Clear the previous collisions
 	collPair.resetCollisions();
 
 	cVector2 collVector(noColl_);
 	const cEntity* ent1 = &collPair.ent1(),
 				 * ent2 = &collPair.ent2();
+	bool isCollision = false;
 	if (ent1 != nullptr && ent2 != nullptr) {
 		const std::vector<cEntityNode>& nodesList1 = ent1->getNodes(),
 									  & nodesList2 = ent2->getNodes();
@@ -30,44 +31,15 @@ void cCollTest::testPair (cCollPair& collPair) {
 		// Calculate the node offsets for collision testing
 		std::map<int, cPosComp> nodeOffset1 = getNodeOffset(nodesList1),
 								nodeOffset2 = getNodeOffset(nodesList2);
-/*		for (const auto& itr : nodesList1) {
-			cPosComp parentOffset(0,0,0),
-					 nodeOffset(0,0,0);
-			if (itr.getParentId() != 0)
-				parentOffset = nodeOffset1.at(itr.getParentId());
-			nodeOffset1[itr.getId()] = cPosComp(0,0,0);
-			cVector2 posOffset = parentOffset.getPos()
-							   + itr.getPosComp().getPos();
-			double rotnOffset = parentOffset.getRotn()
-							  + itr.getPosComp().getRotn();
-			nodeOffset1[itr.getId()].setPos(posOffset);
-			nodeOffset1[itr.getId()].setRotn(rotnOffset);
-		}
-		for (const auto& itr : nodesList2) {
-			cPosComp parentOffset(0,0,0),
-					 nodeOffset(0,0,0);
-			if (itr.getParentId() != 0)
-				parentOffset = nodeOffset2.at(itr.getParentId());
-			nodeOffset2[itr.getId()] = cPosComp(0,0,0);
-			cVector2 posOffset = parentOffset.getPos()
-							   + itr.getPosComp().getPos();
-			double rotnOffset = parentOffset.getRotn()
-							  + itr.getPosComp().getRotn();
-			nodeOffset2[itr.getId()].setPos(posOffset);
-			nodeOffset2[itr.getId()].setRotn(rotnOffset);
-		}
-*/
 		// Iterate through the lists and test each node
 		for (const auto& itr1 : nodesList1) {
 			for (const auto& itr2 : nodesList2) {
 				// Check if there was a collision
 				// TODO: Once implemented, check if the node is active or not...
 				sCollShapeInfo shapeInfo1(ent1->getPosComp(),
-										  itr1.getPosComp()+
 										  nodeOffset1.at(itr1.getId()),
 										  itr1.getCollComp()),
 							   shapeInfo2(ent2->getPosComp(),
-										  itr2.getPosComp()+
 										  nodeOffset2.at(itr2.getId()),
 				 						  itr2.getCollComp());
 				eShapeType shapeType1 =
@@ -80,6 +52,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 
 				if (collVector != noColl_) {
 					// Collision detected, add it to the pair's list
+					isCollision = true;
 					eCollType collType;
 					if (collVector == contactColl_)
 						collType = eCollType::CONTACT;
@@ -91,6 +64,7 @@ void cCollTest::testPair (cCollPair& collPair) {
 			}
 		}
 	}
+	return isCollision;
 }
 
 cVector2 cCollTest::collTestPolyPoly (const sCollShapeInfo& objPoly1,

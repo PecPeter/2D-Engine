@@ -12,10 +12,9 @@ void collDebugDrawerUnitTest (void) {
 	SDL_SetRenderDrawColor(renderer,0,0,0,255);
 	SDL_RenderClear(renderer);
 
-	std::shared_ptr<cCollDebugDrawer> draw = std::make_shared<cCollDebugDrawer>();
-	std::shared_ptr<cGenBroadphase> broadphase = 
-		std::make_shared<cGenBroadphase>();
-	cCollWorld world(broadphase);
+	cCollWorld world(eBroadphaseType::GENERAL);
+	cCollDebugDrawer draw;
+	world.setDebugDraw(draw);
 	cCollPoint point;
 	cCollLine line(cVector2(0.250,4.0));
 	cCollTri tri(5,10,16,2,3,-4);
@@ -39,9 +38,9 @@ void collDebugDrawerUnitTest (void) {
 	std::vector<cEntityNode> nodeList1;
 	nodeList1.push_back(node1);
 	nodeList1.push_back(cEntityNode(1,cPosComp(50,0,0),coll4,0));
-	cEntity* ent1 = world.createEntity(eEntityType::STATIC,pos1,nodeList1),
-		   * ent2 = world.createEntity(eEntityType::DYNAMIC,pos2,node1),
-		   * ent3 = world.createEntity(eEntityType::DYNAMIC,pos3,node2);
+	cEntity* ent1 = world.createEntity(0,pos1,nodeList1),
+		   * ent2 = world.createEntity(1,pos2,node1,eEntityType::DYNAMIC),
+		   * ent3 = world.createEntity(2,pos3,node2,eEntityType::DYNAMIC);
 //			ent4 = world.createEntity(eEntityType::DYNAMIC,pos4,),
 //			ent5 = world.createEntity(eEntityType::DYNAMIC,pos5,),
 //			ent6 = world.createEntity(eEntityType::KINEMATIC,pos6,);
@@ -52,7 +51,6 @@ void collDebugDrawerUnitTest (void) {
 
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderClear(renderer);
-		world.setDebugDraw(draw);
 		world.drawDebugWorld(renderer);
 		SDL_RenderPresent(renderer);
 	}

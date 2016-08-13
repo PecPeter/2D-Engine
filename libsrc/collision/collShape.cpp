@@ -5,8 +5,8 @@ cCollShape::cCollShape (eShapeType shapeType, int numNorms): shapeType_(shapeTyp
 }
 
 cCollShape::~cCollShape (void) {
-	normList_.clear();
-	data_.clear();
+//	normList_.clear();
+//	data_.clear();
 }
 
 const eShapeType& cCollShape::getShapeType (void) const {

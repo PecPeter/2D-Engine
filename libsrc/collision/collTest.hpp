@@ -32,7 +32,7 @@ struct sCollShapeInfo {
 class cCollTest {
 	public:
 		cCollTest (void);
-		void testPair (cCollPair& collPair);
+		bool testPair (cCollPair& collPair);
 	private:
 		// These collision test should always return what object
 		// 1 has to do to get out of the collision (ie. obj1: dynamic,

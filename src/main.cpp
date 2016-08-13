@@ -11,6 +11,7 @@
 #include "mathVectorUnitTest.hpp"
 #include "collObjectUnitTest.hpp"
 #include "collPairUnitTest.hpp"
+#include "collShapeUnitTest.hpp"
 #include "collTestHandlerUnitTest.hpp"
 #include "collWorldUnitTest.hpp"
 #include "collDebugDrawerUnitTest.hpp"
@@ -75,9 +76,12 @@ int main (void) {
 	collTestHandlerUnitTest();
 	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-*/	std::cout << "Collision world debug drawer unit test:\n";
+	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
-/*	std::cout << "Command handler unit test:\n";
+	std::cout << "Command handler unit test:\n";
 	commandHandlerUnitTest();
-*/	return 0;
+*/
+	std::cout << "Collision shape unit test:\n";
+	collShapeUnitTest();
+	return 0;
 }

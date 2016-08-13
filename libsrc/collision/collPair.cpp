@@ -5,7 +5,7 @@ sCollPairInfo::sCollPairInfo (int entNodeId1, int entNodeId2,
 	entNodeId1_(entNodeId1), entNodeId2_(entNodeId2), overlap_(overlap),
 	collType_(collType) {}
 
-cCollPair::cCollPair (const cEntity& entity1, const cEntity& entity2) :
+cCollPair::cCollPair (cEntity& entity1, cEntity& entity2) :
 		 entity1_(&entity1), entity2_(&entity2) {
 	eEntityType ent1Type = entity1.getType(),
 				 ent2Type = entity2.getType();
@@ -24,11 +24,11 @@ cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 
 cCollPair::~cCollPair (void) {}
 
-const cEntity& cCollPair::ent1 (void) const {
+cEntity& cCollPair::ent1 (void) const {
 	return *entity1_;
 }
 
-const cEntity& cCollPair::ent2 (void) const {
+cEntity& cCollPair::ent2 (void) const {
 	return *entity2_;
 }
 

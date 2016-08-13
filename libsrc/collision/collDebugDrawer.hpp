@@ -10,7 +10,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-//#include "collObject.hpp"
 #include "../entity/entity.hpp"
 #include "../entity/entityNode.hpp"
 #include "../entity/components/positionComponent.hpp"

@@ -10,7 +10,8 @@ void mathMatrixTest (void) {
 	m1.set(1,0) = 4;
 	m1.set(1,1) = 5;
 	m1.set(1,2) = 6;
-	std::cout << m1;
+	std::cout << "The output should be:\n[1 2 3]\n[4 5 6]\n";
+	std::cout << "Matrix 1:\n" << m1;
 
 	cMatrix m2(2,3);
 	m2.set(0,0) = 1;
