@@ -9,8 +9,15 @@ cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
 		const std::vector<cEntityNode>& entityNodeList, int entityMask,
 		void* usrPtr) :
 		id_(id), type_(type), entityPos_(pos),
-		entityNodeList_(entityNodeList), entityMask_(entityMask),
-		usrPtr_(usrPtr) {}
+		entityNodeList_(entityNodeList),
+		entityMask_(entityMask),
+		usrPtr_(usrPtr)
+{
+	for (const auto& itr : entityNodeList_)
+	{
+		entityNodeActivityMap_[itr.getId()] = true;
+	}
+}
 
 cEntity::~cEntity (void) {}
 
@@ -125,6 +132,38 @@ void cEntity::setUsrPtr (void* usrPtr) {
 
 void* cEntity::getUsrPtr (void) const {
 	return usrPtr_;
+}
+
+// Entity activity function
+bool cEntity::getActivity (void) const
+{
+	for (const auto& itr : entityNodeActivityMap_)
+	{
+		if (itr.second == true)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void cEntity::setNodeActivity (int nodeId, bool nodeActivity)
+{
+	int entityNodeIndex = 0;
+	for (auto& nodeItr : getNodes())
+	{
+		if (nodeItr.getId() == nodeId)
+		{
+			entityNodeActivityMap_.at(entityNodeIndex) = nodeActivity;
+			break;
+		}
+		++entityNodeIndex;
+	}
+}
+
+bool cEntity::getNodeActivity (int nodeId) const
+{
+	return entityNodeActivityMap_.at(nodeId);
 }
 
 std::map<int,cPosComp> getNodeOffset (const std::vector<cEntityNode>& nodeList) {

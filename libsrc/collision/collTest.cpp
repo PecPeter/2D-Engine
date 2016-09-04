@@ -24,6 +24,13 @@ bool cCollTest::testPair (cCollPair& collPair) {
 	const cEntity* ent1 = &collPair.ent1(),
 				 * ent2 = &collPair.ent2();
 	bool isCollision = false;
+	
+	// Check if the entities are active
+	if (ent1->getActivity() == false || ent2->getActivity() == false)
+	{
+		return isCollision;
+	}
+
 	if (ent1 != nullptr && ent2 != nullptr) {
 		const std::vector<cEntityNode>& nodesList1 = ent1->getNodes(),
 									  & nodesList2 = ent2->getNodes();
@@ -32,34 +39,43 @@ bool cCollTest::testPair (cCollPair& collPair) {
 		std::map<int, cPosComp> nodeOffset1 = getNodeOffset(nodesList1),
 								nodeOffset2 = getNodeOffset(nodesList2);
 		// Iterate through the lists and test each node
-		for (const auto& itr1 : nodesList1) {
-			for (const auto& itr2 : nodesList2) {
-				// Check if there was a collision
-				// TODO: Once implemented, check if the node is active or not...
-				sCollShapeInfo shapeInfo1(ent1->getPosComp(),
-										  nodeOffset1.at(itr1.getId()),
-										  itr1.getCollComp()),
-							   shapeInfo2(ent2->getPosComp(),
-										  nodeOffset2.at(itr2.getId()),
-				 						  itr2.getCollComp());
-				eShapeType shapeType1 =
-						shapeInfo1.collComp_.getCollShape().getShapeType(),
-						   shapeType2 = 
-						shapeInfo2.collComp_.getCollShape().getShapeType();
-				auto& collFunc = collTestMap_.at(collTestMapKey(shapeType1,
+		for (const auto& itr1 : nodesList1)
+		{
+			if (ent1->getNodeActivity(itr1.getId()) == true)
+			{
+				for (const auto& itr2 : nodesList2)
+				{
+					if (ent2->getNodeActivity(itr2.getId()) == true)
+					{
+						// Check if there was a collision
+						sCollShapeInfo shapeInfo1(ent1->getPosComp(),
+												  nodeOffset1.at(itr1.getId()),
+												  itr1.getCollComp()),
+									   shapeInfo2(ent2->getPosComp(),
+												  nodeOffset2.at(itr2.getId()),
+						 						  itr2.getCollComp());
+						eShapeType shapeType1 =
+							shapeInfo1.collComp_.getCollShape().getShapeType(),
+								   shapeType2 = 
+							shapeInfo2.collComp_.getCollShape().getShapeType();
+						auto& collFunc = 
+									collTestMap_.at(collTestMapKey(shapeType1,
 							shapeType2));
-				collVector = ((this->*collFunc)(shapeInfo1,shapeInfo2));
+						collVector = ((this->*collFunc)(shapeInfo1,shapeInfo2));
 
-				if (collVector != noColl_) {
-					// Collision detected, add it to the pair's list
-					isCollision = true;
-					eCollType collType;
-					if (collVector == contactColl_)
-						collType = eCollType::CONTACT;
-					else
-						collType = eCollType::COLLISION;
-					collPair.addCollision(itr1.getId(),itr2.getId(),collVector,
-							collType);
+						if (collVector != noColl_)
+						{
+							// Collision detected, add it to the pair's list
+							isCollision = true;
+							eCollType collType;
+							if (collVector == contactColl_)
+								collType = eCollType::CONTACT;
+							else
+								collType = eCollType::COLLISION;
+							collPair.addCollision(itr1.getId(),
+									itr2.getId(),collVector,collType);
+						}
+					}
 				}
 			}
 		}

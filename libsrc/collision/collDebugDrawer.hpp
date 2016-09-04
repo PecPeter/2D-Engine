@@ -14,7 +14,6 @@
 #include "../entity/entityNode.hpp"
 #include "../entity/components/positionComponent.hpp"
 #include "collShape.hpp"
-#include "collShapeNode.hpp"
 #include "../math/mathVector.hpp"
 #include "../math/mathLinAlgebra.hpp"
 #include "../renderFunctions.hpp"

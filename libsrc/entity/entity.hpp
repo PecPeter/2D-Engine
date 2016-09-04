@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <memory>
 #include <map>
+#include <vector>
 
 #include "entityNode.hpp"
 #include "./components/positionComponent.hpp"
@@ -74,11 +75,17 @@ class cEntity {
 		void setUsrPtr (void* usrPtr);
 		void* getUsrPtr (void) const;
 
+		// Entity activity function
+		bool getActivity (void) const;
+		void setNodeActivity (int nodeId, bool nodeActivity);
+		bool getNodeActivity (int nodeId) const;
+
 	private:
 		int id_;
 		eEntityType type_;
 		cPosComp entityPos_;
 		std::vector<cEntityNode> entityNodeList_;
+		std::map<int,bool> entityNodeActivityMap_;
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;
