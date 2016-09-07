@@ -6,13 +6,45 @@ cCollDebugDrawer::cCollDebugDrawer (int alpha) {
 		alphaLevel = 255;
 	else if (alpha < 0)
 		alphaLevel = 0;
-	colMap_[eEntityType::STATIC] = cVector4(alphaLevel,255,0,0);
-	colMap_[eEntityType::DYNAMIC] = cVector4(alphaLevel,0,255,0);
-	colMap_[eEntityType::KINEMATIC] = cVector4(alphaLevel,0,0,255);
+
+	colIndex statAndAct(eEntityType::STATIC,true),
+			 statAndInact(eEntityType::STATIC,false),
+			 dynAndAct(eEntityType::DYNAMIC,true),
+			 dynAndInact(eEntityType::DYNAMIC,false),
+			 kinAndAct(eEntityType::KINEMATIC,true),
+			 kinAndInact(eEntityType::KINEMATIC,false);
+
+	colMap_[statAndAct] = cVector4(alphaLevel,255,0,0);
+	colMap_[statAndInact] = cVector4(alphaLevel,255,128,128);
+	colMap_[dynAndAct] = cVector4(alphaLevel,0,255,0);
+	colMap_[dynAndInact] = cVector4(alphaLevel,128,255,128);
+	colMap_[kinAndAct] = cVector4(alphaLevel,0,0,255);
+	colMap_[kinAndInact] = cVector4(alphaLevel,128,128,255);
 }
 
-void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent) {
-	drawEnt(rend,ent,colMap_.at(ent.getType()));
+void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent)
+{
+	const cPosComp entPos = ent.getPosComp();
+	cMatrix rotnMatrix = rotnTransform(ent.getRotn());
+	const std::vector<cEntityNode> nodeList = ent.getNodes();
+	std::map<int,cPosComp> nodeOffset = getNodeOffset(nodeList);
+	// Iterate through the cEntityNode vector of the cEntity class
+	// and draw each shape
+	for (const auto& itr : nodeList)
+	{
+		// Calculate the positions at which the different shapes will be at,
+		// rotating them by the amount that the entity is rotated by
+		cPosComp shapePos = nodeOffset.at(itr.getId());
+		shapePos.setPos(rotnMatrix*shapePos.getPos()+entPos.getPos());
+		shapePos.setRotn(shapePos.getRotn()+entPos.getRotn());
+
+		const cCollShape collShape = itr.getCollComp().getCollShape();
+
+		colIndex index(ent.getType(),ent.getNodeActivity(itr.getId()));
+		cVector4 col = colMap_.at(index);
+
+		drawShape(rend,collShape,shapePos.getPos(),shapePos.getRotn(),col);
+	}
 }
 
 void cCollDebugDrawer::drawEnt (const SDL_Renderer* rend, const cEntity& ent,

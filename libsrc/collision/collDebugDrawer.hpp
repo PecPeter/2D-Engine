@@ -30,9 +30,11 @@ class cCollDebugDrawer {
 		void drawShape (const SDL_Renderer* rend, const cCollShape& shape,
 				const cVector2& shapePos, const double& shapeRotn,
 				const cVector4& col);
+		typedef std::pair<eEntityType,bool> colIndex;
+		std::map<colIndex,cVector4> colMap_;
 //		typedef std::pair<eObjectType,eObjectState> colIndex;
 //		std::map<colIndex,cVector3> colMap;
-		std::map<eEntityType,cVector4> colMap_;
+//		std::map<eEntityType,cVector4> colMap_;
 };
 
 #endif
