@@ -92,4 +92,10 @@ bool operator== (const cCollShape& lhs, const cCollShape& rhs);
 // closed polygon).
 cVector2 polygonCentroid (const std::vector<cVector2>& pts);
 
+// Returns the offset from the shape centroid from which centre of a line segment
+// would extend to reach both ends of the shape (x) and the half-length of the 
+// line segment (y)
+cVector2 minMaxPos (const cCollShape& shape, double rotnRad,
+		const cVector2& axisDir);
+
 #endif

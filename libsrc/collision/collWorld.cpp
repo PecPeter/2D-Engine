@@ -8,6 +8,9 @@ cCollWorld::cCollWorld (eBroadphaseType broadphaseType) :
 		case eBroadphaseType::GENERAL:
 			broadphase_ = new cGenBroadphase;
 			break;
+		case eBroadphaseType::GRID:
+			broadphase_ = new cGridBroadphase(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+			break;
 		default:
 			break;
 	}
@@ -73,6 +76,27 @@ void cCollWorld::removeEntity (int entityId)
 	}
 }
 
+cEntity* cCollWorld::findEntity (int entityId)
+{
+	for (entityListCont::iterator itr = entityListStatic_.begin();
+			itr != entityListStatic_.end(); ++itr)
+	{
+		if ((*itr)->getId() == entityId)
+		{
+			return (*itr).get();
+		}
+	}
+	for (entityListCont::iterator itr = entityListDyn_.begin();
+			itr != entityListDyn_.end(); ++itr)
+	{
+		if ((*itr)->getId() == entityId)
+		{
+			return (*itr).get();
+		}
+	}
+	return nullptr;
+}
+
 std::forward_list<cCollPair> cCollWorld::checkColls (void)
 {
 	std::forward_list<cCollPair> collPairListTmp, collPairList;
@@ -87,6 +111,11 @@ std::forward_list<cCollPair> cCollWorld::checkColls (void)
 		}
 	}
 	return collPairList;
+}
+
+cCollBroadphase* cCollWorld::getBroadphase (void)
+{
+	return broadphase_;
 }
 
 void cCollWorld::setDebugDraw (const cCollDebugDrawer& debugDrawer)

@@ -11,6 +11,7 @@ extern int SCREEN_WIDTH,
 	   SCREEN_HEIGHT,
 	   MAX_UPDATE_COUNT;
 
-void setSettings (double tickRate, double frameRate, double maxUpdateCount);
+void setSettings (int screenWidth, int screenHeight, double tickRate,
+		double frameRate, double maxUpdateCount);
 
 #endif

@@ -25,7 +25,8 @@ cGenBroadphase::cGenBroadphase (void) {}
 
 cGenBroadphase::~cGenBroadphase (void) {}
 
-void cGenBroadphase::genList (pairCont& pairList, objCont& objList) const {
+void cGenBroadphase::genList (pairCont& pairList, objCont& objList)
+{
 	for (objCont::iterator cItr1 = objList.begin();
 			cItr1 != objList.end(); ++cItr1) {
 		objCont::iterator cItr2 = cItr1;
@@ -38,7 +39,8 @@ void cGenBroadphase::genList (pairCont& pairList, objCont& objList) const {
 }
 
 void cGenBroadphase::genList (pairCont& pairList, objCont& objListDyn,
-		objCont& objListStatic) const {
+		objCont& objListStatic)
+{
 	for (objCont::const_iterator cItr1 = objListDyn.begin();
 			cItr1 != objListDyn.end(); ++cItr1) {
 		objCont::const_iterator cItr2 = cItr1;
@@ -53,4 +55,301 @@ void cGenBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 				pairList.push_front(cCollPair(*(*cItr1),*(*cItr3)));
 		}
 	}
+}
+
+cGridBroadphase::cGridBroadphase (double worldMinX, double worldMinY,
+		double worldMaxX, double worldMaxY) : 
+	cGridBroadphase(cVector2(worldMinX,worldMinY),cVector2(worldMaxX,
+				worldMaxY)) {}
+
+cGridBroadphase::cGridBroadphase (cVector2 worldMin, cVector2 worldMax) : 
+	worldMinDim_(worldMin), worldMaxDim_(worldMax),
+	cellDim_(cVector2(10,10))
+{
+	sizeCellList();
+}
+
+cGridBroadphase::~cGridBroadphase (void)
+{
+}
+
+void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
+{
+	// Go through the objList and place the pointers in the appropriate cells
+	for (objCont::iterator cItr = objList.begin();
+			cItr != objList.end(); ++cItr)
+	{
+		const cEntity& entity = **cItr;
+		cVector2 aabb = getBoundingAabbDim(entity);
+		cVector2 pos = entity.getPosComp().getPos();
+
+		// Find the cell indices...
+		int minRow = (pos.getX()-aabb.getX())/cellDim_.getX(),
+			maxRow = (pos.getX()+aabb.getX())/cellDim_.getX(),
+			minCol = (pos.getY()-aabb.getY())/cellDim_.getY(),
+			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
+
+		// Iterate through the appropriate cells and add the entity reference
+		for (int row = minRow; row < maxRow; ++row)
+		{
+			for (int col = minCol; col < maxCol; ++col)
+			{
+				int index = row*numCols_+col;
+				cellList_.at(index).push_back(*cItr);
+			}
+		}
+	}
+
+	// Reset the pairHashList
+	for (auto& itr : pairHashList_)
+	{
+		itr.second = false;
+	}
+
+	// Iterate through all of the cells and make the pairs;
+	for (auto& itr : cellList_)
+	{
+		if (itr.size() >= 2)
+		{
+			// Make pairs for every entity in the vector
+			for (objCont::iterator cItr1 = itr.begin();
+					cItr1 != itr.end(); ++cItr1)
+			{
+				for (objCont::iterator cItr2 = ++cItr1;
+						cItr2 != itr.end(); ++cItr2)
+				{
+					if (checkValidPair(**cItr1,**cItr2) == true)
+					{
+						pairList.push_front(cCollPair(**cItr1,**cItr2));
+					}
+				}
+			}
+		}
+	}
+}
+
+void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
+				objCont& objListStatic)
+{
+	// Go through the objList and place the pointers in the appropriate cells
+	for (objCont::iterator cItr = objListDyn.begin();
+			cItr != objListDyn.end(); ++cItr)
+	{
+		const cEntity& entity = **cItr;
+		cVector2 aabb = getBoundingAabbDim(entity);
+		cVector2 pos = entity.getPosComp().getPos();
+
+		// Find the cell indices...
+		int minRow = (pos.getX()-aabb.getX())/cellDim_.getX(),
+			maxRow = (pos.getX()+aabb.getX())/cellDim_.getX(),
+			minCol = (pos.getY()-aabb.getY())/cellDim_.getY(),
+			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
+
+		// Iterate through the appropriate cells and add the entity reference
+		for (int row = minRow; row < maxRow; ++row)
+		{
+			for (int col = minCol; col < maxCol; ++col)
+			{
+				int index = row*numCols_+col;
+				cellList_.at(index).push_back(*cItr);
+			}
+		}
+	}
+	for (objCont::iterator cItr = objListStatic.begin();
+			cItr != objListStatic.end(); ++cItr)
+	{
+		const cEntity& entity = **cItr;
+		cVector2 aabb = getBoundingAabbDim(entity);
+		cVector2 pos = entity.getPosComp().getPos();
+
+		// Find the cell indices...
+		int minRow = (pos.getX()-aabb.getX())/cellDim_.getX(),
+			maxRow = (pos.getX()+aabb.getX())/cellDim_.getX(),
+			minCol = (pos.getY()-aabb.getY())/cellDim_.getY(),
+			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
+
+		// Iterate through the appropriate cells and add the entity reference
+		for (int row = minRow; row < maxRow; ++row)
+		{
+			for (int col = minCol; col < maxCol; ++col)
+			{
+				int index = row*numCols_+col;
+//				int tmpEntity = (*cItr)->getId();
+
+				cellList_.at(index).push_back(*cItr);
+			}
+		}
+	}
+
+	// Reset the pairHashList
+	for (auto& itr : pairHashList_)
+	{
+		itr.second = false;
+	}
+
+	// Iterate through all of the cells and make the pairs;
+	for (auto& itr : cellList_)
+	{
+		if (itr.size() >= 2)
+		{
+			// Make pairs for every entity in the vector
+			for (objCont::iterator cItr1 = itr.begin();
+					cItr1 != itr.end(); ++cItr1)
+			{
+				for (objCont::iterator cItr2 = ++cItr1;
+						cItr2 != itr.end(); ++cItr2)
+				{
+					if (checkValidPair(**cItr1,**cItr2) == true)
+					{
+						pairList.push_front(cCollPair(**cItr1,**cItr2));
+					}
+				}
+			}
+		}
+	}
+}
+
+void cGridBroadphase::setCellSize (double cellWidth, double cellHeight)
+{
+	cellDim_.setX(cellWidth);
+	cellDim_.setY(cellHeight);
+	sizeCellList();
+}
+
+void cGridBroadphase::setCellSize (const cVector2& cellDim)
+{
+	cellDim_ = cellDim;
+	sizeCellList();
+}
+
+void cGridBroadphase::sizeCellList (void)
+{
+	// Size the vector appropriately
+	double worldLength = worldMaxDim_.getX() - worldMinDim_.getX(),
+		   worldHeight = worldMaxDim_.getY() - worldMinDim_.getY();
+	numRows_ = ceil(worldLength/cellDim_.getX());
+	numCols_ = ceil(worldHeight/cellDim_.getY());
+	cellList_.resize(numRows_*numCols_);
+	for (int index = 0; index < numRows_*numCols_; ++index)
+	{
+		cellList_.at(index).resize(4);
+	}
+}
+
+bool cGridBroadphase::checkValidPair (const cEntity& ent1, 
+		const cEntity& ent2) 
+{
+	// Compare the masks
+	if (compareCollMask(ent1.getMask(),ent2.getMask()) == false)
+		return false;
+	
+	// Compare the hashes
+	std::string hash1 = std::to_string(ent1.getId()) +
+		std::to_string(ent2.getId()),
+				hash2 = std::to_string(ent2.getId()) +
+		std::to_string(ent1.getId());
+	auto mapPair = pairHashList_.find(hash1);
+	std::pair<const std::string,bool> nullPair (std::string("NULL"),false);
+
+	// Check if mapItr was found
+	if (*mapPair == nullPair)
+	{
+		// Not found, check other hash
+		mapPair = pairHashList_.find(hash2);
+		if (*mapPair == nullPair)
+		{
+			// Collision pair hasn't been added yet
+			pairHashList_[hash1] = true;
+		}
+		else if ((*mapPair).second == true)
+		{
+			return false;
+		}
+	}
+	else if ((*mapPair).second == true)
+	{
+		return false;
+	}
+	(*mapPair).second = true;
+	return true;
+}
+
+/*
+	// Check if mapItr exists
+	if (*mapItr == pairHashList_.end())
+	{
+		*mapItr = pairHashList_.find(hash2);
+		if (*mapItr == pairHashList_.end())
+		{
+			// Valid pair that hasn't been encountered yet
+			pairHashList_[hash1] = true;
+		}
+		else if (*mapItr.second == true)
+			return false;
+	}
+	else if (*mapItr.second == true)
+		return false;
+	*mapItr.second = true;
+	return true;
+}
+*/
+// The bounding AABB is at the entities position. No other offset is needed.
+cVector2 getBoundingAabbDim (const cEntity& entity)
+{
+	// Iterate through the nodes of the entity to find the min/max positions
+	// for an AABB. Can be then rotated by the entity's rotation
+	std::vector<cEntityNode> nodeList = entity.getNodes();
+	std::map<int, cPosComp> nodeOffsetMap = getNodeOffset(nodeList);
+	double minX = 10000, maxX = -10000, minY = 10000, maxY = -10000;
+	for (const auto& itr : nodeList)
+	{
+		// Find the min and max positions
+		cCollShape shape = itr.getCollComp().getCollShape();
+		double rotn = itr.getPosComp().getRotn();
+		cVector2 xPos = minMaxPos(shape,rotn,cVector2(1,0)),
+				 yPos = minMaxPos(shape,rotn,cVector2(0,1));
+		double nMinX, nMaxX, nMinY, nMaxY;
+		nMinX = nodeOffsetMap[itr.getId()].getPos().getX() + xPos.getX() - 
+			xPos.getY();
+		nMaxX = nodeOffsetMap[itr.getId()].getPos().getX() + xPos.getX() +
+			xPos.getY();
+		nMinY = nodeOffsetMap[itr.getId()].getPos().getY() + yPos.getX() -
+			yPos.getY();
+		nMaxY = nodeOffsetMap[itr.getId()].getPos().getY() + yPos.getX() +
+			yPos.getY();
+
+		if (nMinX < minX)
+			minX = nMinX;
+		if (nMaxX > maxX)
+			maxX = nMaxX;
+		if (nMinY < minY)
+			minY = nMinY;
+		if (nMaxY > maxY)
+			maxY = nMaxY;
+	}
+	// Rotate the values to get the appropriate size for the AABB
+	cVector2 entPos = entity.getPosComp().getPos();
+	double entRotn = entity.getPosComp().getRotn();
+	cVector2 ptList[4] = {cVector2(minX,minY),
+		cVector2(minX,maxY),
+		cVector2(maxX,maxY),
+		cVector2(maxX,minY)};
+	minX = minY = 10000;
+	maxX = maxY = -10000;
+	for (int i = 0; i < 4; ++i)
+	{
+		ptList[i] = vRotate(ptList[i]-entPos,entRotn);
+		if (ptList[i].getX() > maxX)
+			maxX = ptList[i].getX();
+		if (ptList[i].getX() < minX)
+			minX = ptList[i].getX();
+		if (ptList[i].getY() > maxY)
+			maxY = ptList[i].getY();
+		if (ptList[i].getY() < minY)
+			minY = ptList[i].getY();
+	}
+
+	double hw = minX > maxX ? minX : maxX,
+		hh = minY > maxY ? minY : maxY;
+	return cVector2(hw,hh);
 }

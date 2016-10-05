@@ -1,21 +1,26 @@
 #ifndef COLLBROADPHASE_HPP
 #define COLLBROADPHASE_HPP
 
+#include <cmath>
 #include <forward_list>
 #include <map>
 #include <memory>
 #include <utility>
 #include <vector>
+#include <string>
 
 #include "../entity/entity.hpp"
+#include "../entity/entityNode.hpp"
 #include "collPair.hpp"
+#include "collShape.hpp"
 
 typedef std::forward_list<cCollPair> pairCont;
 typedef std::vector<std::shared_ptr<cEntity>> objCont;
 
 enum class eBroadphaseType
 {
-	GENERAL
+	GENERAL,
+	GRID
 };
 
 //maybe make these templated so that the queue doesnt have to be hardcoded,
@@ -28,9 +33,9 @@ class cCollBroadphase {
 		//maybe make one that takes 2 lists, 1 dynamic and the other static.
 		//This should make pairing easier
 		virtual void genList (pairCont& pairList,
-				objCont& objList) const = 0;
+				objCont& objList) = 0;
 		virtual void genList (pairCont& pairList, objCont& objListDyn,
-				objCont& objListStatic) const = 0;
+				objCont& objListStatic) = 0;
 		void addCollMask (int objMask, int collMask);
 	protected:
 		bool compareCollMask (int objMask1, int objMask2) const;
@@ -43,23 +48,41 @@ class cGenBroadphase : public cCollBroadphase {
 	public:
 		cGenBroadphase (void);
 		~cGenBroadphase(void);
-		void genList (pairCont& pairList, objCont& objList) const;
+		void genList (pairCont& pairList, objCont& objList);
 		void genList (pairCont& pairList, objCont& objListDyn,
-				objCont& objListStatic) const;
+				objCont& objListStatic);
 };
 
-//Grid based broadphase
-/*
+//Grid based broadphase - updates both the static and dynamic lists every update
 class cGridBroadphase : public cCollBroadphase {
 	public:
 		cGridBroadphase (double worldMinX, double worldMinY, double worldMaxX,
 			double worldMaxY);
 		cGridBroadphase (cVector2 worldMin, cVector2 worldMax);
+		~cGridBroadphase (void);
 
+		void genList (pairCont& pairList, objCont& objList);
+		void genList (pairCont& pairList, objCont& objListDyn,
+				objCont& objListStatic);
+
+		void setCellSize (double cellWidth, double cellHeight);
+		void setCellSize (const cVector2& cellDim);
 	private:
+		void sizeCellList (void);
+		bool checkValidPair (const cEntity& ent1, const cEntity& ent2);
+
 		cVector2 worldMinDim_,
-				 worldMaxDim_;
+				 worldMaxDim_,
+				 cellDim_;
+		std::vector<objCont> cellList_;
+		std::map<std::string,bool> pairHashList_;
+		int numRows_,
+			numCols_;
 };
-*/
+
+// Grid based broadphase - keeps the static list, and updates dynamic list only,
+// unless told to update static as well...
+
+cVector2 getBoundingAabbDim (const cEntity& entity);
 
 #endif

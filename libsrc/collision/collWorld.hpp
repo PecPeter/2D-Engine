@@ -34,8 +34,11 @@ class cCollWorld {
 				int entityMask = DEFAULT_ENTITYMASK,
 				void* userPtr = nullptr);
 		void removeEntity (int entityId);
+		cEntity* findEntity (int entityId);
 
 		std::forward_list<cCollPair> checkColls (void);
+
+		cCollBroadphase* getBroadphase (void);
 
 		void setDebugDraw (const cCollDebugDrawer& debugDrawer); 
 		void setDebugDraw (cCollDebugDrawer* debugDrawer);

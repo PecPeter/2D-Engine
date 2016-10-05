@@ -109,3 +109,39 @@ cVector2 polygonCentroid (const std::vector<cVector2>& pts) {
 	double multiplier = 1.0/(6.0*area);
 	return cVector2(multiplier*cX,multiplier*cY);
 }
+
+cVector2 minMaxPos (const cCollShape& shape, double rotnRad,
+		const cVector2& axisDir)
+{
+	// Can't do this for lines...points will just be zero vector
+	cVector2 result;
+	switch (shape.getShapeType())
+	{
+		case eShapeType::POLY:
+			{
+				double min, max;
+				min = 10000;
+				max = -10000;
+				
+				for (const auto& itr : shape.getData())
+				{
+					double projPos = vScalProj(vRotate(itr,rotnRad),axisDir);
+					// If > 0, then compare to max
+					if (projPos >= 0 && projPos > max)
+						max = projPos;
+					else if (projPos < 0 && projPos < min)
+						min = projPos;
+				}
+				// Return result
+				double hl = (max-min)/2;
+				result = cVector2(min+hl,hl);
+				break;
+			}
+		case eShapeType::CIRCLE:
+			result = cVector2(0,shape.getData().at(0).getX());
+			break;
+		default:
+			break;
+	}
+	return result;
+}
