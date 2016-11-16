@@ -74,14 +74,13 @@ int main (void) {
 	collPairUnitTest();
 	std::cout << "Collision test handler unit test:\n";
 	collTestHandlerUnitTest();
-	std::cout << "Collision world unit test:\n";
+*/	std::cout << "Collision world unit test:\n";
 	collWorldUnitTest();
-	std::cout << "Collision world debug drawer unit test:\n";
+/*	std::cout << "Collision world debug drawer unit test:\n";
 	collDebugDrawerUnitTest();
 	std::cout << "Command handler unit test:\n";
 	commandHandlerUnitTest();
-*/
 	std::cout << "Collision shape unit test:\n";
 	collShapeUnitTest();
-	return 0;
+*/	return 0;
 }

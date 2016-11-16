@@ -14,6 +14,7 @@
 #include "./2D-Engine/entity/entity.hpp"
 #include "./2D-Engine/collision/collBroadphase.hpp"
 #include "./2D-Engine/collision/collWorld.hpp"
+#include "./2D-Engine/engineMetrics.hpp"
 
 void collWorldUnitTest (void);
 

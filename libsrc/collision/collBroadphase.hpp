@@ -69,13 +69,12 @@ class cGridBroadphase : public cCollBroadphase {
 		void setCellSize (const cVector2& cellDim);
 	private:
 		void sizeCellList (void);
-		bool checkValidPair (const cEntity& ent1, const cEntity& ent2);
+		bool checkValidPair (const cEntity& ent1, const cEntity& ent2,
+				std::map<std::string,bool>& pairHashList);
 
 		cVector2 worldMinDim_,
 				 worldMaxDim_,
 				 cellDim_;
-		std::vector<objCont> cellList_;
-		std::map<std::string,bool> pairHashList_;
 		int numRows_,
 			numCols_;
 };

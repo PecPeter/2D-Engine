@@ -75,6 +75,10 @@ cGridBroadphase::~cGridBroadphase (void)
 
 void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
 {
+	std::vector<objCont> cellList;
+	cellList.resize(numRows_*numCols_);
+	std::map<std::string,bool> pairHashList;
+
 	// Go through the objList and place the pointers in the appropriate cells
 	for (objCont::iterator cItr = objList.begin();
 			cItr != objList.end(); ++cItr)
@@ -90,24 +94,18 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
 			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
 
 		// Iterate through the appropriate cells and add the entity reference
-		for (int row = minRow; row < maxRow; ++row)
+		for (int row = minRow; row <= maxRow; ++row)
 		{
-			for (int col = minCol; col < maxCol; ++col)
+			for (int col = minCol; col <= maxCol; ++col)
 			{
 				int index = row*numCols_+col;
-				cellList_.at(index).push_back(*cItr);
+				cellList.at(index).push_back(*cItr);
 			}
 		}
 	}
 
-	// Reset the pairHashList
-	for (auto& itr : pairHashList_)
-	{
-		itr.second = false;
-	}
-
 	// Iterate through all of the cells and make the pairs;
-	for (auto& itr : cellList_)
+	for (auto& itr : cellList)
 	{
 		if (itr.size() >= 2)
 		{
@@ -115,10 +113,11 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
 			for (objCont::iterator cItr1 = itr.begin();
 					cItr1 != itr.end(); ++cItr1)
 			{
-				for (objCont::iterator cItr2 = ++cItr1;
+				auto tmpItr = cItr1;
+				for (objCont::iterator cItr2 = ++tmpItr;
 						cItr2 != itr.end(); ++cItr2)
 				{
-					if (checkValidPair(**cItr1,**cItr2) == true)
+					if (checkValidPair(**cItr1,**cItr2,pairHashList) == true)
 					{
 						pairList.push_front(cCollPair(**cItr1,**cItr2));
 					}
@@ -131,6 +130,10 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
 void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 				objCont& objListStatic)
 {
+	std::vector<objCont> cellList;
+	cellList.resize(numRows_*numCols_);
+	std::map<std::string,bool> pairHashList;
+
 	// Go through the objList and place the pointers in the appropriate cells
 	for (objCont::iterator cItr = objListDyn.begin();
 			cItr != objListDyn.end(); ++cItr)
@@ -146,12 +149,12 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
 
 		// Iterate through the appropriate cells and add the entity reference
-		for (int row = minRow; row < maxRow; ++row)
+		for (int row = minRow; row <= maxRow; ++row)
 		{
-			for (int col = minCol; col < maxCol; ++col)
+			for (int col = minCol; col <= maxCol; ++col)
 			{
 				int index = row*numCols_+col;
-				cellList_.at(index).push_back(*cItr);
+				cellList.at(index).push_back(*cItr);
 			}
 		}
 	}
@@ -169,26 +172,18 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
 
 		// Iterate through the appropriate cells and add the entity reference
-		for (int row = minRow; row < maxRow; ++row)
+		for (int row = minRow; row <= maxRow; ++row)
 		{
-			for (int col = minCol; col < maxCol; ++col)
+			for (int col = minCol; col <= maxCol; ++col)
 			{
 				int index = row*numCols_+col;
-//				int tmpEntity = (*cItr)->getId();
-
-				cellList_.at(index).push_back(*cItr);
+				cellList.at(index).push_back(*cItr);
 			}
 		}
 	}
 
-	// Reset the pairHashList
-	for (auto& itr : pairHashList_)
-	{
-		itr.second = false;
-	}
-
 	// Iterate through all of the cells and make the pairs;
-	for (auto& itr : cellList_)
+	for (auto& itr : cellList)
 	{
 		if (itr.size() >= 2)
 		{
@@ -196,10 +191,11 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 			for (objCont::iterator cItr1 = itr.begin();
 					cItr1 != itr.end(); ++cItr1)
 			{
-				for (objCont::iterator cItr2 = ++cItr1;
+				auto tmpItr = cItr1;
+				for (objCont::iterator cItr2 = ++tmpItr;
 						cItr2 != itr.end(); ++cItr2)
 				{
-					if (checkValidPair(**cItr1,**cItr2) == true)
+					if (checkValidPair(**cItr1,**cItr2,pairHashList) == true)
 					{
 						pairList.push_front(cCollPair(**cItr1,**cItr2));
 					}
@@ -229,15 +225,10 @@ void cGridBroadphase::sizeCellList (void)
 		   worldHeight = worldMaxDim_.getY() - worldMinDim_.getY();
 	numRows_ = ceil(worldLength/cellDim_.getX());
 	numCols_ = ceil(worldHeight/cellDim_.getY());
-	cellList_.resize(numRows_*numCols_);
-	for (int index = 0; index < numRows_*numCols_; ++index)
-	{
-		cellList_.at(index).resize(4);
-	}
 }
 
 bool cGridBroadphase::checkValidPair (const cEntity& ent1, 
-		const cEntity& ent2) 
+		const cEntity& ent2, std::map<std::string,bool>& pairHashList) 
 {
 	// Compare the masks
 	if (compareCollMask(ent1.getMask(),ent2.getMask()) == false)
@@ -248,18 +239,18 @@ bool cGridBroadphase::checkValidPair (const cEntity& ent1,
 		std::to_string(ent2.getId()),
 				hash2 = std::to_string(ent2.getId()) +
 		std::to_string(ent1.getId());
-	auto mapPair = pairHashList_.find(hash1);
+	auto mapPair = pairHashList.find(hash1);
 	std::pair<const std::string,bool> nullPair (std::string("NULL"),false);
 
 	// Check if mapItr was found
-	if (*mapPair == nullPair)
+	if (mapPair == pairHashList.end())
 	{
 		// Not found, check other hash
-		mapPair = pairHashList_.find(hash2);
-		if (*mapPair == nullPair)
+		mapPair = pairHashList.find(hash2);
+		if (mapPair == pairHashList.end())
 		{
 			// Collision pair hasn't been added yet
-			pairHashList_[hash1] = true;
+			pairHashList[hash1] = true;
 		}
 		else if ((*mapPair).second == true)
 		{
@@ -270,29 +261,13 @@ bool cGridBroadphase::checkValidPair (const cEntity& ent1,
 	{
 		return false;
 	}
-	(*mapPair).second = true;
+	else
+	{
+		(*mapPair).second = true;
+	}
 	return true;
 }
 
-/*
-	// Check if mapItr exists
-	if (*mapItr == pairHashList_.end())
-	{
-		*mapItr = pairHashList_.find(hash2);
-		if (*mapItr == pairHashList_.end())
-		{
-			// Valid pair that hasn't been encountered yet
-			pairHashList_[hash1] = true;
-		}
-		else if (*mapItr.second == true)
-			return false;
-	}
-	else if (*mapItr.second == true)
-		return false;
-	*mapItr.second = true;
-	return true;
-}
-*/
 // The bounding AABB is at the entities position. No other offset is needed.
 cVector2 getBoundingAabbDim (const cEntity& entity)
 {
@@ -338,7 +313,10 @@ cVector2 getBoundingAabbDim (const cEntity& entity)
 	maxX = maxY = -10000;
 	for (int i = 0; i < 4; ++i)
 	{
-		ptList[i] = vRotate(ptList[i]-entPos,entRotn);
+		if (entRotn != 0.0)
+		{
+			ptList[i] = vRotate(ptList[i],entRotn);
+		}
 		if (ptList[i].getX() > maxX)
 			maxX = ptList[i].getX();
 		if (ptList[i].getX() < minX)
