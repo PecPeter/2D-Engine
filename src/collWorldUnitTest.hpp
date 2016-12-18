@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <forward_list>
 
 #include <SDL2/SDL.h>
 

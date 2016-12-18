@@ -29,9 +29,9 @@ all: debug
 
 libs: dlib rlib
 
-debug: clean dlib dsrc
+debug: dlib dsrc
 
-release: clean rlib rsrc
+release: rlib rsrc
 
 dlib: ${DEBUG_LIB_OBJ}
 	ar crv lib2D-Engine_debug.a $(shell find ${LIB_OBJ_DIR} -name *.o)

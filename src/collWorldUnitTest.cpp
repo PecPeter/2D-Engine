@@ -33,7 +33,20 @@ void collWorldUnitTest (void) {
 	ent2->translate(1,0);
 	ent3->translate(1,0);
 	*/
-	world.checkColls();
+	std::forward_list<cCollPair> pairList = world.checkColls();
+	for (auto& itr : pairList)
+	{
+		cEntity entity1 = itr.ent1(),
+				entity2 = itr.ent2();
+		std::list<sCollPairInfo> pairInfo = itr.getCollisions();
+		for (auto& itr2 : pairInfo)
+		{
+			int nodeId1 = itr2.entNodeId1_,
+				nodeId2 = itr2.entNodeId2_;
+			cVector2 overlap = itr2.overlap_;
+			std::cout << overlap << std::endl;
+		}
+	}
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Window* window = SDL_CreateWindow("TEST",SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,600,600,SDL_WINDOW_SHOWN);
