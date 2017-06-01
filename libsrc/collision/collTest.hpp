@@ -9,14 +9,15 @@
 #include <vector>
 #include <iostream>
 
+#include "./mathLib/mathVector.hpp"
+#include "./mathLib/mathLinAlgebra.hpp"
+
 #include "collShape.hpp"
 #include "collPair.hpp"
 #include "../entity/entity.hpp"
 #include "../entity/entityNode.hpp"
 #include "../entity/components/positionComponent.hpp"
 #include "../entity/components/collisionComponent.hpp"
-#include "../math/mathVector.hpp"
-#include "../math/mathLinAlgebra.hpp"
 
 const cVector2 noColl_ (std::nan(""),std::nan(""));
 const cVector2 contactColl_ (0,0);

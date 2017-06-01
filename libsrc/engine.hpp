@@ -9,7 +9,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_framerate.h>
 
-#include "./math/mathVector.hpp" // maybe get rid of this when making some debug info state thing...
+#include "mathLib/mathVector.hpp" // maybe get rid of this when making some debug info state thing...
 
 #include "engineMetrics.hpp"
 #include "gameState.hpp"

@@ -4,9 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "2D-Engine/math/mathVector.hpp"
-
-#include "./2D-Engine/collision/collShape.hpp"
+#include "2D-Engine/collision/collShape.hpp"
+#include "mathLib/mathVector.hpp"
 
 void collShapeUnitTest (void);
 

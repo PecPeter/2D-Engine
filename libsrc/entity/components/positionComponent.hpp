@@ -1,7 +1,7 @@
 #ifndef POSITIONCOMPONENT_HPP
 #define POSITIONCOMPONENT_HPP
 
-#include "../../math/mathVector.hpp"
+#include "./mathLib/mathVector.hpp"
 
 class cPosComp {
 	public:

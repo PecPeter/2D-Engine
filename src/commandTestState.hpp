@@ -4,11 +4,11 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
-#include "./2D-Engine/gameState.hpp"
-#include "./2D-Engine/controllers/cntrlKb.hpp"
-#include "./2D-Engine/collision/collWorld.hpp"
-#include "./2D-Engine/collision/collShape.hpp"
-#include "./2D-Engine/math/mathVector.hpp"
+#include "2D-Engine/gameState.hpp"
+#include "2D-Engine/controllers/cntrlKb.hpp"
+#include "2D-Engine/collision/collWorld.hpp"
+#include "2D-Engine/collision/collShape.hpp"
+#include "mathLib/mathVector.hpp"
 
 #include "gameStateTypes.hpp"
 

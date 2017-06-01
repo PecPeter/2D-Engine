@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "../entity/entity.hpp"
-#include "../math/mathVector.hpp"
+#include "./mathLib/mathVector.hpp"
 
 enum class eCollType {
 	NO_COLLISION,
