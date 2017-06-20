@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 #include <forward_list>
+#include <exception>
+#include <string>
 
 #include <SDL2/SDL.h>
 
@@ -22,7 +24,8 @@ typedef std::vector<std::shared_ptr<cEntity>> entityListCont;
 
 class cCollWorld {
 	public:
-		cCollWorld (eBroadphaseType broadphaseType = eBroadphaseType::GENERAL);
+		cCollWorld (eBroadphaseType broadphaseType = eBroadphaseType::GENERAL,
+					void* info = nullptr);
 		~cCollWorld (void);
 
 		cEntity* createEntity (int id, const cPosComp& pos,

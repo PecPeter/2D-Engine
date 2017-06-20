@@ -9,6 +9,7 @@ double TICK_RATE = 0,
 int SCREEN_WIDTH = 0,
 	SCREEN_HEIGHT = 0,
 	MAX_UPDATE_COUNT = 0;
+int RENDER_SETTINGS = 0;
 
 void setSettings (int screenWidth, int screenHeight, double tickRate,
 		double frameRate, double maxUpdateCount)
@@ -22,4 +23,17 @@ void setSettings (int screenWidth, int screenHeight, double tickRate,
 
 	SCREEN_WIDTH = screenWidth;
 	SCREEN_HEIGHT = screenHeight;
+}
+
+void toggleRenderSettings (int toggledSetting) {
+	// Check if the toggledSetting is correct
+	bool foundSetting = false;
+	if (toggledSetting == RENDER_FPS || toggledSetting == RENDER_TPS)
+		foundSetting = true;
+	if (foundSetting == false) {
+		std::string errorString = "toggleRenderSettings: toggledSetting " +
+			std::to_string(toggledSetting) + " is not valid";
+		throw std::invalid_argument(errorString);
+	}
+	RENDER_SETTINGS = RENDER_SETTINGS ^ toggledSetting;
 }

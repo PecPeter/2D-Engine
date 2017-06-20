@@ -84,6 +84,89 @@ void cEngine::quit (void) {
 }
 
 void cEngine::mainLoop (void) {
+	int loops = 0;
+	double interpolation;
+	double numUpdates = 0,
+		   numFrames = 0;
+	cTickCounter rateCounter;
+
+	if (TICK_RATE == 0.0)
+		TICK_RATE = 60.0;
+	MS_PER_UPDATE = 1000.0/TICK_RATE;
+	double dtUpdate = 0.0,
+		   tOffUpdate = 0.0;
+
+	if (MAX_UPDATE_COUNT == 0)
+		MAX_UPDATE_COUNT = 10;
+
+	if (FRAME_RATE == 0.0)
+		FRAME_RATE = 120.0;
+	MS_PER_RENDER = 1000.0/FRAME_RATE;
+	double dtRender = 0.0,
+		   tOffRender = 0.0;
+
+	double t_lastUpdateCall,
+		   t_lastRenderCall;
+	t_lastUpdateCall = t_lastRenderCall = SDL_GetTicks();
+
+	while (stateHandler_->getNumStates() > 0) {
+		rateCounter.startLoop();
+		// Update loop
+		double curTime = SDL_GetTicks();
+		dtUpdate = curTime - t_lastUpdateCall;
+
+		while ((dtUpdate >= MS_PER_UPDATE) &&
+				loops < MAX_UPDATE_COUNT) {
+			dtUpdate -= MS_PER_UPDATE;
+			++loops;
+			++numUpdates;
+
+			handleEvents();
+			updateState(TICK_RATE);
+		}
+		loops = 0;
+//		tOffUpdate = dtUpdate;
+		t_lastUpdateCall = curTime - dtUpdate;
+		
+//		while ((dtUpdate >= MS_PER_UPDATE - tOffUpdate) && 
+//				loops < MAX_UPDATE_COUNT) {
+//			dtUpdate -= MS_PER_UPDATE;
+//			++loops;
+//			++numUpdates;
+//			
+//			handleEvents();
+//			updateState(TICK_RATE);
+//		}
+//		t_lastUpdateCall = SDL_GetTicks();
+//		tOffUpdate = dtUpdate;
+
+		// Render Loop
+		curTime = SDL_GetTicks();
+		dtRender = curTime - t_lastRenderCall;
+		if (dtRender >= MS_PER_RENDER - tOffRender) {
+			tOffRender = dtRender - MS_PER_RENDER;
+			t_lastRenderCall = curTime;
+			dtRender = 0.0;
+			interpolation = double(curTime-t_lastUpdateCall)/MS_PER_UPDATE;
+			renderState(interpolation);
+			++numFrames;
+		}
+
+		while (SDL_GetTicks() < t_lastRenderCall+MS_PER_RENDER) {
+			SDL_Delay((t_lastRenderCall+MS_PER_RENDER)-SDL_GetTicks());
+		}
+
+		if (rateCounter.getTicks() >= 200) {
+			double dt = rateCounter.getTicksAndClear();
+			CALCED_TICK_RATE = double(numUpdates)/(dt/1000.0);
+			CALCED_FRAME_RATE = double(numFrames)/(dt/1000.0);
+			numUpdates = numFrames = 0;
+		}
+		rateCounter.endLoop();
+	}
+}
+/*
+void cEngine::mainLoop (void) {
 	int loops;
 	double interpolation;
 	double numUpdates = 0,
@@ -128,7 +211,7 @@ void cEngine::mainLoop (void) {
 		rateCounter.endLoop();
 	}
 }
-
+*/
 void cEngine::handleEvents (void) {
 	auto currentState = stateHandler_->getState();
 	if (currentState != nullptr)
@@ -148,12 +231,18 @@ void cEngine::renderState (double timeLag) {
 	if (currentState != nullptr) {
 		currentState->render(renderer_,timeLag);
 
-		// Add something to toggle this, ie. "Show fps..."
-		std::string debugText = "Tick Rate = " + std::to_string(CALCED_TICK_RATE)
-			+ "FPS = " + std::to_string(CALCED_FRAME_RATE);
-		drawStrC(renderer_,debugInfoFont_,cVector2(200,
-					200),debugText.c_str(),cVector4(255,255,255,255));
-
+		if (RENDER_SETTINGS != 0) {
+			if ((RENDER_SETTINGS & RENDER_FPS) > 0) {
+				std::string fpsText = "FPS: " + std::to_string(CALCED_FRAME_RATE);
+				drawStrDR(renderer_,debugInfoFont_,cVector2(0,0),fpsText.c_str(),
+						cVector4(255,255,255,255));
+			}
+			if ((RENDER_SETTINGS & RENDER_TPS) > 0) {
+				std::string tpsText = "TPS: " + std::to_string(CALCED_TICK_RATE);
+				drawStrDR(renderer_,debugInfoFont_,cVector2(0,10),tpsText.c_str(),
+						cVector4(255,255,255,255));
+			}
+		}
 		SDL_RenderPresent(renderer_);
 		SDL_SetRenderDrawColor(renderer_,0,0,0,255);
 		SDL_RenderClear(renderer_);

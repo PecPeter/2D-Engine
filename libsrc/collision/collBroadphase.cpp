@@ -6,7 +6,6 @@ cCollBroadphase::cCollBroadphase (void) {
 }
 
 cCollBroadphase::~cCollBroadphase (void) {
-	collMaskMap_.clear();
 }
 
 void cCollBroadphase::addCollMask (int objMask, int collMask) {
@@ -14,8 +13,24 @@ void cCollBroadphase::addCollMask (int objMask, int collMask) {
 }
 
 bool cCollBroadphase::compareCollMask (int objMask1, int objMask2) const {
-	int collMask1 = collMaskMap_.at(objMask1),
+	int collMask1, collMask2;
+	try {
+		collMask1 = collMaskMap_.at(objMask1);
+	}
+	catch (const std::out_of_range& e) {
+		std::string errorString = "cCollBroadphase::compareCollMask - objMask1 = "
+			+ std::to_string(objMask1) + " was not found in collMaskMap_.";
+		throw std::invalid_argument(errorString);
+	}
+	try {
 		collMask2 = collMaskMap_.at(objMask2);
+	}
+	catch (const std::out_of_range& e) {
+		std::string errorString = "cCollBroadphase::compareCollMask - objMask2 = "
+			+ std::to_string(objMask2) + " was not found in collMaskMap_.";
+		throw std::invalid_argument(errorString);
+	}
+
 	if (((collMask1&objMask2)*(collMask2&objMask1)) != 0)
 		return true;
 	return false;
@@ -105,20 +120,15 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objList)
 	}
 
 	// Iterate through all of the cells and make the pairs;
-	for (auto& itr : cellList)
-	{
-		if (itr.size() >= 2)
-		{
+	for (auto& itr : cellList) {
+		if (itr.size() >= 2) {
 			// Make pairs for every entity in the vector
 			for (objCont::iterator cItr1 = itr.begin();
-					cItr1 != itr.end(); ++cItr1)
-			{
+					cItr1 != itr.end(); ++cItr1) {
 				auto tmpItr = cItr1;
 				for (objCont::iterator cItr2 = ++tmpItr;
-						cItr2 != itr.end(); ++cItr2)
-				{
-					if (checkValidPair(**cItr1,**cItr2,pairHashList) == true)
-					{
+						cItr2 != itr.end(); ++cItr2) {
+					if (checkValidPair(**cItr1,**cItr2,pairHashList) == true) {
 						pairList.push_front(cCollPair(**cItr1,**cItr2));
 					}
 				}
@@ -228,8 +238,13 @@ void cGridBroadphase::sizeCellList (void)
 }
 
 bool cGridBroadphase::checkValidPair (const cEntity& ent1, 
-		const cEntity& ent2, std::map<std::string,bool>& pairHashList) 
-{
+		const cEntity& ent2, std::map<std::string,bool>& pairHashList) {
+	// Check if both entities are static, at which point, doesn't matter if they
+	// collide with each other
+	if ((ent1.getType() == eEntityType::STATIC) &&
+			(ent2.getType() == eEntityType::STATIC))
+		return false;
+
 	// Compare the masks
 	if (compareCollMask(ent1.getMask(),ent2.getMask()) == false)
 		return false;

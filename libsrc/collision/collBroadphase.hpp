@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <exception>
 
 #include "../entity/entity.hpp"
 #include "../entity/entityNode.hpp"

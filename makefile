@@ -35,6 +35,9 @@ debug: dlib dsrc
 
 release: rlib rsrc
 
+special:
+	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} ./src/collWorldUnitTest.cpp -o debug ${DEBUG_LIB_FLAGS}
+
 dlib: ${DEBUG_LIB_OBJ}
 	ar crv lib${LIB_NAME}_debug.a $(shell find ${LIB_OBJ_DIR} -name *.o)
 	mv lib${LIB_NAME}_debug.a ./lib/

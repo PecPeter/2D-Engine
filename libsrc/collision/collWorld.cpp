@@ -1,6 +1,6 @@
 #include "collWorld.hpp"
 
-cCollWorld::cCollWorld (eBroadphaseType broadphaseType) :
+cCollWorld::cCollWorld (eBroadphaseType broadphaseType, void* info) :
 		broadphase_(nullptr), debugDrawer_(nullptr)
 {
 	switch (broadphaseType)
@@ -8,9 +8,13 @@ cCollWorld::cCollWorld (eBroadphaseType broadphaseType) :
 		case eBroadphaseType::GENERAL:
 			broadphase_ = new cGenBroadphase;
 			break;
-		case eBroadphaseType::GRID:
-			broadphase_ = new cGridBroadphase(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+		case eBroadphaseType::GRID: {
+			//TODO: LOOK INTO THROWING AN ERROR IF THE CONVERSION FAILS
+			cVector2* worldDim = static_cast<cVector2*>(info);
+			broadphase_ = new cGridBroadphase(0,0,worldDim->getX(),
+					worldDim->getY());
 			break;
+		}
 		default:
 			break;
 	}
@@ -33,6 +37,16 @@ cEntity* cCollWorld::createEntity (int id, const cPosComp& pos,
 		const std::vector<cEntityNode>& entityNode,
 		const eEntityType& type, int entityMask, void* userPtr)
 {
+	// Check if the ID is unique
+	cEntity* tmpEnt = nullptr;
+	tmpEnt = findEntity(id);
+	if (tmpEnt != nullptr) {
+		tmpEnt = nullptr;
+		std::string errorString = "ID: " + std::to_string(id) + 
+			" already exists.";
+		throw std::invalid_argument(errorString);
+	}
+
 	entityListCont* entityList = nullptr;
 	switch (type)
 	{

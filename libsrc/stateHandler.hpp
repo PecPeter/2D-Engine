@@ -1,7 +1,9 @@
 #ifndef STATEHANDLER_HPP
 #define STATEHANDLER_HPP
 
-class cGameState;
+#include "gameState.hpp"
+
+//class cGameState;
 
 class cStateHandler {
 	public:

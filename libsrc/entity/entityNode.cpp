@@ -3,8 +3,8 @@
 cEntityNode::cEntityNode (int nodeId, const cPosComp& posOffset,
 		const cCollComp& collComp, int parentNodeId) :
 		nodeId_(nodeId), parentNodeId_(parentNodeId),
-		posComp_(posOffset), collComp_(collComp),
-		componentMask_(0) {}
+		nodeActivity_(true), posComp_(posOffset),
+		collComp_(collComp), componentMask_(0) {}
 
 int cEntityNode::getId (void) const {
 	return nodeId_;

@@ -22,7 +22,9 @@ cCollPair::cCollPair (cCollObj* object1, cCollObj* object2):
 		object1_(object1), object2_(object2), collType_(eCollType::NO_COLLISION) {}
 */
 
-cCollPair::~cCollPair (void) {}
+cCollPair::~cCollPair (void) {
+	entity1_ = entity2_ = nullptr;
+}
 
 cEntity& cCollPair::ent1 (void) const {
 	return *entity1_;

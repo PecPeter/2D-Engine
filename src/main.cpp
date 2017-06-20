@@ -7,8 +7,6 @@
 #include "gameStateTypes.hpp"
 #include "commandTestState.hpp"
 
-#include "mathMatrixUnitTest.hpp"
-#include "mathVectorUnitTest.hpp"
 #include "collObjectUnitTest.hpp"
 #include "collPairUnitTest.hpp"
 #include "collShapeUnitTest.hpp"
@@ -17,6 +15,7 @@
 #include "collDebugDrawerUnitTest.hpp"
 #include "commandHandlerUnitTest.hpp"
 
+/*
 class handler: public cStateHandler {
 	public:
 		handler (void): state_(nullptr) {
@@ -48,7 +47,7 @@ class handler: public cStateHandler {
 	private:
 		cGameState* state_;
 };
-
+*/
 int main (void) {
 /*
 	cEngine engine;
@@ -64,10 +63,6 @@ int main (void) {
 	engine.mainLoop();
 	engine.quit();
 
-	std::cout << "Matrix unit test:\n";
-	mathMatrixTest();
-	std::cout << "Vector unit test:\n";
-	mathVectorUnitTest();
 	std::cout << "Collision object unit test:\n";
 	collObjectUnitTest();
 	std::cout << "Collision pair unit test:\n";
