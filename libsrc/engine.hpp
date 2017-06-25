@@ -18,6 +18,8 @@
 
 #include "renderFunctions.hpp"
 
+typedef void (*stateChangeCallback) (int stateChange, cGameState** statePntr);
+
 class cEngine {
 	public:
 		cEngine (void);
@@ -26,6 +28,12 @@ class cEngine {
 				cStateHandler* stateHandler);
 		bool init (int screenWidth, int screenHeight, std::string winTitle,
 				cStateHandler* stateHandler);
+		bool init (int screenWidth, int screenHeight,
+				const char* winTitle, stateChangeCallback callback,
+				cGameState** statePntr);
+		bool init (int screenWidth, int screenHeight,
+				std::string winTitle, stateChangeCallback callback,
+				cGameState** statePntr);
 		void quit (void);
 
 		void mainLoop (void);
@@ -39,6 +47,10 @@ class cEngine {
 		SDL_Window* window_;
 		SDL_Renderer* renderer_;
 		SDL_Event event_;
+
+		cGameState** statePntr_;
+		void** interStateInfo_;
+		stateChangeCallback stateChange_;
 
 		cStateHandler* stateHandler_;
 

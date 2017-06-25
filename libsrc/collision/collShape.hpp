@@ -17,7 +17,7 @@ enum class eShapeType {
 class cCollShape {
 	public:
 		cCollShape (eShapeType shapeType, int numNorms);
-		virtual ~cCollShape (void);
+//		virtual ~cCollShape (void);
 
 		const eShapeType& getShapeType (void) const;
 		const std::vector<cVector2>& getNormList (void) const;

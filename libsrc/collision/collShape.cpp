@@ -4,10 +4,10 @@ cCollShape::cCollShape (eShapeType shapeType, int numNorms): shapeType_(shapeTyp
 	normList_.resize(numNorms);
 }
 
-cCollShape::~cCollShape (void) {
+//cCollShape::~cCollShape (void) {
 //	normList_.clear();
 //	data_.clear();
-}
+//}
 
 const eShapeType& cCollShape::getShapeType (void) const {
 	return shapeType_;
