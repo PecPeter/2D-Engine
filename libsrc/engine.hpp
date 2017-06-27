@@ -24,10 +24,6 @@ class cEngine {
 	public:
 		cEngine (void);
 
-		bool init (int screenWidth, int screenHeight, const char* winTitle,
-				cStateHandler* stateHandler);
-		bool init (int screenWidth, int screenHeight, std::string winTitle,
-				cStateHandler* stateHandler);
 		bool init (int screenWidth, int screenHeight,
 				const char* winTitle, stateChangeCallback callback,
 				cGameState** statePntr);
@@ -51,8 +47,6 @@ class cEngine {
 		cGameState** statePntr_;
 		void** interStateInfo_;
 		stateChangeCallback stateChange_;
-
-		cStateHandler* stateHandler_;
 
 		// Move these to some debug render state thing
 		TTF_Font* debugInfoFont_;

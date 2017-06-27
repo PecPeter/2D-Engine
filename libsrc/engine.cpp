@@ -5,11 +5,6 @@ cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),
 	debugInfoFont_(nullptr) {}
 
 bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle,
-		cStateHandler* stateHandler) {
-	return init (screenWidth,screenHeight,std::string(winTitle),stateHandler);
-}
-
-bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle,
 		stateChangeCallback callback, cGameState** statePntr) {
 	return init (screenWidth,screenHeight,std::string(winTitle),callback,
 			statePntr);
@@ -70,69 +65,7 @@ bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
 	return true;
 }
 
-bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
-		cStateHandler* stateHandler) {
-	SCREEN_WIDTH = screenWidth;
-	SCREEN_HEIGHT = screenHeight;
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		std::cerr << "SDL could not be initialized, within cEngine::init()" <<
-			"\nSDL_Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
-	if (IMG_Init (IMG_INIT_PNG) < 0) {
-		std::cerr << "SDL_Image could not be initialized." <<
-			"\nIMG_Error: " << IMG_GetError() << std::endl;
-		return false;
-	}
-	window_ = SDL_CreateWindow (winTitle.c_str(), SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT,
-			SDL_WINDOW_SHOWN);
-	if (window_ == nullptr) {
-		std::cerr << "window could not be created." <<
-			"\nSDL_Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
-//	renderer_ = SDL_CreateRenderer (window_,-1,SDL_RENDERER_ACCELERATED |
-//			SDL_RENDERER_PRESENTVSYNC);
-	renderer_ = SDL_CreateRenderer (window_,-1,SDL_RENDERER_ACCELERATED);
-	if (renderer_ == nullptr) {
-		std::cerr << "renderer could not be created." << 
-			"\nSDL_Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
-	if (SDL_SetRenderDrawColor (renderer_,0,0,0,255) != 0) {
-		std::cerr << "Could not set render draw color, within cEngine::init." <<
-			"\nSDL_Error: " << SDL_GetError() << std::endl;
-		return false;
-	}
-	if (TTF_Init() == -1) {
-		std::cerr << "SDL_TTF could not be initialized." << 
-			"\nTTF_Error: " << TTF_GetError() << std::endl;
-		return false;
-	}
-	debugInfoFont_ = TTF_OpenFont("./assets/fonts/TerminusTTF.ttf",12);
-	if (debugInfoFont_ == nullptr) {
-		std::cerr << "debugInfoFont is null, within cEngine::init."
-				  << std::endl;
-		return false;
-	}
-	if (stateHandler == nullptr) {
-		std::cerr << "stateHandler is null, within cEngine::init." << std::endl;
-		return false;
-	}
-	stateHandler_ = stateHandler;
-	return true;
-}
-
 void cEngine::quit (void) {
-//	if (stateHandler_ != nullptr) {
-//		delete stateHandler_;
-//	}
-	stateHandler_ = nullptr;
-//	if (stateList_.empty() == false)
-//		for (auto& itr : stateList_)
-//			delete &itr;
-//	stateList_.clear();
 	if (renderer_ != nullptr)
 		SDL_DestroyRenderer(renderer_);
 	if (window_ != nullptr)
@@ -175,7 +108,6 @@ void cEngine::mainLoop (void) {
 	t_lastUpdateCall = t_lastRenderCall = SDL_GetTicks();
 
 	while ((*statePntr_) != nullptr) {
-//	while (stateHandler_->getNumStates() > 0) {
 		rateCounter.startLoop();
 		// Update loop
 		double curTime = SDL_GetTicks();
@@ -281,46 +213,28 @@ void cEngine::mainLoop (void) {
 */
 void cEngine::handleEvents (void) {
 	(*statePntr_)->handleEvents(&event_);
-
-//	auto currentState = stateHandler_->getState();
-//	if (currentState != nullptr)
-//		currentState->handleEvents(&event_);
 }
 
 void cEngine::updateState (double tickRate) {
 	int stateIndex = (*statePntr_)->update(tickRate,interStateInfo_);
 	stateChange_(stateIndex,statePntr_);
-
-
-//	auto currentState = stateHandler_->getState();
-//	if (currentState != nullptr) {
-//		void** interStateInfo = stateHandler_->getInterStateInfo();
-//		stateHandler_->changeState(currentState->update(tickRate,interStateInfo));
-//	}
-
 }
 
 void cEngine::renderState (double timeLag) {
 	(*statePntr_)->render(renderer_,timeLag);
-
-//	auto currentState = stateHandler_->getState();
-//	if (currentState != nullptr) {
-//		currentState->render(renderer_,timeLag);
-
-		if (RENDER_SETTINGS != 0) {
-			if ((RENDER_SETTINGS & RENDER_FPS) > 0) {
-				std::string fpsText = "FPS: " + std::to_string(CALCED_FRAME_RATE);
-				drawStrDR(renderer_,debugInfoFont_,cVector2(0,0),fpsText.c_str(),
-						cVector4(255,255,255,255));
-			}
-			if ((RENDER_SETTINGS & RENDER_TPS) > 0) {
-				std::string tpsText = "TPS: " + std::to_string(CALCED_TICK_RATE);
-				drawStrDR(renderer_,debugInfoFont_,cVector2(0,10),tpsText.c_str(),
-						cVector4(255,255,255,255));
-			}
+	if (RENDER_SETTINGS != 0) {
+		if ((RENDER_SETTINGS & RENDER_FPS) > 0) {
+			std::string fpsText = "FPS: " + std::to_string(CALCED_FRAME_RATE);
+			drawStrDR(renderer_,debugInfoFont_,cVector2(0,0),fpsText.c_str(),
+					cVector4(255,255,255,255));
 		}
-		SDL_RenderPresent(renderer_);
-		SDL_SetRenderDrawColor(renderer_,0,0,0,255);
-		SDL_RenderClear(renderer_);
-//	}
+		if ((RENDER_SETTINGS & RENDER_TPS) > 0) {
+			std::string tpsText = "TPS: " + std::to_string(CALCED_TICK_RATE);
+			drawStrDR(renderer_,debugInfoFont_,cVector2(0,10),tpsText.c_str(),
+					cVector4(255,255,255,255));
+		}
+	}
+	SDL_RenderPresent(renderer_);
+	SDL_SetRenderDrawColor(renderer_,0,0,0,255);
+	SDL_RenderClear(renderer_);
 }
