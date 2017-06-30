@@ -21,6 +21,7 @@
 
 const cVector2 noColl_ (std::nan(""),std::nan(""));
 const cVector2 contactColl_ (0,0);
+const double epsilon = 0.000001;
 
 struct sCollShapeInfo {
 	sCollShapeInfo (const cPosComp& parentPosComp, const cPosComp& shapePosComp,
@@ -48,6 +49,16 @@ class cCollTest {
 				const sCollShapeInfo& objPoly);
 		cVector2 collTestCircleCircle (const sCollShapeInfo& objCircle1,
 				const sCollShapeInfo& objCircle2);
+		cVector2 collTestPointPoly (const sCollShapeInfo& objPoint,
+				const sCollShapeInfo& objPoly);
+		cVector2 collTestPolyPoint (const sCollShapeInfo& objPoly,
+				const sCollShapeInfo& objPoint);
+		cVector2 collTestPointCircle (const sCollShapeInfo& objPoint,
+				const sCollShapeInfo& objCircle);
+		cVector2 collTestCirclePoint (const sCollShapeInfo& objCircle,
+				const sCollShapeInfo& objPoint);
+		cVector2 collTestPointPoint (const sCollShapeInfo& objPoint1,
+				const sCollShapeInfo& objPoint2);
 
 		typedef std::pair<eShapeType,eShapeType> collTestMapKey;
 		typedef cVector2 (cCollTest::*collTestMapPtr)
@@ -55,8 +66,8 @@ class cCollTest {
 		std::map <collTestMapKey,collTestMapPtr> collTestMap_;
 };
 
-void genNormList (const std::vector<cVector2>& nList1, const std::vector<cVector2>& nList2,
-		std::vector<cVector2>* normList);
+void genNormList (const std::vector<cVector2>& nList1,
+		const std::vector<cVector2>& nList2, std::vector<cVector2>* normList);
 //This return the min displacement that obj1 would have to do to not intersect
 //with obj2 along an axis
 cVector2 minDisplacement (double obj1Min, double obj1Max, double obj2Min, double obj2Max, cVector2 axis);

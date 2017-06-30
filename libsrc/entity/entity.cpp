@@ -135,12 +135,9 @@ void* cEntity::getUsrPtr (void) const {
 }
 
 // Entity activity function
-bool cEntity::getActivity (void) const
-{
-	for (const auto& itr : entityNodeActivityMap_)
-	{
-		if (itr.second == true)
-		{
+bool cEntity::getActivity (void) const {
+	for (const auto& itr : entityNodeActivityMap_) {
+		if (itr.second == true) {
 			return true;
 		}
 	}

@@ -45,8 +45,8 @@ cCntrlKb<T>::~cCntrlKb (void) {
 
 template <class T>
 void cCntrlKb<T>::addCommand (T action, SDL_Keycode keyCode, bool repeatCommand, int modCode) {
-	std::vector<SDL_Keycode> commandVec;
-	commandVec.push_back(keyCode);
+	std::vector<SDL_Keycode> commandVec(1,keyCode);
+//	commandVec.push_back(keyCode);
 	addCommand(action,commandVec,repeatCommand,modCode);
 }
 	

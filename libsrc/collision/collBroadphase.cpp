@@ -146,8 +146,7 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 
 	// Go through the objList and place the pointers in the appropriate cells
 	for (objCont::iterator cItr = objListDyn.begin();
-			cItr != objListDyn.end(); ++cItr)
-	{
+			cItr < objListDyn.end(); ++cItr) {
 		const cEntity& entity = **cItr;
 		cVector2 aabb = getBoundingAabbDim(entity);
 		cVector2 pos = entity.getPosComp().getPos();
@@ -159,17 +158,16 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
 
 		// Iterate through the appropriate cells and add the entity reference
-		for (int row = minRow; row <= maxRow; ++row)
-		{
-			for (int col = minCol; col <= maxCol; ++col)
-			{
+		#pragma omp parallel for ordered schedule(dynamic) collapse(2)
+		for (int row = minRow; row <= maxRow; ++row) {
+			for (int col = minCol; col <= maxCol; ++col) {
 				int index = row*numCols_+col;
 				cellList.at(index).push_back(*cItr);
 			}
 		}
 	}
 	for (objCont::iterator cItr = objListStatic.begin();
-			cItr != objListStatic.end(); ++cItr)
+			cItr < objListStatic.end(); ++cItr)
 	{
 		const cEntity& entity = **cItr;
 		cVector2 aabb = getBoundingAabbDim(entity);
@@ -182,6 +180,7 @@ void cGridBroadphase::genList (pairCont& pairList, objCont& objListDyn,
 			maxCol = (pos.getY()+aabb.getY())/cellDim_.getY();
 
 		// Iterate through the appropriate cells and add the entity reference
+		#pragma omp parallel for ordered schedule(dynamic) collapse(2)
 		for (int row = minRow; row <= maxRow; ++row)
 		{
 			for (int col = minCol; col <= maxCol; ++col)

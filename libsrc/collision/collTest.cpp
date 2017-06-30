@@ -14,6 +14,16 @@ cCollTest::cCollTest (void) {
 		&cCollTest::collTestCirclePoly;
 	collTestMap_[collTestMapKey(eShapeType::CIRCLE,eShapeType::CIRCLE)] =
 		&cCollTest::collTestCircleCircle;
+	collTestMap_[collTestMapKey(eShapeType::POINT,eShapeType::POLY)] =
+		&cCollTest::collTestPointPoly;
+	collTestMap_[collTestMapKey(eShapeType::POLY,eShapeType::POINT)] =
+		&cCollTest::collTestPolyPoint;
+	collTestMap_[collTestMapKey(eShapeType::POINT,eShapeType::CIRCLE)] =
+		&cCollTest::collTestPointCircle;
+	collTestMap_[collTestMapKey(eShapeType::CIRCLE,eShapeType::POINT)] =
+		&cCollTest::collTestCirclePoint;
+	collTestMap_[collTestMapKey(eShapeType::POINT,eShapeType::POINT)] =
+		&cCollTest::collTestPointPoint;
 }
 
 bool cCollTest::testPair (cCollPair& collPair) {
@@ -252,6 +262,134 @@ cVector2 cCollTest::collTestCircleCircle (const sCollShapeInfo& objCircle1,
 		std::swap(obj2Min,obj2Max);
 
 	return minDisplacement(obj1Min,obj1Max,obj2Min,obj2Max,satAxis);
+}
+
+cVector2 cCollTest::collTestPointPoly (const sCollShapeInfo& objPoint,
+		const sCollShapeInfo& objPoly) {
+	const cCollShape& poly = objPoly.collComp_.getCollShape();
+	// Create norm list
+	// Find the closest poly vertex to the point,
+	// add the centroid->point as an axis to test for collision
+	std::vector<cVector2> normList = poly.getNormList();
+
+	//Update shape data to account for obj position and rotation
+	std::vector<cVector2> polyPtList = poly.getData();
+	cPosComp polyPos = objPoly.parentPosComp_ + objPoly.shapePosComp_;
+	if (polyPos.getRotn() != 0) {
+		cMatrix rotnMatrix = rotnTransform(polyPos.getRotn());
+		for (auto& ptListItr : polyPtList)
+			ptListItr = rotnMatrix*ptListItr+polyPos.getPos();
+	}
+	else
+		for (auto& ptListItr : polyPtList)
+			ptListItr += polyPos.getPos();
+
+	//Test distance to each poly point
+	cVector2 satAxis;
+	cPosComp pointPos = objPoint.parentPosComp_ + objPoint.shapePosComp_;
+	double ptDistance = std::numeric_limits<double>::max();
+	for (auto& polyPtItr : polyPtList) {
+		cVector2 tempAxis = pointPos.getPos()-polyPtItr;
+		double distance = vSqMagnitude(tempAxis);
+		if (distance < ptDistance) {
+			ptDistance = distance;
+			satAxis = tempAxis;
+		}
+	}
+	normList.push_back(vUnitVector(satAxis));
+
+	// Test each norm
+	std::vector<cVector2> overlapList;
+	for (auto& normListItr : normList) {
+		double polyMin, polyMax, pointMin, pointMax;
+		polyMin = pointMin = std::numeric_limits<double>::max();
+		polyMax = pointMax = -polyMin;
+		for (auto& polyPtItr : polyPtList) {
+			double projValue = vScalProj(polyPtItr,normListItr);
+			if (projValue < polyMin)
+				polyMin = projValue;
+			if (projValue > polyMax)
+				polyMax = projValue;
+		}
+		double radius = epsilon;
+		double pos = vScalProj(pointPos.getPos(),normListItr);
+		pointMin = pos-radius;
+		pointMax = pos+radius;
+		if (pointMin > pointMax)
+			std::swap(pointMin,pointMax);
+
+		cVector2 dispVector = minDisplacement(polyMin,polyMax,pointMin,
+				pointMax,normListItr);
+		if (dispVector == noColl_ || dispVector == contactColl_)
+			return dispVector;
+		overlapList.push_back(dispVector);
+	}
+	cVector2 collVector = *overlapList.begin();
+	double collVectorMag = vSqMagnitude(collVector);
+	for (std::size_t i = 1; i < overlapList.size(); ++i) {
+		if (vSqMagnitude(overlapList.at(i)) < collVectorMag) {
+			collVector = overlapList.at(i);
+			collVectorMag = vSqMagnitude(overlapList.at(i));
+		}
+	}
+	return collVector;
+}
+
+cVector2 cCollTest::collTestPolyPoint (const sCollShapeInfo& objPoly,
+		const sCollShapeInfo& objPoint) {
+	cVector2 collVector = collTestPointPoly(objPoint,objPoly);
+	if (collVector == noColl_ || collVector == contactColl_)
+		return collVector;
+	return (-1*collVector);
+}
+
+cVector2 cCollTest::collTestPointCircle (const sCollShapeInfo& objPoint,
+		const sCollShapeInfo& objCircle) {
+	const cCollShape& circle = objCircle.collComp_.getCollShape();
+
+	cPosComp pointPos = objPoint.parentPosComp_ + objPoint.shapePosComp_,
+			 circlePos = objCircle.parentPosComp_ + objCircle.shapePosComp_;
+	double pointRad = epsilon,
+		   circleRad = circle.getData().at(0).getX();
+	cVector2 satAxis = vUnitVector((circlePos-pointPos).getPos());
+	double pointMin = vScalProj(pointPos.getPos(),satAxis)-pointRad,
+		   pointMax = vScalProj(pointPos.getPos(),satAxis)+pointRad,
+		   circleMin = vScalProj(circlePos.getPos(),satAxis)-circleRad,
+		   circleMax = vScalProj(circlePos.getPos(),satAxis)+circleRad;
+
+	if (pointMin > pointMax)
+		std::swap(pointMin,pointMax);
+	if (circleMin > circleMax)
+		std::swap(circleMin,circleMax);
+
+	return minDisplacement(pointMin,pointMax,circleMin,circleMax,satAxis);
+}
+
+cVector2 cCollTest::collTestCirclePoint (const sCollShapeInfo& objCircle,
+		const sCollShapeInfo& objPoint) {
+	cVector2 collVector = collTestPointCircle(objPoint,objCircle);
+	if (collVector == noColl_ || collVector == contactColl_)
+		return collVector;
+	return (-1*collVector);
+}
+
+cVector2 cCollTest::collTestPointPoint (const sCollShapeInfo& objPoint1,
+		const sCollShapeInfo& objPoint2) {
+	cPosComp point1Pos = objPoint1.parentPosComp_ + objPoint1.shapePosComp_,
+			 point2Pos = objPoint2.parentPosComp_ + objPoint2.shapePosComp_;
+	double pointRad = epsilon;
+	cVector2 satAxis = vUnitVector((point2Pos-point1Pos).getPos());
+	double point1Min = vScalProj(point1Pos.getPos(),satAxis)-pointRad,
+		   point1Max = vScalProj(point1Pos.getPos(),satAxis)+pointRad,
+		   point2Min = vScalProj(point2Pos.getPos(),satAxis)-pointRad,
+		   point2Max = vScalProj(point2Pos.getPos(),satAxis)+pointRad;
+
+	if (point1Min > point1Max)
+		std::swap(point1Min,point1Max);
+	if (point2Min > point2Max)
+		std::swap(point2Min,point2Max);
+
+	return minDisplacement(point1Min,point1Max,point2Min,point2Max,satAxis);
 }
 
 void genNormList (const std::vector<cVector2>& nList1,

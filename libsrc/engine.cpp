@@ -1,8 +1,7 @@
 #include "engine.hpp"
 
 cEngine::cEngine (void): window_(nullptr),renderer_(nullptr),
-	statePntr_(nullptr), stateHandler_(nullptr),
-	debugInfoFont_(nullptr) {}
+	statePntr_(nullptr), debugInfoFont_(nullptr) {}
 
 bool cEngine::init (int screenWidth, int screenHeight, const char* winTitle,
 		stateChangeCallback callback, cGameState** statePntr) {

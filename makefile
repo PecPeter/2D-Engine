@@ -1,5 +1,6 @@
 CC = g++
 DEBUG_FLAGS = -g -O0
+RELEASE_FLAGS = -fopenmp
 COMP_FLAGS = -Wall -c -std=c++14 -I ./include
 LINK_FLAGS = -Wall -std=c++14 -I ./include
 
@@ -9,14 +10,14 @@ SRC_DIR = ./src/
 OBJ_DIR = ./obj/
 SOURCES := $(shell find $(SRC_DIR) -name *.cpp)
 VAR = $(SOURCES:${SRC_DIR}%=%)
-DEBUG_OBJ = $(VAR:.cpp=_d_src.o)
+DEBUG_OBJ = $(VAR:.cpp=_src_d.o)
 REL_OBJ = $(VAR:.cpp=_src.o)
 
 LIB_SRC_DIR = ./libsrc/
 LIB_OBJ_DIR = ./lib_obj/
 LIB_SOURCES := $(shell find $(LIB_SRC_DIR) -name *.cpp)
 LIB_VAR = $(LIB_SOURCES:${LIB_SRC_DIR}%=%)
-DEBUG_LIB_OBJ = $(LIB_VAR:.cpp=_d_lib.o)
+DEBUG_LIB_OBJ = $(LIB_VAR:.cpp=_lib_d.o)
 REL_LIB_OBJ = $(LIB_VAR:.cpp=_lib.o)
 
 SDL_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx
@@ -35,34 +36,31 @@ debug: dlib dsrc
 
 release: rlib rsrc
 
-special:
-	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} ./src/collWorldUnitTest.cpp -o debug ${DEBUG_LIB_FLAGS}
-
 dlib: ${DEBUG_LIB_OBJ}
-	ar crv lib${LIB_NAME}_debug.a $(shell find ${LIB_OBJ_DIR} -name *.o)
+	ar crv lib${LIB_NAME}_debug.a $(shell find ${LIB_OBJ_DIR} -name *_lib_d.o)
 	mv lib${LIB_NAME}_debug.a ./lib/
 	rm -r -f ./include/${LIB_NAME}
 	cp --parents $(shell find $(LIB_SRC_DIR) -name *.hpp) ./include
 	mv ./include/$(LIB_SRC_DIR) ./include/${LIB_NAME}
 
 rlib: ${REL_LIB_OBJ}
-	ar crv lib${LIB_NAME}_release.a $(shell find ${LIB_OBJ_DIR} -name *.o)
+	ar crv lib${LIB_NAME}_release.a $(shell find ${LIB_OBJ_DIR} -name *_lib.o)
 	mv lib${LIB_NAME}_release.a ./lib/
 	rm -r -f ./include/${LIB_NAME}
 	cp --parents $(shell find $(LIB_SRC_DIR) -name *.hpp) ./include
 	mv ./include/$(LIB_SRC_DIR) ./include/${LIB_NAME}
 
-%_d_lib.o: %.cpp %.hpp
+%_lib_d.o: %.cpp %.hpp
 	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
 
-%_d_lib.o: %.cpp
+%_lib_d.o: %.cpp
 	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
 
 %_lib.o: %.cpp %.hpp
-	${CC} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
+	${CC} ${RELEASE_FLAGS} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
 
 %_lib.o: %.cpp
-	${CC} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
+	${CC} ${RELEASE_FLAGS} ${COMP_FLAGS} $< -o ${LIB_OBJ_DIR}$@
 
 dsrc: ${DEBUG_OBJ}
 	${CC} $(addprefix ${OBJ_DIR},${DEBUG_OBJ}) -o debug ${DEBUG_LIB_FLAGS}
@@ -70,10 +68,10 @@ dsrc: ${DEBUG_OBJ}
 rsrc: ${REL_OBJ}
 	${CC} $(addprefix ${OBJ_DIR},${REL_OBJ}) -o release ${RELEASE_LIB_FLAGS}
 
-%_d_src.o: %.cpp %.hpp
+%_src_d.o: %.cpp %.hpp
 	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} $< -o ${OBJ_DIR}$@
 
-%_d_src.o: %.cpp
+%_src_d.o: %.cpp
 	${CC} ${DEBUG_FLAGS} ${COMP_FLAGS} $< -o ${OBJ_DIR}$@
 
 %_src.o: %.cpp %.hpp

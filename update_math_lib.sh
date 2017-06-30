@@ -1,7 +1,7 @@
 #/bin/bash
 
 echo "Deleting old files..."
-rm -r ./include/mathLib/* ./lib/libMathLib*
+rm -r ./include/mathLib/* ./lib/libmathLib*
 
 echo "Copying new files..."
 cp -r ~/Programming/mathLib/include/* ./include

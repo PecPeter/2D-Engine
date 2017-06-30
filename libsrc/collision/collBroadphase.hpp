@@ -1,6 +1,7 @@
 #ifndef COLLBROADPHASE_HPP
 #define COLLBROADPHASE_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <forward_list>
 #include <map>
