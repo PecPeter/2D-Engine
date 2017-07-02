@@ -61,6 +61,8 @@ bool cEngine::init (int screenWidth, int screenHeight, std::string winTitle,
 	}
 	statePntr_ = statePntr;
 	stateChange_ = callback;
+	TICK_RATE = 15.0;
+	MAX_UPDATE_COUNT = 5;
 	return true;
 }
 
@@ -80,143 +82,56 @@ void cEngine::quit (void) {
 	SDL_Quit();
 }
 
+// The game loop is based on the DeWitters game loop post
+// http://www.koonsolo.com/news/dewitters-gameloop/
 void cEngine::mainLoop (void) {
-	int loops = 0;
-	double interpolation;
 	double numUpdates = 0,
 		   numFrames = 0;
 	cTickCounter rateCounter;
 
-	if (TICK_RATE == 0.0)
-		TICK_RATE = 60.0;
-	MS_PER_UPDATE = 1000.0/TICK_RATE;
-	double dtUpdate = 0.0,
-		   tOffUpdate = 0.0;
-
-	if (MAX_UPDATE_COUNT == 0)
-		MAX_UPDATE_COUNT = 10;
-
-	if (FRAME_RATE == 0.0)
-		FRAME_RATE = 120.0;
-	MS_PER_RENDER = 1000.0/FRAME_RATE;
-	double dtRender = 0.0,
-		   tOffRender = 0.0;
-
-	double t_lastUpdateCall,
-		   t_lastRenderCall;
-	t_lastUpdateCall = t_lastRenderCall = SDL_GetTicks();
+	int loops;
+	double interpolation;
+	double nextTick = SDL_GetTicks();
 
 	while ((*statePntr_) != nullptr) {
 		rateCounter.startLoop();
-		// Update loop
-		double curTime = SDL_GetTicks();
-		dtUpdate = curTime - t_lastUpdateCall;
 
-		while ((dtUpdate >= MS_PER_UPDATE) &&
-				loops < MAX_UPDATE_COUNT && ((*statePntr_) != nullptr)) {
-			dtUpdate -= MS_PER_UPDATE;
+		// Update loop
+		loops = 0;
+		while (SDL_GetTicks() > nextTick && loops < MAX_UPDATE_COUNT &&
+			   ((*statePntr_) != nullptr)) {
 			++loops;
 			++numUpdates;
-
 			handleEvents();
 			updateState(TICK_RATE);
+			nextTick += MS_PER_UPDATE;
 		}
-		loops = 0;
-//		tOffUpdate = dtUpdate;
-		t_lastUpdateCall = curTime - dtUpdate;
-		
-//		while ((dtUpdate >= MS_PER_UPDATE - tOffUpdate) && 
-//				loops < MAX_UPDATE_COUNT) {
-//			dtUpdate -= MS_PER_UPDATE;
-//			++loops;
-//			++numUpdates;
-//			
-//			handleEvents();
-//			updateState(TICK_RATE);
-//		}
-//		t_lastUpdateCall = SDL_GetTicks();
-//		tOffUpdate = dtUpdate;
 
 		// Render Loop
-		curTime = SDL_GetTicks();
-		dtRender = curTime - t_lastRenderCall;
-		if ((dtRender >= MS_PER_RENDER - tOffRender) &&
-				((*statePntr_) != nullptr)) {
-			tOffRender = dtRender - MS_PER_RENDER;
-			t_lastRenderCall = curTime;
-			dtRender = 0.0;
-			interpolation = double(curTime-t_lastUpdateCall)/MS_PER_UPDATE;
+		interpolation = double(SDL_GetTicks()+MS_PER_UPDATE-nextTick) /
+			MS_PER_UPDATE;
+		if ((*statePntr_) != nullptr) {
 			renderState(interpolation);
 			++numFrames;
 		}
 
-		while (SDL_GetTicks() < t_lastRenderCall+MS_PER_RENDER) {
-			SDL_Delay((t_lastRenderCall+MS_PER_RENDER)-SDL_GetTicks());
-		}
-
+		rateCounter.endLoop();
 		if (rateCounter.getTicks() >= 200) {
 			double dt = rateCounter.getTicksAndClear();
 			CALCED_TICK_RATE = double(numUpdates)/(dt/1000.0);
 			CALCED_FRAME_RATE = double(numFrames)/(dt/1000.0);
 			numUpdates = numFrames = 0;
 		}
-		rateCounter.endLoop();
 	}
 }
-/*
-void cEngine::mainLoop (void) {
-	int loops;
-	double interpolation;
-	double numUpdates = 0,
-		   numFrames = 0;
-	cTickCounter rateCounter;
 
-	TICK_RATE = 60;
-	MS_PER_UPDATE = 1000.0/TICK_RATE;
-	MAX_UPDATE_COUNT = 10;
-	FRAME_RATE = 200;
-	MS_PER_RENDER = 1000.0/FRAME_RATE;
-	Uint32 nextTick = SDL_GetTicks();
-	Uint32 lastRender = SDL_GetTicks();
-	while (stateHandler_->getNumStates() > 0) {
-		//As long as there is a state on the list, don't end the game
-		rateCounter.startLoop();
-		loops = 0;
-		while (nextTick < SDL_GetTicks() && loops < MAX_UPDATE_COUNT) {
-			handleEvents();
-			updateState(TICK_RATE);
-			nextTick += MS_PER_UPDATE;
-			++loops;
-			++numUpdates;
-		}
-
-		interpolation = double(SDL_GetTicks()+MS_PER_UPDATE-nextTick)
-			/MS_PER_UPDATE;
-		renderState(interpolation);
-		++numFrames;
-
-		while (SDL_GetTicks() < lastRender+MS_PER_RENDER) {
-			SDL_Delay((lastRender+MS_PER_RENDER)-SDL_GetTicks());
-		}
-		lastRender = SDL_GetTicks();
-
-		if (rateCounter.getTicks() >= 200) {
-			double dt = rateCounter.getTicksAndClear();
-			CALCED_TICK_RATE = double(numUpdates)/(dt/1000.0);
-			CALCED_FRAME_RATE = double(numFrames)/(dt/1000.0);
-			numUpdates = numFrames = 0;
-		}
-		rateCounter.endLoop();
-	}
-}
-*/
 void cEngine::handleEvents (void) {
 	(*statePntr_)->handleEvents(&event_);
 }
 
 void cEngine::updateState (double tickRate) {
 	int stateIndex = (*statePntr_)->update(tickRate,interStateInfo_);
-	stateChange_(stateIndex,statePntr_);
+	stateChange_(stateIndex,statePntr_,interStateInfo_);
 }
 
 void cEngine::renderState (double timeLag) {

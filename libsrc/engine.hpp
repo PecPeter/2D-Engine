@@ -18,7 +18,8 @@
 
 #include "renderFunctions.hpp"
 
-typedef void (*stateChangeCallback) (int stateChange, cGameState** statePntr);
+typedef void (*stateChangeCallback) (int stateChange, cGameState** statePntr,
+		void** interStateInfo);
 
 class cEngine {
 	public:
