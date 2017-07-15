@@ -77,8 +77,13 @@ class cEntity {
 
 		// Entity activity function
 		bool getActivity (void) const;
+		void setActivity (bool entActivity);
 		void setNodeActivity (int nodeId, bool nodeActivity);
 		bool getNodeActivity (int nodeId) const;
+
+		// Entity State functions
+		int getState (void) const;
+		void setState (int entityState);
 
 	private:
 		int id_;
@@ -89,6 +94,7 @@ class cEntity {
 		int entityMask_;
 		collCallbackFunc collCallback_;
 		void* usrPtr_;
+		int entityState_;
 };
 
 std::map<int,cPosComp> getNodeOffset (const std::vector<cEntityNode>& nodeList);

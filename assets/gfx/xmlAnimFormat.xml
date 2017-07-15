@@ -1,0 +1,14 @@
+<Root>
+	<SheetRoot name="str.jpg">
+		<Animation id="int" numFrames="int" fps="int">
+			<Frame id="int">
+				<topLeftX></topLeftX>
+				<topLeftY></topLeftY>
+				<width></width>
+				<height></height>
+				<dx_centre></dx_centre>
+				<dy_centre></dy_centre>
+			</Frame>
+		</Animation>
+	</SheetRoot>
+</Root>

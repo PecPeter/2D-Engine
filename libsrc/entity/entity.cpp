@@ -9,12 +9,9 @@ cEntity::cEntity (int id, const eEntityType& type, const cPosComp& pos,
 		const std::vector<cEntityNode>& entityNodeList, int entityMask,
 		void* usrPtr) :
 		id_(id), type_(type), entityPos_(pos),
-		entityNodeList_(entityNodeList),
-		entityMask_(entityMask),
-		usrPtr_(usrPtr)
-{
-	for (const auto& itr : entityNodeList_)
-	{
+		entityNodeList_(entityNodeList), entityMask_(entityMask),
+		usrPtr_(usrPtr), entityState_(0) {
+	for (const auto& itr : entityNodeList_) {
 		entityNodeActivityMap_[itr.getId()] = true;
 	}
 }
@@ -144,8 +141,13 @@ bool cEntity::getActivity (void) const {
 	return false;
 }
 
-void cEntity::setNodeActivity (int nodeId, bool nodeActivity)
-{
+void cEntity::setActivity (bool entActivity) {
+	for (auto& itr : entityNodeActivityMap_) {
+		itr.second = true;
+	}
+}
+
+void cEntity::setNodeActivity (int nodeId, bool nodeActivity) {
 	int entityNodeIndex = 0;
 	for (auto& nodeItr : getNodes())
 	{
@@ -158,9 +160,17 @@ void cEntity::setNodeActivity (int nodeId, bool nodeActivity)
 	}
 }
 
-bool cEntity::getNodeActivity (int nodeId) const
-{
+bool cEntity::getNodeActivity (int nodeId) const {
 	return entityNodeActivityMap_.at(nodeId);
+}
+
+// Entity State functions
+int cEntity::getState (void) const {
+	return entityState_;
+}
+
+void cEntity::setState (int entityState) {
+	entityState_ = entityState;
 }
 
 std::map<int,cPosComp> getNodeOffset (const std::vector<cEntityNode>& nodeList) {

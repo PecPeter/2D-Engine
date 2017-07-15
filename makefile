@@ -20,15 +20,15 @@ LIB_VAR = $(LIB_SOURCES:${LIB_SRC_DIR}%=%)
 DEBUG_LIB_OBJ = $(LIB_VAR:.cpp=_lib_d.o)
 REL_LIB_OBJ = $(LIB_VAR:.cpp=_lib.o)
 
-SDL_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx
-DEBUG_LIB_FLAGS = -L ./lib -l${LIB_NAME}_debug -lmathLib_debug ${SDL_FLAGS}
-RELEASE_LIB_FLAGS = -L ./lib  -l${LIB_NAME}_release -lmathLib_release ${SDL_FLAGS}
+LIB_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx -ltinyxml2
+DEBUG_LIB_FLAGS = -L ./lib -l${LIB_NAME}_debug -lmathLib_debug ${LIB_FLAGS}
+RELEASE_LIB_FLAGS = -L ./lib  -l${LIB_NAME}_release -lmathLib_release ${LIB_FLAGS}
 
 vpath %.hpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.cpp ${SRC_DIR} ${LIB_SRC_DIR}
 vpath %.o ${OBJ_DIR} ${LIB_OBJ_DIR}
 
-all: debug
+all: libs
 
 libs: dlib rlib
 
