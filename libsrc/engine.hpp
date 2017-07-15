@@ -13,7 +13,6 @@
 
 #include "engineMetrics.hpp"
 #include "gameState.hpp"
-#include "stateHandler.hpp"
 #include "timer.hpp"
 
 #include "renderFunctions.hpp"
